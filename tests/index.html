@@ -1,17 +1,21 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <meta name="viewport" content="initial-scale=100, user-scalable=false" style="width: 100%;">
-    <script src="https://argfcu.customer-dev.cardupdatr.app/cardupdatr-client-v2.js"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="../assets/styles.css" />
+    <script defer src="https://orb_prod.customer-dev.cardupdatr.app/cardupdatr-client-v2.js"></script>
     <style>
         /* Button styling */
         body {
+            margin: 0;
+        }
+        .test-content {
             display: flex;
-            flex-direction: column; 
+            flex-direction: column;
             justify-content: center;
             align-items: center;
-            height: 100vh;
-            margin: 0;
+            min-height: 100vh;
+            padding: 32px 0 64px;
         }
         #placeCardsButton {
             background-color: #004f39;
@@ -39,7 +43,18 @@
     </style>
 </head>
 <body>
+    <header class="site-header">
+        <div class="wrap">
+            <div class="title">ARG-FCU</div>
+            <nav class="nav">
+                <a href="../index.html">Home</a>
+                <a href="../playground.html">Playground</a>
+                <a class="active" href="./index.html">Tests</a>
+            </nav>
+        </div>
+    </header>
 
+    <main class="test-content">
     <div id="data">
         <h2>Account Holder Data Passed</h2>
         <pre>
@@ -93,7 +108,7 @@
                 "overlay" : "true",
                 "app_container_id": "cardupdatr-frame",
                 "show_header": "false",
-                "hostname": "https://argfcu.customer-dev.cardupdatr.app/",
+                "hostname": "https://orb_prod.customer-dev.cardupdatr.app/",
                 "top_sites": "",
                 "merchant_site_tags": "demo"
             },
@@ -196,7 +211,7 @@
                         "overlay" : "true",
                         "app_container_id": "cardupdatr-frame",
                         "show_header": "false",
-                        "hostname": "https://argfcu.customer-dev.cardupdatr.app/",
+                        "hostname": "https://orb_prod.customer-dev.cardupdatr.app/",
                         "top_sites": "",
                         "merchant_site_tags": "demo"
                     },
@@ -224,5 +239,6 @@
             });
         });
     </script>
+    </main>
 </body>
 </html>

@@ -26,36 +26,85 @@
       </p>
 
       <div class="form">
+        <div class="full">
+          <div><b>Integration Type</b></div>
+          <label><input type="radio" name="integrationType" id="integrationEmbedded" value="embedded" checked /> Embedded</label>
+          <label><input type="radio" name="integrationType" id="integrationWeblink" value="weblink" /> Weblink</label>
+        </div>
+
+        <div class="full">
+          <div><b>Device Platform</b></div>
+          <label><input type="radio" name="devicePlatform" id="deviceDesktop" value="desktop" checked /> Desktop</label>
+          <label><input type="radio" name="devicePlatform" id="deviceMobile" value="mobile" /> Mobile</label>
+        </div>
+
         <label>
           Financial Institution
-          <input id="fi" type="text" value="argfcu" />
+          <input id="fi" type="text" value="orb_prod" />
+        </label>
+
+        <div class="full">
+          <div><b>Container Parameters</b></div>
+        </div>
+
+        <label>
+          BG Color (Hex)
+          <input id="containerBgColor" type="text" value="#00FF00" />
         </label>
 
         <label>
-          Merchant Site Tags
-          <select id="merchantSiteTags">
-            <option value="prod" selected>prod</option>
-            <option value="demo">demo</option>
+          Width
+          <input id="containerWidth" type="text" value="800px" />
+        </label>
+
+        <label>
+          Height
+          <input id="containerHeight" type="text" value="800px" />
+        </label>
+
+        <label>
+          Min Height
+          <input id="containerMinHeight" type="text" value="50vh" />
+        </label>
+
+        <label>
+          Max Height
+          <input id="containerMaxHeight" type="text" value="100vh" />
+        </label>
+
+        <label>
+          Text Align
+          <input id="containerTextAlign" type="text" value="center" />
+        </label>
+
+        <label>
+          Pad Top
+          <input id="containerPadTop" type="text" value="3vh" />
+        </label>
+
+        <label>
+          Pad Bottom
+          <input id="containerPadBottom" type="text" value="3vh" />
+        </label>
+
+        <label>
+          Overflow
+          <select id="containerOverflow">
+            <option value="visible">visible</option>
+            <option value="scroll" selected>scroll</option>
+            <option value="hidden">hidden</option>
+            <option value="auto">auto</option>
+            <option value="clip">clip</option>
           </select>
         </label>
 
         <label>
-          Device Type
-          <select id="deviceType">
-            <option value="desktop" selected>desktop</option>
-            <option value="tablet">tablet</option>
-            <option value="mobile">mobile</option>
+          Overscroll
+          <select id="containerOverscroll">
+            <option value="auto">auto</option>
+            <option value="contain" selected>contain</option>
+            <option value="none">none</option>
           </select>
-        </label>
-
-        <label>
-          Container Width
-          <input id="containerWidth" type="text" value="100%" />
-        </label>
-
-        <label>
-          Container Height (px)
-          <input id="containerHeight" type="number" value="900" />
         </label>
 
         <label>
@@ -64,6 +113,84 @@
             <option value="none" selected>none</option>
             <option value="thin">thin</option>
           </select>
+        </label>
+
+        <div class="full">
+          <div><b>CardUpdatr Parameters</b></div>
+          <div class="muted">Config Object (passed to CardUpdatr)</div>
+        </div>
+
+        <label>
+          Top Sites (comma delimited)
+          <input id="topSites" type="text" value="" />
+        </label>
+
+        <label>
+          Exclude Sites (comma delimited)
+          <input id="excludeSites" type="text" value="" />
+        </label>
+
+        <label>
+          Merchant Site Tags
+          <select id="merchantSiteTags">
+            <option value="prod" selected>prod</option>
+            <option value="demo">demo</option>
+            <option value="unrestricted">unrestricted</option>
+          </select>
+        </label>
+
+        <label>
+          Countries Supported
+          <input id="countriesSupported" type="text" value="USA" />
+        </label>
+
+        <div class="full">
+          <div><b>Style Template Object</b></div>
+        </div>
+
+        <label>
+          Card Description
+          <input id="cardDescription" type="text" maxlength="40" value="ARG-FCU Credit & Debit Card" />
+        </label>
+
+        <label>
+          Merchant Selection Message
+          <input id="merchantSelectionMessage" type="text" value="Ability for an FI to update the merchant_selection_message and provide a focused call to action" />
+        </label>
+
+        <label class="full">
+          Final Message
+          <input id="finalMessage" type="text" value="Thank you for updating your card, if you would like to update this message send to final_message." />
+        </label>
+
+        <label class="full">
+          Invalid Session URL
+          <input id="invalidSessionUrl" type="text" value="https://www.strivve.com" />
+        </label>
+
+        <label>
+          Link Color
+          <input id="linkColor" type="text" value="#FF0000" />
+        </label>
+
+        <label>
+          Button Color
+          <input id="buttonColor" type="text" value="#5e35b1" />
+        </label>
+
+        <label>
+          Border Color
+          <input id="borderColor" type="text" value="#FFA500" />
+        </label>
+
+        <label>
+          Drop Shadow
+          <input id="dropShadow" type="checkbox" checked />
+        </label>
+
+        <label>
+          Dynamic Height
+          <input id="dynamicHeight" type="checkbox" checked />
         </label>
 
         <label class="full">
@@ -81,10 +208,13 @@
 
     <section class="card">
       <h2>Preview</h2>
-      <iframe id="preview" title="CardUpdatr Preview"></iframe>
+      <div id="preview" aria-label="CardUpdatr Preview">
+        <div id="cardupdatr-frame"></div>
+      </div>
     </section>
   </main>
 
+  <script defer src="https://orb_prod.customer-dev.cardupdatr.app/cardupdatr-client-v2.js"></script>
   <script src="./assets/playground.js"></script>
 </body>
 </html>

@@ -1,6 +1,6 @@
 const $ = (id) => document.getElementById(id);
 
-const CARDUPDATR_SCRIPT_URL = "https://argfcu.customer-dev.cardupdatr.app/cardupdatr-client-v2.js";
+const CARDUPDATR_HOST_SUFFIX = ".customer-dev.cardupdatr.app/";
 
 function safeParseJson(text) {
   if (!text || !text.trim()) return null;
@@ -8,29 +8,56 @@ function safeParseJson(text) {
   catch (e) { throw new Error(`Invalid JSON in override: ${e.message}`); }
 }
 
+function mergeSettings(base, override) {
+  const merged = { ...base, ...override };
+  if (base.config || override.config) {
+    merged.config = { ...base.config, ...override.config };
+  }
+  if (base.style || override.style) {
+    merged.style = { ...base.style, ...override.style };
+  }
+  if (base.style_template || override.style_template) {
+    merged.style_template = { ...base.style_template, ...override.style_template };
+  }
+  if (base.user || override.user) {
+    merged.user = { ...base.user, ...override.user };
+  }
+  return merged;
+}
+
 function buildConfigFromForm() {
   const fi = $("fi").value.trim() || "argfcu";
+  const hostname = `https://${fi}${CARDUPDATR_HOST_SUFFIX}`;
+  const merchantSiteTag = $("merchantSiteTags").value;
+  const devicePlatform = getRadioValue("devicePlatform", "desktop");
 
   const base = {
-    // IMPORTANT: fix spelling vs older file
-    financial_institution: fi,
-
-    // Keep your common knobs
-    merchantSiteTags: $("merchantSiteTags").value,
-    deviceType: $("deviceType").value,
-
-    // Container styling (your legacy code used a bunch of these fields)
-    container: {
-      width: $("containerWidth").value,
-      heightPx: Number($("containerHeight").value || 900),
-      border: $("border").value
+    config: {
+      app_container_id: "cardupdatr-frame",
+      hostname,
+      financial_institution: fi,
+      top_sites: parseCommaList($("topSites").value),
+      exclude_sites: parseCommaList($("excludeSites").value),
+      merchant_site_tags: merchantSiteTag ? [merchantSiteTag] : [],
+      countries_supported: parseCommaList($("countriesSupported").value),
+      device_platform: devicePlatform
+    },
+    style_template: {
+      card_description: $("cardDescription").value.trim(),
+      merchant_selection_message: $("merchantSelectionMessage").value.trim(),
+      final_message: $("finalMessage").value.trim(),
+      invalid_session_url: $("invalidSessionUrl").value.trim(),
+      link_color: $("linkColor").value.trim(),
+      button_color: $("buttonColor").value.trim(),
+      border_color: $("borderColor").value.trim(),
+      drop_shadow: $("dropShadow").checked,
+      dynamic_height: $("dynamicHeight").checked
     }
   };
 
   const override = safeParseJson($("configOverride").value);
   if (override) {
-    // override shallow merges onto base (good enough for now)
-    return { ...base, ...override };
+    return mergeSettings(base, override);
   }
   return base;
 }
@@ -39,82 +66,42 @@ function setStatus(msg) {
   $("status").textContent = msg || "";
 }
 
-function renderPreview(config) {
-  const iframe = $("preview");
-  iframe.style.height = `${config.container?.heightPx || 900}px`;
+function renderPreview(settings) {
+  const integrationType = getRadioValue("integrationType", "embedded");
+  const preview = $("preview");
 
-  // Build an isolated HTML doc inside the iframe
-  const srcdoc = `<!doctype html>
-<html>
-<head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <style>
-    body { margin:0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial; }
-    .wrap { padding: 12px; }
-    .box { width: ${escapeHtml(config.container?.width || "100%")}; }
-    .thin { border: 1px solid #ddd; border-radius: 12px; overflow: hidden; }
-  </style>
-</head>
-<body>
-  <div class="wrap">
-    <div class="box ${config.container?.border === "thin" ? "thin" : ""}">
-      <div id="cardupdatr-root"></div>
-    </div>
-  </div>
+  if (integrationType === "weblink") {
+    const width = parseInt($("containerWidth").value, 10) || 900;
+    const height = parseInt($("containerHeight").value, 10) || 1100;
+    window.open(
+      settings.config.hostname,
+      "",
+      `width=${width},height=${height},scrollbars=no,resizable=no`
+    );
+    setStatus("Weblink launched.");
+    return;
+  }
 
-  <script src="${CARDUPDATR_SCRIPT_URL}"></script>
-  <script>
-    const config = ${JSON.stringify(config)};
+  applyContainerStyles(preview);
+  preview.innerHTML = '<div id="cardupdatr-frame"></div>';
 
-    function fail(msg) {
-      const el = document.getElementById("cardupdatr-root");
-      el.innerHTML = "<div style='padding:12px;color:#b00;font-size:14px;white-space:pre-wrap;'>" + msg + "</div>";
-    }
+  if (typeof window.embedCardUpdatr !== "function") {
+    setStatus("CardUpdatr script not loaded yet.");
+    return;
+  }
 
-    try {
-      if (typeof window.initCardupdatr !== "function") {
-        fail("CardUpdatr script loaded, but window.initCardupdatr() was not found.\\nThe embed API may have changed.");
-      } else if (typeof window.embedCardUpdatr !== "function") {
-        fail("CardUpdatr script loaded, but window.embedCardUpdatr() was not found.\\nThe embed API may have changed.");
-      } else {
-        // Your legacy flow used init + embed. Keep that pattern.
-        window.initCardupdatr(config);
-
-        // Some versions expect a container id; others infer.
-        // We try the common patterns safely.
-        try {
-          window.embedCardUpdatr("cardupdatr-root", config);
-        } catch (e1) {
-          try {
-            window.embedCardUpdatr(config);
-          } catch (e2) {
-            fail("Embed failed.\\n\\n" + (e1?.message || e1) + "\\n" + (e2?.message || e2));
-          }
-        }
-      }
-    } catch (e) {
-      fail("Unexpected error:\\n" + (e?.message || e));
-    }
-  </script>
-</body>
-</html>`;
-
-  iframe.srcdoc = srcdoc;
-}
-
-// minimal HTML escaper for width string (e.g., "100%")
-function escapeHtml(s) {
-  return String(s).replace(/[&<>"']/g, (c) => ({
-    "&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"
-  }[c]));
+  try {
+    window.embedCardUpdatr(settings);
+  } catch (e) {
+    setStatus(`Embed failed: ${e?.message || e}`);
+  }
 }
 
 $("loadBtn").addEventListener("click", () => {
   try {
     setStatus("Loading…");
-    const config = buildConfigFromForm();
-    renderPreview(config);
+    const settings = buildConfigFromForm();
+    renderPreview(settings);
     setStatus("Loaded (check preview + console if blank).");
   } catch (e) {
     setStatus(e.message || String(e));
@@ -123,10 +110,37 @@ $("loadBtn").addEventListener("click", () => {
 
 $("copyBtn").addEventListener("click", async () => {
   try {
-    const config = buildConfigFromForm();
-    await navigator.clipboard.writeText(JSON.stringify(config, null, 2));
+    const settings = buildConfigFromForm();
+    await navigator.clipboard.writeText(JSON.stringify(settings, null, 2));
     setStatus("Config copied to clipboard.");
   } catch (e) {
     setStatus(e.message || String(e));
   }
 });
+
+function parseCommaList(value) {
+  return String(value || "")
+    .split(",")
+    .map((entry) => entry.trim())
+    .filter((entry) => entry.length);
+}
+
+function getRadioValue(name, fallback) {
+  const checked = document.querySelector(`input[name="${name}"]:checked`);
+  return checked ? checked.value : fallback;
+}
+
+function applyContainerStyles(preview) {
+  const border = $("border").value;
+  preview.style.background = $("containerBgColor").value || "transparent";
+  preview.style.width = $("containerWidth").value || "100%";
+  preview.style.height = $("containerHeight").value || "900px";
+  preview.style.minHeight = $("containerMinHeight").value || "";
+  preview.style.maxHeight = $("containerMaxHeight").value || "";
+  preview.style.textAlign = $("containerTextAlign").value || "";
+  preview.style.paddingTop = $("containerPadTop").value || "";
+  preview.style.paddingBottom = $("containerPadBottom").value || "";
+  preview.style.overflow = $("containerOverflow").value || "visible";
+  preview.style.overscrollBehavior = $("containerOverscroll").value || "auto";
+  preview.style.border = border === "thin" ? "1px solid #ddd" : "0";
+}
