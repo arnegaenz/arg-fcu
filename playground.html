@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>CardUpdatr Playground | ARG-FCU</title>
+  <link rel="stylesheet" href="/assets/styles.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="wrap">
+      <div class="title">ARG-FCU</div>
+      <nav class="nav">
+        <a href="/">Home</a>
+        <a class="active" href="/playground.html">Playground</a>
+        <a href="/tests/">Tests</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap grid">
+    <section class="card">
+      <h1>CardUpdatr Playground</h1>
+      <p class="muted">
+        Choose parameters, then click <b>Load CardUpdatr</b> to render the embedded experience.
+      </p>
+
+      <div class="form">
+        <label>
+          Financial Institution
+          <input id="fi" type="text" value="argfcu" />
+        </label>
+
+        <label>
+          Merchant Site Tags
+          <select id="merchantSiteTags">
+            <option value="prod" selected>prod</option>
+            <option value="demo">demo</option>
+          </select>
+        </label>
+
+        <label>
+          Device Type
+          <select id="deviceType">
+            <option value="desktop" selected>desktop</option>
+            <option value="tablet">tablet</option>
+            <option value="mobile">mobile</option>
+          </select>
+        </label>
+
+        <label>
+          Container Width
+          <input id="containerWidth" type="text" value="100%" />
+        </label>
+
+        <label>
+          Container Height (px)
+          <input id="containerHeight" type="number" value="900" />
+        </label>
+
+        <label>
+          Border
+          <select id="border">
+            <option value="none" selected>none</option>
+            <option value="thin">thin</option>
+          </select>
+        </label>
+
+        <label class="full">
+          Advanced Config Override (JSON) — optional
+          <textarea id="configOverride" rows="10" placeholder='{"countriesSupported":["USA"]}'></textarea>
+        </label>
+
+        <div class="actions full">
+          <button id="loadBtn">Load CardUpdatr</button>
+          <button id="copyBtn" class="secondary">Copy Config JSON</button>
+          <span id="status" class="status muted"></span>
+        </div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2>Preview</h2>
+      <iframe id="preview" title="CardUpdatr Preview"></iframe>
+    </section>
+  </main>
+
+  <script src="/assets/playground.js"></script>
+</body>
+</html>
