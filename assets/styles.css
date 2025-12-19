@@ -19,6 +19,7 @@ input, select { height: 42px; }
 .form .inline-field { display: flex; align-items: center; gap: 6px; }
 .form .inline-field input { width: auto; }
 .form .label-title { min-height: 32px; line-height: 1.2; display: block; }
+.form .compact-label { margin-top: -6px; }
 .form .color-input { display: flex; gap: 8px; align-items: center; }
 .form .color-input input[type="text"] { flex: 1 1 auto; }
 .form .color-input input[type="color"] { width: 42px; min-width: 42px; padding: 0; border-radius: 10px; }

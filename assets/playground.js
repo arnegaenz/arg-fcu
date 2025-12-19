@@ -24,15 +24,15 @@ function buildBaseSettingsFromForm() {
   const fiHost = $("fiHost").value.trim();
   const hostname = `https://${fiHost}/`;
   const merchantSiteTag = $("merchantSiteTags").value;
+  const topSites = parseCommaList($("topSites").value);
 
-  return {
+  const base = {
     config: {
       app_container_id: "cardupdatr-frame",
       hostname,
       financial_institution: fiHost.split(".")[0] || "",
       overlay: $("overlayEnabled").checked,
       close_url: $("closeUrl").value.trim(),
-      top_sites: parseCommaList($("topSites").value),
       exclude_sites: parseCommaList($("excludeSites").value),
       merchant_site_tags: merchantSiteTag ? [merchantSiteTag] : [],
       countries_supported: parseCommaList($("countriesSupported").value)
@@ -50,6 +50,11 @@ function buildBaseSettingsFromForm() {
       dynamic_height: $("dynamicHeight").checked
     }
   };
+
+  if (topSites.length) {
+    base.config.top_sites = topSites;
+  }
+
   const merchantSelectionMessage = $("merchantSelectionMessage").value.trim();
   if (merchantSelectionMessage) {
     base.style.merchant_selection_message = merchantSelectionMessage;
@@ -114,6 +119,18 @@ async function renderPreview(settings) {
     await ensureCardupdatrScript(settings.config.hostname);
     if (typeof window.embedCardUpdatr !== "function") {
       setStatus("CardUpdatr script loaded, but embedCardUpdatr is missing.");
+      return;
+    }
+    if (typeof window.initCardupdatr === "function") {
+      window.initCardupdatr(settings);
+      // Some builds render on init; only embed if the container is still empty.
+      setTimeout(() => {
+        const frame = $("cardupdatr-frame");
+        if (!frame || frame.children.length === 0) {
+          window.embedCardUpdatr(settings);
+        }
+        setStatus("Loaded.");
+      }, 50);
       return;
     }
     window.embedCardUpdatr(settings);
