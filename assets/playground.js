@@ -20,11 +20,40 @@ function mergeSettings(base, override) {
   return merged;
 }
 
+const SSO_LAMBDA_URL = "https://bswpcoqak3b7elcynskytiapyu0eokxs.lambda-url.us-west-2.on.aws/";
+const DEMO_CUSTOM_DATA = {
+  SCOPE: {
+    CUSTOMER_KEY: "000000000000"
+  }
+};
+const DEMO_CARD = {
+  email: "jack_skellington@scareme.com",
+  phoneNumber: "7141122222",
+  cvv: "414",
+  nameOnCard: "Jack Skelington",
+  pan: "4114411441144114",
+  expirationMonth: "04",
+  expirationYear: "24",
+  address: {
+    is_primary: "true",
+    address1: "1122 Boogie Boogie Ave.",
+    address2: "",
+    city: "Anaheim",
+    subnational: "CA",
+    postal_code: "92801",
+    country: "USA",
+    first_name: "Jack",
+    last_name: "Skelington"
+  }
+};
+
 function buildBaseSettingsFromForm() {
   const fiHost = $("fiHost").value.trim();
   const hostname = `https://${fiHost}/`;
-  const merchantSiteTag = $("merchantSiteTags").value;
+  const merchantSiteTags = getSelectedMerchantSiteTags();
   const topSites = parseCommaList($("topSites").value);
+  const ssoEnabled = $("ssoEnabled").checked;
+  const closeUrl = normalizeCloseUrl($("closeUrl").value, hostname);
 
   const base = {
     config: {
@@ -32,9 +61,9 @@ function buildBaseSettingsFromForm() {
       hostname,
       financial_institution: fiHost.split(".")[0] || "",
       overlay: $("overlayEnabled").checked,
-      close_url: $("closeUrl").value.trim(),
+      close_url: closeUrl,
       exclude_sites: parseCommaList($("excludeSites").value),
-      merchant_site_tags: merchantSiteTag ? [merchantSiteTag] : [],
+      merchant_site_tags: merchantSiteTags,
       countries_supported: parseCommaList($("countriesSupported").value)
     },
     style: {
@@ -51,6 +80,18 @@ function buildBaseSettingsFromForm() {
     }
   };
 
+  if (merchantSiteTags.length) {
+    base.config.tags = merchantSiteTags.join(",");
+  }
+
+  if (ssoEnabled) {
+    base.user = {
+      grant: "",
+      card_id: "",
+      custom_data: { ...DEMO_CUSTOM_DATA }
+    };
+  }
+
   if (topSites.length) {
     base.config.top_sites = topSites;
   }
@@ -60,6 +101,76 @@ function buildBaseSettingsFromForm() {
     base.style.merchant_selection_message = merchantSelectionMessage;
   }
   return base;
+}
+
+function normalizeCloseUrl(value) {
+  const trimmed = String(value || "").trim();
+  if (!trimmed) return undefined;
+  if (trimmed === "close" || trimmed === "none" || trimmed === "/select-merchants") return trimmed;
+  if (/^https?:\/\//i.test(trimmed)) return trimmed;
+  return "none";
+}
+
+function buildSsoRequestFromForm() {
+  const excludeCVV = $("excludeCVV").checked;
+  const excludePhoneNumber = $("excludePhoneNumber").checked;
+  const excludeEmail = $("excludeEmail").checked;
+
+  const cardsavrServer = inferCardsavrServer($("fiHost").value);
+  const payload = {
+    cardholder_data: {
+      type: "ephemeral",
+      webhook_url1: "",
+      integrator_id1: 0
+    },
+    card_data: {
+      name_on_card: DEMO_CARD.nameOnCard,
+      pan: DEMO_CARD.pan,
+      expiration_month: DEMO_CARD.expirationMonth,
+      expiration_year: DEMO_CARD.expirationYear
+    },
+    cardsavr_server: cardsavrServer
+  };
+
+  if (!excludeEmail) {
+    payload.cardholder_data.email = DEMO_CARD.email;
+  }
+
+  if (!excludeCVV) {
+    payload.card_data.cvv = DEMO_CARD.cvv;
+  }
+
+  payload.address_data = {
+    ...DEMO_CARD.address
+  };
+  if (!excludeEmail) {
+    payload.address_data.email = DEMO_CARD.email;
+  }
+  if (!excludePhoneNumber) {
+    payload.address_data.phone_number = DEMO_CARD.phoneNumber;
+  }
+
+  return payload;
+}
+
+async function fetchSsoGrant(payload) {
+  const response = await fetch(SSO_LAMBDA_URL, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify(payload)
+  });
+
+  if (!response.ok) {
+    throw new Error("SSO demo gateway returned an error.");
+  }
+
+  const apiResponse = await response.json();
+  if (!apiResponse?.grant || !apiResponse?.cardId) {
+    throw new Error("SSO demo response is missing grant or cardId.");
+  }
+  return apiResponse;
 }
 
 function buildConfigFromForm() {
@@ -141,11 +252,32 @@ async function renderPreview(settings) {
 }
 
 $("loadBtn").addEventListener("click", () => {
-  setStatus("Loading…");
-  const settings = buildConfigFromForm();
-  renderPreview(settings).catch((e) => {
-    setStatus(e?.message || String(e));
-  });
+  (async () => {
+    setStatus("Loading…");
+    const settings = buildConfigFromForm();
+    if ($("ssoEnabled").checked) {
+      try {
+        setStatus("Fetching SSO grant…");
+        const rawPayload = $("ssoPayload").value;
+        const payload = rawPayload.trim()
+          ? safeParseJson(rawPayload)
+          : buildSsoRequestFromForm();
+        const apiResponse = await fetchSsoGrant(payload);
+        settings.user = {
+          ...settings.user,
+          grant: apiResponse.grant,
+          card_id: apiResponse.cardId,
+          custom_data: { ...DEMO_CUSTOM_DATA }
+        };
+      } catch (e) {
+        setStatus(`SSO demo failed: ${e?.message || e}`);
+        return;
+      }
+    }
+    renderPreview(settings).catch((e) => {
+      setStatus(e?.message || String(e));
+    });
+  })();
 });
 
 $("copyBtn").addEventListener("click", async () => {
@@ -203,6 +335,27 @@ function parseCommaList(value) {
     .filter((entry) => entry.length);
 }
 
+function inferCardsavrServer(fiHost) {
+  const host = String(fiHost || "").toLowerCase().trim();
+  if (host.endsWith(".cardsavr.io")) {
+    const parts = host.split(".");
+    const cardsavrIndex = parts.lastIndexOf("cardsavr");
+    const subdomain = cardsavrIndex > 0 ? parts[cardsavrIndex - 1] : "";
+    if (subdomain) {
+      return `https://api.${subdomain}.cardsavr.io`;
+    }
+  }
+  if (host.includes("customer-dev")) {
+    return "https://api.customer-dev.cardsavr.io";
+  }
+  return "https://api.customer-dev.cardsavr.io";
+}
+
+function getSelectedMerchantSiteTags() {
+  return Array.from(document.querySelectorAll("#merchantSiteTags input[type=\"checkbox\"]:checked"))
+    .map((input) => input.value);
+}
+
 function getRadioValue(name, fallback) {
   const checked = document.querySelector(`input[name="${name}"]:checked`);
   return checked ? checked.value : fallback;
@@ -232,12 +385,105 @@ function getBorderStyle(size) {
   return "0";
 }
 
+function updateSsoOptionsVisibility() {
+  const enabled = $("ssoEnabled").checked;
+  $("excludeCVV").disabled = !enabled;
+  $("excludePhoneNumber").disabled = !enabled;
+  $("excludeEmail").disabled = !enabled;
+  $("ssoPayload").disabled = !enabled;
+  if (!enabled) {
+    $("excludeCVV").checked = false;
+    $("excludePhoneNumber").checked = false;
+    $("excludeEmail").checked = false;
+  }
+}
+
+function applySsoPromptRules() {
+  const excludeCVV = $("excludeCVV").checked;
+  const excludePhoneNumber = $("excludePhoneNumber").checked;
+  const excludeEmail = $("excludeEmail").checked;
+  const contactPrompted = excludePhoneNumber || excludeEmail;
+
+  if (excludeCVV && contactPrompted) {
+    $("excludePhoneNumber").checked = false;
+    $("excludeEmail").checked = false;
+  }
+
+  $("excludePhoneNumber").disabled = excludeCVV || !$("ssoEnabled").checked;
+  $("excludeEmail").disabled = excludeCVV || !$("ssoEnabled").checked;
+  $("excludeCVV").disabled = contactPrompted || !$("ssoEnabled").checked;
+}
+
+function updateSsoPayloadPreview() {
+  if (!$("ssoEnabled").checked) return;
+  const payload = buildSsoRequestFromForm();
+  $("ssoPayload").value = JSON.stringify(payload, null, 2);
+}
+
+function updateMerchantSiteTagsLabel() {
+  const selectedTags = getSelectedMerchantSiteTags();
+  const toggle = $("merchantSiteTagsToggle");
+  if (!toggle) return;
+  if (!selectedTags.length) {
+    toggle.textContent = "Select tags";
+    return;
+  }
+  toggle.textContent = `${selectedTags.length} selected`;
+}
+
+function toggleMerchantSiteTagsMenu(forceOpen) {
+  const container = $("merchantSiteTags");
+  const toggle = $("merchantSiteTagsToggle");
+  if (!container || !toggle) return;
+  const shouldOpen = typeof forceOpen === "boolean" ? forceOpen : !container.classList.contains("open");
+  container.classList.toggle("open", shouldOpen);
+  toggle.setAttribute("aria-expanded", shouldOpen ? "true" : "false");
+}
+
 document.querySelectorAll(".form input, .form select").forEach((el) => {
   if (el.id === "configOverride") return;
   const eventName = el.type === "radio" || el.type === "checkbox" ? "change" : "input";
   el.addEventListener(eventName, updateOverridePreview);
 });
 updateOverridePreview();
+
+$("ssoEnabled").addEventListener("change", () => {
+  updateSsoOptionsVisibility();
+  applySsoPromptRules();
+  updateSsoPayloadPreview();
+  updateOverridePreview();
+});
+
+["excludeCVV", "excludePhoneNumber", "excludeEmail"].forEach((id) => {
+  $(id).addEventListener("change", () => {
+    applySsoPromptRules();
+    updateSsoPayloadPreview();
+    updateOverridePreview();
+  });
+});
+
+updateSsoOptionsVisibility();
+applySsoPromptRules();
+updateSsoPayloadPreview();
+
+updateMerchantSiteTagsLabel();
+$("merchantSiteTagsToggle").addEventListener("click", (event) => {
+  event.stopPropagation();
+  toggleMerchantSiteTagsMenu();
+});
+document.addEventListener("click", (event) => {
+  const container = $("merchantSiteTags");
+  if (!container || !container.classList.contains("open")) return;
+  if (!container.contains(event.target)) {
+    toggleMerchantSiteTagsMenu(false);
+  }
+});
+document.querySelectorAll("#merchantSiteTags input[type=\"checkbox\"]").forEach((checkbox) => {
+  checkbox.addEventListener("change", () => {
+    updateMerchantSiteTagsLabel();
+    updateOverridePreview();
+  });
+});
 
 function isSafari() {
   const ua = navigator.userAgent;

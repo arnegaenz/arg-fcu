@@ -44,6 +44,36 @@
         </label>
 
         <div class="full">
+          <div><b>SSO Testing Capabilities</b></div>
+        </div>
+
+        <label class="inline-field full compact-label sso-toggle">
+          SSO Demo Testing
+          <input id="ssoEnabled" type="checkbox" />
+        </label>
+
+        <div id="ssoOptions" class="full compact-label sso-options">
+          <div class="inline-options">
+            <label class="inline-field">
+              Exclude CVV
+              <input id="excludeCVV" type="checkbox" />
+            </label>
+            <label class="inline-field">
+              Exclude Phone Number
+              <input id="excludePhoneNumber" type="checkbox" />
+            </label>
+            <label class="inline-field">
+              Exclude Email
+              <input id="excludeEmail" type="checkbox" />
+            </label>
+          </div>
+          <label class="full">
+            <span class="label-title">SSO Grant Request Payload (JSON)</span>
+            <textarea id="ssoPayload" rows="10" placeholder='{"cardsavr_server":"https://api.customer-dev.cardsavr.io"}'></textarea>
+          </label>
+        </div>
+
+        <div class="full">
           <div><b>Container Parameters</b></div>
         </div>
 
@@ -132,7 +162,7 @@
 
         <label>
           <span class="label-title">Close URL</span>
-          <input id="closeUrl" type="text" value="/select-merchants" />
+          <input id="closeUrl" type="text" value="none" />
         </label>
 
         <label>
@@ -147,11 +177,41 @@
 
         <label>
           <span class="label-title">Merchant Site Tags</span>
-          <select id="merchantSiteTags">
-            <option value="prod" selected>prod</option>
-            <option value="demo">demo</option>
-            <option value="unrestricted">unrestricted</option>
-          </select>
+          <div id="merchantSiteTags" class="multi-select">
+            <button id="merchantSiteTagsToggle" type="button" class="multi-select-toggle" aria-haspopup="listbox" aria-expanded="false">
+              Select tags
+            </button>
+            <div id="merchantSiteTagsMenu" class="multi-select-menu" role="listbox">
+              <label class="inline-field">
+                <input type="checkbox" value="unrestricted" />
+                unrestricted
+              </label>
+              <label class="inline-field">
+                <input type="checkbox" value="demo" checked />
+                demo
+              </label>
+              <label class="inline-field">
+                <input type="checkbox" value="beta" />
+                beta
+              </label>
+              <label class="inline-field">
+                <input type="checkbox" value="synthetic" />
+                synthetic
+              </label>
+              <label class="inline-field">
+                <input type="checkbox" value="prod" checked />
+                prod
+              </label>
+              <label class="inline-field">
+                <input type="checkbox" value="limited" />
+                limited
+              </label>
+              <label class="inline-field">
+                <input type="checkbox" value="down" />
+                down
+              </label>
+            </div>
+          </div>
         </label>
 
         <label>

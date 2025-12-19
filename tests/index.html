@@ -100,14 +100,14 @@
     <!-- Empty div to initialize the iFrame which loads CardUpdatr. -->
     <div class="cardupdatr-frame" id="cardupdatr-frame" style="background-color: #004f39;"></div>
 
-    <div id="data">
+    <div id="config-data">
         <h2>CardUpdatr Object Data</h2>
         <pre>
             "config": {
                 "show_close_overlay_button" : true,
-                "overlay" : "true",
+                "overlay" : true,
                 "app_container_id": "cardupdatr-frame",
-                "show_header": "false",
+                "show_header": false,
                 "hostname": "https://orb_prod.customer-dev.cardupdatr.app/",
                 "top_sites": "",
                 "merchant_site_tags": "demo"
@@ -133,6 +133,7 @@
                 "overlay_background_color" : "rgba(255,255,255,.9)"
             }
         </pre>
+    </div>
 
     <script>
         var ssoGrant = '';
@@ -208,9 +209,9 @@
                 window.embedCardUpdatr({
                     "config": {
                         "show_close_overlay_button" : true,
-                        "overlay" : "true",
+                        "overlay" : true,
                         "app_container_id": "cardupdatr-frame",
-                        "show_header": "false",
+                        "show_header": false,
                         "hostname": "https://orb_prod.customer-dev.cardupdatr.app/",
                         "top_sites": "",
                         "merchant_site_tags": "demo"
