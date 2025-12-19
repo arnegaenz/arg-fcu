@@ -1,0 +1,373 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>CardUpdatr-Playground</title>
+</head>
+
+<body>
+	<h2>CardUpdatr Integration Type</h2>
+	<input type="radio" name="cuintegration" id="CUIweblink" value="weblink" />Weblink<br />
+	<input type="radio" name="cuintegration" id="CUIembedded" value="embedded" checked ="checked" />Embedded<br />
+
+	<h2>Device Platform</h2>
+	<input type="radio" name="deviceplatform" id="DPdesktop" value="desktop" />Desktop<br />
+	<input type="radio" name="deviceplatform" id="DPmobile" value="mobile" />Mobile<br />
+
+	<h2>Container Frame Parameters</h2>
+	<h5>Background Color</h5>
+	<input id="containerbackgroundcolor" name="containerbackgroundcolor" type="text" value="#00FF00">
+
+	<h5>Width</h5>
+	<input id="containerwidth" name="containerwidth" type="text" value="800px">
+
+	<h5>Height</h5>
+	<input id="containerheight" name="containerheight" type="text" value="800px">
+
+	<h5>Text Align</h5>
+	<input id="containertextalign" name="containertextalign" type="text" value="center">
+
+	<h5>Padding Top</h5>
+	<input id="containerpaddingtop" name="containerpaddingtop" type="text" value="3vh">
+
+	<h5>Padding Bottom</h5>
+	<input id="containerpaddingbottom" name="containerpaddingbottom" type="text" value="3vh">
+
+	<h5>Min-Height</h5>
+	<input id="containerminheight" name="containerminheight" type="text" value="50vh">
+
+	<h5>Max-Height</h5>
+	<input id="containermaxheight" name="containermaxheight" type="text" value="100vh">
+
+	<h5>Overflow</h5>
+	<select name="containeroverflow" id="containeroverflow">
+		<option value="visible">visible</option>
+		<option value="scroll">scroll</option>
+		<option value="hidden">hidden</option>
+		<option value="auto">auto</option>
+		<option value="clip">clip</option>
+	</select>
+
+	<h5>Border</h5>
+	<select name="containerborder" id="containerborder">
+		<option value="none">none</option>
+		<option value="dashed">dashed</option>
+		<option value="solid">solid</option>
+		<option value="double">double</option>
+	</select>
+
+
+	<h2>CardUpdatr Parameters</h2>
+	<h4>Config Object</h4>
+	<p> Config: app_container_id, hostname, financial_institution. </p>
+	<p> Are not options to change with CardUpdatr Embedded.</p>
+
+	<h5>Top Sites</h5>
+	<input id="top_sites" name="top_sites" type="text" value="">
+	<h5>Exclude Sites</h5>
+	<input id="exclude_sites" name="exclude_sites" type="text" value="">
+	<h5>Merchant Site Tags</h5>
+	<input id="merchant_site_tags" name="merchant_site_tags" type="text" value="prod">
+	<h5>Countries Supported</h5>
+	<input id="countries_supported" name="countries_supported" type="text" value="USA">
+
+	<h4>Style Template Object</h4>
+	<p> style_template: name and pagetitle. </p>
+	<p> Are not options to change with CardUpdatr Embedded.</p>
+
+	<h5>Card Description</h5>
+	<input id="card_description" name="card_description" type="text" value="ARG-FCU Credit & Debit Card">
+
+	<h5>Merchant Selection Message</h5>
+	<input id="merchant_selection_message" name="merchant_selection_message" type="text" value="Ability for an FI to update the merchant_selection_message and provide a focused call to action">
+	<p>If you provide a Merchant Selection Message, the card description will not be shown so include the card description in the message.</p>
+
+	<h5>Final Message</h5>
+	<input id="final_message" name="final_message" type="text" value="Thank you for updating your card, if you would like to update this message send to final_message.">
+
+	<h5>Invalid Session URL</h5>
+	<input id="invalid_session_url" name="invalid_session_url" type="text" value="https://www.strivve.com">
+
+	<h5>Link Color</h5>
+	<input id="link_color" name="link_color" type="text" value="#FF0000">
+
+	<h5>Button Color</h5>
+	<input id="button_color" name="button_color" type="text" value="#5e35b1">
+
+	<h5>Border Color</h5>
+	<input id="border_color" name="border_color" type="text" value="#FFA500">
+
+	<h5>Drop Shadow</h5>
+	<input id="drop_shadow" name="drop_shadow" type="checkbox" checked="checked">
+
+	<h5>Dynamic Height</h5>
+	<input id="dynamic_height" name="dynamic_height" type="checkbox" checked="checked">
+
+	<br /><br />
+
+	<button id="loadcardupdatr" name="loadcardupdatr" onclick="LoadCardUpdatr()">
+		Load CardUpdatr
+	</button>
+
+	<br><br /><br />
+
+	<div class="cardupdatr-host" id="cardupdatr-host" display="none" style="background-color: #00FF00;
+						width: 800px;
+						height: 800px;
+						text-align: center;
+						padding-top: 3vh;
+						padding-bottom: 3vh;
+						min-height: 50vh;
+						max-height: 100vh;
+						border: none;
+		 				overflow: visible">
+		<!-- This script loads in from a .cardupdatr.app domain. -->
+		<script src="https://argfcu.customer-dev.cardupdatr.app/cardupdatr-client.js"></script>
+		<!-- Empty div to initialize the iFrame which loads CardUpdatr. -->
+		<div class="cardupdatr-frame" id="cardupdatr-frame"></div>
+	</div>
+
+	<div class="footer-filler" id="footer-filller" style="width: 100%; height: 100px"></div>
+
+	<br> <br /> <br />
+</body>
+
+<script>// Do i need to load the frame and cardupdatr initially or it won't load again in the future?
+
+	// On site load, detect if the device is mobile.  If it is do the following:
+	// 1 - disable the "desktop" option
+	// 2 - configure the default to optimal mobile configuration
+	// 3 - on selection of the radio buttons, update the defaults and update the webform
+
+	// Hide the cardupdatr - div
+	document.getElementById("cardupdatr-host").style.display = "none"
+
+	// ismobile = true
+
+	const useragent = navigator.userAgent
+
+	document.getElementById("CUIweblink").onclick = function () { LoadDefaults() }
+    document.getElementById("CUIembedded").onclick = function () { LoadDefaults() }
+    document.getElementById("DPdesktop").onclick = function () { LoadDefaults() }
+    document.getElementById("DPmobile").onclick = function () { LoadDefaults() }
+
+	if (/(tablet|ipad|playbook|silk)|(android(?!.*mobi))/i.test(useragent)) {
+		devicetype = "tablet"
+	}
+	else if (/Mobile|Android|iP(hone|od)|IEMobile|BlackBerry|Kindle|Silk-Accelerated|(hpw|web)OS|Opera M(obi|ini)/.test(useragent)) {
+		devicetype = "mobile"
+	} else {
+		devicetype = "desktop"
+	}
+
+
+	if ((devicetype = "desktop") || (devicetype = "tablet")) {
+		document.getElementById("DPdesktop").checked = true
+	}
+	else {
+        document.getElementById("DPdesktop").disabled = true
+		document.getElementById("DPmobile").checked = true
+	}
+
+	const customConfig = {config : {
+		app_container_id: "cardupdatr-frame",
+		hostname: "https://argfcu.customer-dev.cardupdatr.app/"},
+		height: document.getElementById("containerminheight").value
+						 }
+	window.initCardupdatr(settings = customConfig)
+
+	const weblinkDesktopConfig = {
+		BackgroundColor:	"#000000",
+		Width:				"900px",
+		Height:				"1100px",
+		TextAlign:			"",
+		PaddingTop:			"",
+		PaddingBottom:		"",
+		MinHeight:			"",
+		MaxHeight:			"",
+		Overflow:			"",
+		Border:				""
+	}
+
+	const weblinkMobileConfig = {
+        BackgroundColor: "#FF0000",
+        Width: "400px",
+        Height: "900px",
+        TextAlign: "",
+        PaddingTop: "3vh",
+        PaddingBottom: "",
+        MinHeight: "",
+        MaxHeight: "",
+        Overflow: "",
+        Border: ""
+	}
+
+	const embeddedDesktopConfig = {
+        BackgroundColor: "#00FF00",
+        Width: "800px",
+        Height: "800px",
+        TextAlign: "center",
+        PaddingTop: "3vh",
+        PaddingBottom: "3vh",
+        MinHeight: "50vh",
+		MaxHeight: "100vh",
+		Dropshadow: true,
+        Overflow: "scroll",
+        Border: "none"
+	}
+
+    const embeddedMobileConfig = {
+        BackgroundColor: "#0000FF",
+        Width: "400px",
+        Height: "900px",
+        TextAlign: "center",
+        PaddingTop: "3vh",
+        PaddingBottom: "3vh",
+        MinHeight: "50vh",
+		MaxHeight: "95vh",
+		Dropshadow: false,
+        Overflow: "scroll",
+        Border: "none"
+	}
+
+	LoadDefaults()
+
+
+	function setFormValues(configDefaults) {
+        document.getElementById("containerbackgroundcolor").value = configDefaults.BackgroundColor
+		document.getElementById("containerwidth").value = configDefaults.Width
+		document.getElementById("containerheight").value = configDefaults.Height
+        document.getElementById("containertextalign").value = configDefaults.TextAlign
+        document.getElementById("containerpaddingtop").value = configDefaults.PaddingTop
+        document.getElementById("containerpaddingbottom").value = configDefaults.PaddingBottom
+        document.getElementById("containerminheight").value = configDefaults.MinHeight
+		document.getElementById("containermaxheight").value = configDefaults.MaxHeight
+		document.getElementById("drop_shadow").checked = configDefaults.Dropshadow
+		document.getElementById("containeroverflow").value = configDefaults.Overflow
+        document.getElementById("containerborder").value = Border
+	}
+
+	function LoadDefaults() {
+		if ((document.getElementById("CUIweblink").checked) && (document.getElementById("DPdesktop").checked)) {
+            document.getElementById("loadcardupdatr").innerText = "Launch Weblink"
+			document.getElementById("cardupdatr-host").style.display = "none"
+			setFormValues(weblinkDesktopConfig)
+            
+		}
+        if ((document.getElementById("CUIweblink").checked) && (document.getElementById("DPmobile").checked)) {
+            document.getElementById("loadcardupdatr").innerText = "Launch Weblink"
+			document.getElementById("cardupdatr-host").style.display = "none"
+			setFormValues(weblinkMobileConfig)
+        }
+        if ((document.getElementById("CUIembedded").checked) && (document.getElementById("DPdesktop").checked)) {
+            document.getElementById("loadcardupdatr").innerText = "Load CardUpdatr"
+            document.getElementById("cardupdatr-host").style.display = "block"
+			setFormValues(embeddedDesktopConfig)
+        }
+        if ((document.getElementById("CUIembedded").checked) && (document.getElementById("DPmobile").checked)) {
+            document.getElementById("loadcardupdatr").innerText = "Load CardUpdatr"
+            document.getElementById("cardupdatr-host").style.display = "block"
+			setFormValues(embeddedMobileConfig)
+        }	
+
+	}
+
+	function LoadCardUpdatr() {
+	// Unhide the Card-Updatr DIV if it is the first time load
+
+		if (document.getElementById("CUIweblink").checked) {
+
+		// code to launch a weblinked webpage based on results of the configuration fields.
+		// Parameters to consider in the webform
+        //		fullscreen = yes | no | 1 | 0	Whether or not to display the browser in full - screen mode.Default is no.A window in full - screen mode must also be in theater mode.IE only
+        //		height = pixels	The height of the window.Min.value is 100
+        //		left = pixels	The left position of the window.Negative values not allowed
+        //		location = yes | no | 1 | 0	Whether or not to display the address field.Opera only
+        //		menubar = yes | no | 1 | 0	Whether or not to display the menu bar
+        //		resizable = yes | no | 1 | 0	Whether or not the window is resizable.IE only
+        //		scrollbars = yes | no | 1 | 0	Whether or not to display scroll bars.IE, Firefox & Opera only
+        //		status = yes | no | 1 | 0	Whether or not to add a status bar
+        //		titlebar = yes | no | 1 | 0	Whether or not to display the title bar.Ignored unless the calling application is an HTML Application or a trusted dialog box
+        //		toolbar = yes | no | 1 | 0	Whether or not to display the browser toolbar.IE and Firefox only
+        //		top = pixels	The top position of the window.Negative values not allowed
+        //		width = pixels	The width of the window.Min.value is 100
+
+			alert(window.screenLeft)
+			alert(window.innerWidth)
+			alert(parseInt(document.getElementById("containerwidth").value))
+
+            const offsetleft = (window.screenLeft + ((window.innerWidth / 2) - (parseInt(document.getElementById("containerwidth").value) / 2 )))
+			const offsettop = window.screenTop + 100
+
+			alert(offsetleft)
+
+			window.open("https://argfcu.customer-dev.cardupdatr.app/", "",
+				"width=" + document.getElementById("containerwidth").value + ", height=" +
+				document.getElementById("containerheight").value + ", scrollbars=no, resizable=no" + ", top=" + offsettop + ", left=" + offsetleft)
+		} else
+			{
+
+			document.getElementById("cardupdatr-host").style.display = "block"
+
+			// Update Container Information based on live form input results
+			document.getElementById("cardupdatr-host").style.background = document.getElementById("containerbackgroundcolor").value
+			document.getElementById("cardupdatr-host").style.width = document.getElementById("containerwidth").value
+			document.getElementById("cardupdatr-host").style.height = document.getElementById("containerheight").value
+			document.getElementById("cardupdatr-host").style.textAlign = document.getElementById("containertextalign").value
+			document.getElementById("cardupdatr-host").style.paddingTop = document.getElementById("containerpaddingtop").value
+			document.getElementById("cardupdatr-host").style.paddingBottom = document.getElementById("containerpaddingbottom").value
+			document.getElementById("cardupdatr-host").style.minHeight = document.getElementById("containerminheight").value
+			document.getElementById("cardupdatr-host").style.maxHeight = document.getElementById("containermaxheight").value
+			document.getElementById("cardupdatr-host").style.overflow = document.getElementById("containeroverflow").value
+			document.getElementById("cardupdatr-host").style.borderStyle = document.getElementById("containerborder").value
+
+			// remove "cardupdatr-frame" so it can be re-loaded
+			document.getElementById("cardupdatr-frame").remove()
+
+			const cardupdatrFrame = document.createElement("div")
+			cardupdatrFrame.class = "cardupdatr-frame"
+			cardupdatrFrame.id = "cardupdatr-frame"
+
+			document.getElementById("cardupdatr-host").appendChild(cardupdatrFrame)
+
+			// Parse Top_Sites and create an array
+			const topsites = document.getElementById("top_sites").value
+			const topsitesArr = topsites.split(',')
+
+			const excludesites = document.getElementById("exclude_sites").value
+			const excludesitesArr = excludesites.split(',')
+
+			const merchantsitetags = document.getElementById("merchant_site_tags").value
+			const merchantsitetagsArr = merchantsitetags.split(',')
+
+			const updateConfig = {
+					config: {
+						app_container_id: "cardupdatr-frame",
+						hostname: "https://argfcu.customer-dev.cardupdatr.app/",
+						financial_insitution: "argfcu",
+						top_sites: topsitesArr,
+						exclude_sites: excludesitesArr,
+						merchant_site_tags: merchantsitetagsArr,
+						countries_supported: [document.getElementById("countries_supported").value]
+						},
+					style_template: {
+						name: "ArG-FCU Bank",
+						page_title: "CardUpdatr",
+						card_description: document.getElementById("card_description").value,
+						merchant_selection_message: document.getElementById("merchant_selection_message").value,
+						final_message: document.getElementById("final_message").value,
+						invalid_session_url: document.getElementById("invalid_session_url").value,
+						link_color: document.getElementById("link_color").value,
+						button_color: document.getElementById("button_color").value,
+						border_color: document.getElementById("border_color").value,
+						drop_shadow: document.getElementById("drop_shadow").checked,
+						dynamic_height: document.getElementById("dynamic_height").checked
+						}
+				}
+
+			window.initCardupdatr(settings = updateConfig)
+		}
+	}
+	</script>
+
+</html>

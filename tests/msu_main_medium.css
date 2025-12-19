@@ -1,0 +1,172 @@
+/* THIS IS STYLEING FOR IN DEBUGGING MODE */
+
+.style_sheet_hint
+{
+	position: fixed;
+	bottom: 0;
+	display: block;
+	width: 100%;
+	height: 10px;
+	background-color: lightgreen;
+	z-index: 600;
+}
+
+
+#ps_main_page_contianer
+{
+	/*min-height: 500px;*/
+}
+
+#psf_image_containers
+{
+	bottom: 30px;
+}
+.hp_promotional_container
+{
+    max-height: 325px;
+}
+
+.hp_ns_image_container
+{
+	height: 150px;
+}
+@media only screen and (min-width: 600px)
+{
+	.hp_ns_image_container
+	{
+		height: 200px;
+	}
+
+}
+
+/*Rates Begin*/
+.rate_cat_name
+{
+    font-size: 12pt;
+}
+.rate_cat_prefix
+{
+    font-size: 9pt;
+}
+.rate_cat_rate
+{
+    font-size: 26pt;
+}
+.rate_cat_rate sup
+{
+    font-size: 10pt;
+}
+.rate_cat_apply
+{
+    font-size: 10pt;
+}
+/*Rates End*/
+/***** IMAGE COLLAGE CSS *****/
+	
+	.cpig_tile_main_container
+	{
+	}
+	.cpig_tile_secondary_container
+	{
+		display: block;
+		width: 400px;
+		height: 400px;
+		margin: 0 auto;
+		overflow: hidden;
+	}
+	.cpig_tile_groups
+	{
+	}
+	.cpig_tile_subgroup
+	{
+		margin: 10px 0 0 10px;
+	}
+	
+	.psig_tile_background
+	{
+		
+	}
+	.psig_tile 
+	{
+	}
+	.psig_tile_small
+	{
+		width: 250px;
+		height: 250px;
+	}
+	
+	.psig_tile_tiny
+	{
+		width: 120px;
+		height: 120px;
+	}
+	.psig_tile_tiny_special
+	{
+		width: 120px;
+		height: 120px;
+		margin-top: 10px;
+	}
+	.psig_tile_content
+	{
+		
+	}
+	.psig_tile_title
+	{
+		
+	}
+	.psig_tile img
+	{
+		width: 100%;
+	}
+	.psig_tile_background
+	{
+		width: 100%;
+		height: 100%;
+	}
+
+	.cpic_scroll_group
+	{
+		position: relative; 
+		left: -800px;
+	}
+	
+	.cpic_tile_carousel_main_container
+	{
+		height: 290.5px;
+	}
+	.cpic_previous_tile, .cpic_next_tile
+	{
+		width: 70px;
+	}
+	.cpic_previous_tile > img, .cpic_next_tile > img
+	{
+		width: 50.4px;
+	}
+	.psic_tile_title
+	{
+		font-size: 10pt;
+		padding: 10.5px;
+	}
+	.psic_tile_small
+	{
+		width: 290.5px;
+		height: 290.5px;
+		margin: 0 10.5px;
+	}
+	.psic_tile_tiny_top, .psic_tile_tiny_bottom
+	{
+		width: 140px;
+		height: 140px;
+	}
+	.psic_tile_tiny_top
+	{
+		margin-bottom: 10.5px;
+	}
+
+/***** END IMAGE COLLAGE CSS *****/
+
+.toggle {
+	height: 27px;
+	padding: 1% 1% 1% 2%;
+}
+

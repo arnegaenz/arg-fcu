@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="initial-scale=100, user-scalable=false" style="width: 100%;">
+    <script src="https://argfcu.customer-dev.cardupdatr.app/cardupdatr-client-v2.js"></script>
+    <style>
+        /* Button styling */
+        body {
+            display: flex;
+            flex-direction: column; 
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        #placeCardsButton {
+            background-color: #004f39;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            text-align: center;
+            margin-top: 20px; 
+        }
+        #placeCardsButton:hover {
+            background-color: #003d31;
+        }
+        #data {
+            text-align: center;
+            display: block;
+        }
+
+        #data pre {
+            text-align: left; 
+            margin: 0 auto; 
+        }   
+    </style>
+</head>
+<body>
+
+    <div id="data">
+        <h2>Account Holder Data Passed</h2>
+        <pre>
+            "cardholder_data": {
+                "email": "jack_skellington@scareme.com",
+                "type": "ephemeral",
+                "webhook_url1": "",
+                "integrator_id1": 0
+            },
+            "address_data": {
+                "is_primary": "true",
+                "address1": "1122 Boogie Boogie Ave.",
+                "address2": "",
+                "city": "Anaheim",
+                "subnational": "CA",
+                "postal_code": "92801",
+                "country": "USA",
+                "email": "jack_skellington@scareme.com",
+                "phone_number": "7141122222",
+                "first_name": "Jack",
+                "last_name": "Skelington"
+            },
+            "card_data": {
+                "name_on_card": "Jack Skelington",
+                "pan": "4114411441144114",
+                "cvv": "414",
+                "expiration_month": "04",
+                "expiration_year": "24"
+            }
+        </pre>
+
+        <div>
+            <input type="checkbox" id="excludeCVV"> Exclude CVV<br>
+            <input type="checkbox" id="excludePhoneNumber"> Exclude Phone Number<br>
+            <input type="checkbox" id="excludeEmail"> Exclude Email<br>
+        </div>
+
+        <!-- Button to trigger the action -->
+        <button id="placeCardsButton">Place your cards!</button>
+
+    </div>
+
+    <!-- Empty div to initialize the iFrame which loads CardUpdatr. -->
+    <div class="cardupdatr-frame" id="cardupdatr-frame" style="background-color: #004f39;"></div>
+
+    <div id="data">
+        <h2>CardUpdatr Object Data</h2>
+        <pre>
+            "config": {
+                "show_close_overlay_button" : true,
+                "overlay" : "true",
+                "app_container_id": "cardupdatr-frame",
+                "show_header": "false",
+                "hostname": "https://argfcu.customer-dev.cardupdatr.app/",
+                "top_sites": "",
+                "merchant_site_tags": "demo"
+            },
+            "user": {
+                "grant": ssoGrant,
+                "card_id": ssoCardID,                       
+                 "custom_data": {
+                    SCOPE: { //customer defined SCOPE is optional, but recommended to avoid collisions
+                       CUSTOMER_KEY: "000000000000"
+                   }
+               }
+            },
+            "style": {
+                "card_description": "MSU Credit Card",
+                "merchant_selection_message": "Select the sites below to make your {{{card_description}}} the primary payment method.",
+                "landing_page_image_url": "https://swch-site-images-mgmt.s3-us-west-2.amazonaws.com/branding/customer-dev/msu_dev/images/landing-page-image.jpg",
+                "header_background_color": "#004f39",
+                "link_color": "#25b570",
+                "button_color": "#004f39",
+                "drop_shadow": false,
+                "border_color": "#004f39",
+                "overlay_background_color" : "rgba(255,255,255,.9)"
+            }
+        </pre>
+
+    <script>
+        var ssoGrant = '';
+        var ssoCardID = '';
+
+        function callApiGateway(callback) {
+            const excludeCVV = document.getElementById('excludeCVV').checked;
+            const excludePhoneNumber = document.getElementById('excludePhoneNumber').checked;
+            const excludeEmail = document.getElementById('excludeEmail').checked;
+
+            // Define variables for email, phone number, and cvv
+            const emailValue = excludeEmail ? "" : "jack_skellington@scareme.com";
+            const phoneNumberValue = excludePhoneNumber ? "" : "7141122222";
+            const cvvValue = excludeCVV ? "" : "414";
+
+            const url = 'https://bswpcoqak3b7elcynskytiapyu0eokxs.lambda-url.us-west-2.on.aws/';
+            const data = {
+                "cardholder_data": {
+                    "email": "jack_skellington@scareme.com",
+                    "type": "ephemeral",
+                    "webhook_url1": "",
+                    "integrator_id1": 0
+                },
+                "address_data": {
+                    "is_primary": "true",
+                    "address1": "1122 Boogie Boogie Ave.",
+                    "address2": "",
+                    "city": "Anaheim",
+                    "subnational": "CA",
+                    "postal_code": "92801",
+                    "country": "USA",
+                    "email": emailValue,
+                    "phone_number": phoneNumberValue,
+                    "first_name": "Jack",
+                    "last_name": "Skelington"
+                },
+                "card_data": {
+                    "name_on_card": "Jack Skelington",
+                    "pan": "4114411441144114",
+                    "cvv": cvvValue,
+                    "expiration_month": "04",
+                    "expiration_year": "24"
+                }
+            };
+
+            fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('HTTP error');
+                }
+                return response.json();
+            })
+            .then(apiResponse => {
+                ssoGrant = apiResponse.grant;
+                ssoCardID = apiResponse.cardId;
+                callback(apiResponse); 
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        }
+
+        document.getElementById('placeCardsButton').addEventListener('click', function() {
+            callApiGateway(function(apiResponse) {
+                console.log("Callback executed with API Response:", apiResponse);
+
+                window.embedCardUpdatr({
+                    "config": {
+                        "show_close_overlay_button" : true,
+                        "overlay" : "true",
+                        "app_container_id": "cardupdatr-frame",
+                        "show_header": "false",
+                        "hostname": "https://argfcu.customer-dev.cardupdatr.app/",
+                        "top_sites": "",
+                        "merchant_site_tags": "demo"
+                    },
+                    "user": {
+                        "grant": ssoGrant,
+                        "card_id": ssoCardID,
+                        "custom_data": {
+                             SCOPE: { //customer defined SCOPE is optional, but recommended to avoid collisions
+                                CUSTOMER_KEY: "000000000000"
+                            }
+                        }
+                    },
+                    "style": {
+                        "card_description": "MSU Credit Card",
+                        "merchant_selection_message": "Select the sites below to make your {{{card_description}}} the primary payment method.",
+                        "landing_page_image_url": "https://swch-site-images-mgmt.s3-us-west-2.amazonaws.com/branding/customer-dev/msu_dev/images/landing-page-image.jpg",
+                        "header_background_color": "#004f39",
+                        "link_color": "#25b570",
+                        "button_color": "#004f39",
+                        "drop_shadow": false,
+                        "border_color": "#004f39",
+                        "overlay_background_color" : "rgba(255, 165, 0,.9)"
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

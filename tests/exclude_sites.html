@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="initial-scale=100, user-scalable=true" style="width: 100%;">
+    <script src="https://argfcu.customer-dev.cardupdatr.app/cardupdatr-client-v2.js"></script>
+    <style>
+        /* Button styling */
+        body {
+            display: flex;
+            flex-direction: column; 
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        #placeCardsButton {
+            background-color: #FFA500;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            text-align: center;
+            margin-top: 20px; 
+        }
+        #placeCardsButton:hover {
+            background-color: #FFA500;
+        }
+        #data {
+            text-align: center;
+            display: block;
+        }
+
+        #data pre {
+            text-align: left; 
+            margin: 0 auto; 
+        }   
+    </style>
+</head>
+<body>
+
+    <div id="data">
+        <h2>Account Holder Data Passed</h2>
+        <pre>
+            "cardholder_data": {
+                "email": "jack_skellington@scareme.com",
+                "type": "ephemeral",
+                "webhook_url1": "",
+                "integrator_id1": 0
+            },
+            "address_data": {
+                "is_primary": "true",
+                "address1": "1122 Boogie Boogie Ave.",
+                "address2": "",
+                "city": "Anaheim",
+                "subnational": "CA",
+                "postal_code": "92801",
+                "country": "USA",
+                "email": "jack_skellington@scareme.com",
+                "phone_number": "7141122222",
+                "first_name": "Jack",
+                "last_name": "Skelington"
+            },
+            "card_data": {
+                "name_on_card": "Jack Skelington",
+                "pan": "4114411441144114",
+                "cvv": "414",
+                "expiration_month": "04",
+                "expiration_year": "24"
+            }
+        </pre>
+
+        <div>
+            <input type="checkbox" id="excludeCVV"> Exclude CVV<br>
+            <input type="checkbox" id="excludePhoneNumber"> Exclude Phone Number<br>
+            <input type="checkbox" id="excludeEmail"> Exclude Email<br>
+        </div>
+
+        <!-- Button to trigger the action -->
+        <button id="placeCardsButton">Place your cards!</button>
+
+    </div>
+
+    <!-- Empty div to initialize the iFrame which loads CardUpdatr. -->
+    <div class="cardupdatr-frame" id="cardupdatr-frame" style="background-color: #FFA500;"></div>
+
+    <div id="data">
+        <h2>CardUpdatr Object Data</h2>
+        <pre>
+            "config": {
+                "show_close_overlay_button" : true,
+                "overlay" : "true",
+                "app_container_id": "cardupdatr-frame",
+                "show_header": "false",
+                "hostname": "https://argfcu.customer-dev.cardupdatr.app/",
+                "top_sites": "",
+                "exclude_sites": [ tons of sites you can view in page source ]
+            ],    
+                "merchant_site_tags": "prod,demo"
+            },
+            "user": {
+                "grant": ssoGrant,
+                "card_id": ssoCardID
+            },
+            "style": {
+                "card_description": "Exclude Sites Debit Card",
+                "merchant_selection_message": "Select the sites below to make your {{{card_description}}} the primary payment method.  And remember, no excluded sites!",
+                "landing_page_image_url": "https://swch-site-images-mgmt.s3-us-west-2.amazonaws.com/branding/customer-dev/msu_dev/images/landing-page-image.jpg",
+                "header_background_color": "#FFA500",
+                "link_color": "#25b570",
+                "button_color": "#FFA500",
+                "drop_shadow": false,
+                "border_color": "#004f39",
+                "overlay_background_color" : "rgba(0,0,0,.65)"
+            }
+        </pre>
+
+    <script>
+        var ssoGrant = '';
+        var ssoCardID = '';
+
+        function callApiGateway(callback) {
+            const excludeCVV = document.getElementById('excludeCVV').checked;
+            const excludePhoneNumber = document.getElementById('excludePhoneNumber').checked;
+            const excludeEmail = document.getElementById('excludeEmail').checked;
+
+            // Define variables for email, phone number, and cvv
+            const emailValue = excludeEmail ? "" : "jack_skellington@scareme.com";
+            const phoneNumberValue = excludePhoneNumber ? "" : "7141122222";
+            const cvvValue = excludeCVV ? "" : "414";
+
+            const url = 'https://bswpcoqak3b7elcynskytiapyu0eokxs.lambda-url.us-west-2.on.aws/';
+            const data = {
+                "cardholder_data": {
+                    "email": "jack_skellington@scareme.com",
+                    "type": "ephemeral",
+                    "webhook_url1": "",
+                    "integrator_id1": 0
+                },
+                "address_data": {
+                    "is_primary": "true",
+                    "address1": "1122 Boogie Boogie Ave.",
+                    "address2": "",
+                    "city": "Anaheim",
+                    "subnational": "CA",
+                    "postal_code": "92801",
+                    "country": "USA",
+                    "email": emailValue,
+                    "phone_number": phoneNumberValue,
+                    "first_name": "Jack",
+                    "last_name": "Skelington"
+                },
+                "card_data": {
+                    "name_on_card": "Jack Skelington",
+                    "pan": "4114411441144114",
+                    "cvv": cvvValue,
+                    "expiration_month": "04",
+                    "expiration_year": "24"
+                }
+            };
+
+            fetch(url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('HTTP error');
+                }
+                return response.json();
+            })
+            .then(apiResponse => {
+                ssoGrant = apiResponse.grant;
+                ssoCardID = apiResponse.cardId;
+                callback(apiResponse); 
+            })
+            .catch(error => {
+                console.error('Error:', error);
+            });
+        }
+
+        document.getElementById('placeCardsButton').addEventListener('click', function() {
+            callApiGateway(function(apiResponse) {
+                console.log("Callback executed with API Response:", apiResponse);
+
+                window.embedCardUpdatr({
+                    "config": {
+                        "show_close_overlay_button" : true,
+                        "overlay" : "true",
+                        "app_container_id": "cardupdatr-frame",
+                        "show_header": "false",
+                        "hostname": "https://argfcu.customer-dev.cardupdatr.app/",
+                        "top_sites": "",
+                        "exclude_sites": [
+                            "albertsons.com",
+                            "aa.com",
+                            "ae.com",
+                            "airbnb.com",
+                            "amazon.com",
+                            "amazon.ca",
+                            "anthropologie.com",
+                            "apple.com",
+                            "appleid.apple.com",
+                            "store.apple.com",
+                            "aritzia.com",
+                            "asap.com",
+                            "athleta.com",
+                            "att.com",
+                            "audible.com",
+                            "aveda.com",
+                            "bakersplus.com",
+                            "bananarepublic.com",
+                            "barnesandnoble.com",
+                            "bathandbodyworks.com",
+                            "bedbathandbeyond.com",
+                            "belk.com",
+                            "bestbuy.com",
+                            "bouqs.com",
+                            "cvs.com",
+                            "trycaviar.com",
+                            "carhartt.com",
+                            "cheaptickets.com",
+                            "chewy.com",
+                            "chipotle.com",
+                            "citymarket.com",
+                            "costco.ca",
+                            "costco.com",
+                            "dsw.com",
+                            "delta.com",
+                            "dillons.com",
+                            "disneyplus.com",
+                            "dominos.com",
+                            "doordash.com",
+                            "dribbble.com",
+                            "dunkindonuts.com",
+                            "espn.com",
+                            "ebay.com",
+                            "enterprise.com",
+                            "expedia.com",
+                            "e-zpassny.com",
+                            "ezcater.com",
+                            "fedex.com",
+                            "fredmeyer.com",
+                            "freepeople.com",
+                            "flyfrontier.com",
+                            "frysfood.com",
+                            "fubo.tv",
+                            "gap.com",
+                            "golfnow.com",
+                            "gopuff.com",
+                            "groupon.com",
+                            "grubhub.com",
+                            "heb.com",
+                            "hsn.com",
+                            "hawaiianairlines.com",
+                            "homedepot.com",
+                            "hulu.com",
+                            "instacart.com",
+                            "jcpenney.com",
+                            "jcrew.com",
+                            "kayak.com",
+                            "krispykreme.com",
+                            "kroger.com",
+                            "lowes.com",
+                            "lyft.com",
+                            "macys.com",
+                            "madewell.com",
+                            "marianos.com",
+                            "marriott.com",
+                            "netflix.com",
+                            "oldnavy.com",
+                            "orbitz.com",
+                            "pacsun.com",
+                            "pandora.com",
+                            "panerabread.com",
+                            "paypal.com",
+                            "postmates.com",
+                            "priceline.com",
+                            "qfc.com",
+                            "ralphs.com",
+                            "safeway.com",
+                            "seamless.com",
+                            "siriusxm.com",
+                            "sling.com",
+                            "rei.com",
+                            "shaws.com",
+                            "shipt.com",
+                            "spotify.com",
+                            "staples.com",
+                            "starbucks.com",
+                            "statefarm.com",
+                            "stubhub.com",
+                            "subway.com",
+                            "target.com",
+                            "tjmaxx.tjx.com",
+                            "thenorthface.com",
+                            "travelocity.com",
+                            "uber.com",
+                            "ups.com",
+                            "ubereats.com",
+                            "ugg.com",
+                            "ulta.com",
+                            "urbanoutfitters.com",
+                            "venmo.com",
+                            "verizon.com",
+                            "virginatlantic.com",
+                            "walgreens.com",
+                            "walmart.com",
+                            "wayfair.com",
+                            "wendys.com",
+                            "wsj.com"
+                    ],    
+                        "merchant_site_tags": "prod,demo"
+                    },
+                    "user": {
+                        "grant": ssoGrant,
+                        "card_id": ssoCardID
+                    },
+                    "style": {
+                        "card_description": "Exclude Sites Debit Card",
+                        "merchant_selection_message": "Select the sites below to make your {{{card_description}}} the primary payment method.  And remember, no excluded sites!",
+                        "landing_page_image_url": "https://swch-site-images-mgmt.s3-us-west-2.amazonaws.com/branding/customer-dev/msu_dev/images/landing-page-image.jpg",
+                        "header_background_color": "#FFA500",
+                        "link_color": "#25b570",
+                        "button_color": "#FFA500",
+                        "border_color": "#004f39",
+                        "drop_shadow": "false",
+                        "overlay_background_color" : "rgba(0,0,0,.65)"
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>

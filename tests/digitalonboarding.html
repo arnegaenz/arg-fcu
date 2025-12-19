@@ -1,0 +1,436 @@
+// THIS FILE NEEDS TO BE HOSTED ON THE CARDUPDATR HOSTNAME IN ORDER TO TARGET THE ELEMENTS CORRECTLY
+// initCardupdatr settings parameter object:
+
+/**
+ *
+ * @param {*} settings { app_container_id (required), hostname (required by FI's), show_header, show_terms, grant_object: {grant, card_id} }
+ */
+
+window.initCardupdatr = function (settings) {
+    // IE11 Polyfill for String.Prototype.startsWith :: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/startsWith#Polyfill
+    if (!String.prototype.startsWith) {
+      Object.defineProperty(String.prototype, "startsWith", {
+        value: function value(search, rawPos) {
+          var pos = rawPos > 0 ? rawPos | 0 : 0;
+          return this.substring(pos, pos + search.length) === search;
+        }
+      });
+    }
+  
+    if (!String.prototype.includes) {
+      String.prototype.includes = function (search, start) {
+        "use strict";
+  
+        if (search instanceof RegExp) {
+          throw TypeError("first argument must not be a RegExp");
+        }
+  
+        if (start === undefined) {
+          start = 0;
+        }
+  
+        return this.indexOf(search, start) !== -1;
+      };
+  
+      Array.prototype.includes = function (
+        searchElement
+        /*, fromIndex*/
+      ) {
+        "use strict";
+  
+        var O = Object(this);
+        var len = parseInt(O.length) || 0;
+  
+        if (len === 0) {
+          return false;
+        }
+  
+        var n = parseInt(arguments[1]) || 0;
+        var k;
+  
+        if (n >= 0) {
+          k = n;
+        } else {
+          k = len + n;
+  
+          if (k < 0) {
+            k = 0;
+          }
+        }
+  
+        var currentElement;
+  
+        while (k < len) {
+          currentElement = O[k];
+  
+          if (
+            searchElement === currentElement ||
+            (searchElement !== searchElement && currentElement !== currentElement)
+          ) {
+            return true;
+          }
+  
+          k++;
+        }
+  
+        return false;
+      };
+    } // Create an iFrame to load in to the container.
+    // Breakout the potential objects/properties passed in. This is a bit messy since we need to be backwards compatible.
+  
+    var config = settings.config;
+    var user = settings.user;
+    var grant_object = settings.grant_object;
+    var style_template = settings.style_template;
+    var app_container_id = settings.app_container_id;
+    var hostname = settings.hostname;
+    var page_order = settings.page_order;
+    var show_header = settings.show_header;
+    var financial_institution = settings.financial_institution;
+
+    financial_institution = 
+      config && config.financial_institution
+        ? config.financial_institution
+        : financial_institution
+
+    app_container_id =
+      config && config.app_container_id
+        ? config.app_container_id
+        : app_container_id;
+
+    hostname =
+      config && config.hostname
+        ? config.hostname
+        : hostname
+        ? hostname
+        : window.location.hostname; // Default to hostname if none is passed through
+  
+    page_order =
+      config && config.page_order
+        ? config.page_order
+        : page_order; // null page order will be reset to default in CU
+  
+    show_header =
+      config && config.show_header
+        ? config.show_header
+        : show_header
+        ? show_header
+        : false; // Default is false
+  
+    user = user ? user : grant_object ? grant_object : null; // Defaults to no SSO user.
+    const hash_keys = get_hash_key_values();
+    if(Object.keys(hash_keys)[0]) {
+      user = { grant: hash_keys.grant, card_id: hash_keys.card_id, selected_sites: hash_keys.selected_sites };
+    }
+    window.location.hash = "";
+    var cardupdatr_iframe = document.createElement("iframe"); // Set up the required properties on the iFrame element (no scroll, transparency, border, id);
+  
+    cardupdatr_iframe.id = "cardupdatr-app";
+    cardupdatr_iframe.style.border = "none";
+    cardupdatr_iframe.allowtransparency = "true";
+    cardupdatr_iframe.style.margin = 0;
+    cardupdatr_iframe.style.padding = 0;
+    cardupdatr_iframe.style.width = "100%";
+    cardupdatr_iframe.scrolling = "yes";
+    cardupdatr_iframe.title = "CardUpdatr embedded frame";
+    cardupdatr_iframe.style.overflow = "scroll";
+    window.addEventListener(
+      "message",
+      function (e) {
+        var eventName = e.data[0];
+        var data = e.data[1];
+  
+        switch (eventName) {
+          case "setTrace":
+            window.location.hash = data;
+            break;
+
+          case "init":
+            if(window.iFrameResize) {
+              window.iFrameResize({ log: false }, '#cardupdatr-app')
+            }
+          break;
+  
+          case "setTitle":
+            window.document.title = data;
+            break;
+  
+          case "setFavicon": {
+            var link_node = document.createElement("link");
+            link_node.type = "image/x-icon";
+            link_node.rel = "shortcut icon";
+            link_node.href = data;
+            document.head.appendChild(link_node);
+            break;
+          }
+  
+          case "reload":
+            window.location.reload();
+            break;
+
+          case "setHeight":
+            // Keeping this in here for easy re-enabling
+            cardupdatr_iframe.style.height = data; 
+            break;
+  
+          case "scrollToTop":
+            window.scrollTo({
+              top: cardupdatr_iframe.getClientRects()[0].top,
+              behavior: "smooth"
+            });
+            break;
+        }
+      },
+      false
+    ); // Append the iFrame to the supplied container div.
+  
+    var cardupdatr_app_container = document.getElementById(app_container_id);
+    cardupdatr_app_container.appendChild(cardupdatr_iframe); // Conditional loading of the source.
+  
+    var app_source = get_app_source(hostname, financial_institution);
+    var hash_string = build_cardupdatr_hash_string(
+      user,
+      config,
+      style_template,
+      show_header,
+      page_order
+    ); // Build the URL we set the source to;
+  
+      // Keeping this in here for easy re-enabling
+      // var iframe_resizer_script = document.createElement("script");
+      // iframe_resizer_script.setAttribute("src", app_source + "iframeResizer.min.js");
+      // cardupdatr_app_container.appendChild(iframe_resizer_script);
+    cardupdatr_iframe.src = app_source + "index" + hash_string;
+    cardupdatr_iframe.scrolling = "yes";
+    cardupdatr_iframe.style.overflow = "scroll";
+  };
+  
+  function get_app_source(hostname, fi) {
+    if (typeof hostname !== "undefined") {
+      if (hostname.startsWith("https://")) {
+        return hostname;
+      } else {
+        if (fi && !hostname.startsWith(fi) && fi != "default") {  //for digital onboarding subdomains
+          hostname = `${fi}.${hostname}`;
+        }
+        return "https://" + hostname + "/";
+      }
+    } else {
+      return "https://" + window.location.hostname + "/"; // This should never happen based on the assumption that it'll be hosted on their domain. But for our own testing on staging/acme/etc. this will work.
+    }
+  }
+  
+  function build_cardupdatr_hash_string(
+    user,
+    config,
+    style_template,
+    show_header
+  ) {
+    var initial_string = "#";
+    var hash_value_array = [];
+  
+    if (config) {
+      hash_value_array = configuration_hash_string(hash_value_array, config);
+    }
+  
+    if (style_template) {
+      hash_value_array = style_template_hash_string(
+        hash_value_array,
+        style_template
+      );
+    }
+  
+    if (user) {
+      hash_value_array = sso_user_hash_string(hash_value_array, user);
+    }
+  
+    if (show_header) {
+      hash_value_array.push("show_header=" + show_header);
+    }
+  
+    initial_string += hash_value_array.join("&");
+    return initial_string;
+  }
+  
+  function configuration_hash_string(current_hash_array, configuration) {
+    if (configuration.financial_institution) {
+      current_hash_array.push(
+        "financial_institution=" +
+          encodeURIComponent(configuration.financial_institution)
+      );
+    }
+
+    if (configuration.close_url) {
+      current_hash_array.push(
+        "close_url=" + encodeURIComponent(JSON.stringify(configuration.close_url))
+      );
+    }
+
+    if (configuration.more_sites_url) {
+      current_hash_array.push(
+        "more_sites_url=" + encodeURIComponent(JSON.stringify(configuration.more_sites_url))
+      );
+    }
+  
+    if (configuration.top_sites) {
+      current_hash_array.push(
+        "top_sites=" + encodeURIComponent(JSON.stringify(configuration.top_sites))
+      );
+    }
+  
+    if (configuration.merchant_site_tags) {
+      current_hash_array.push(
+        "merchant_site_tags=" +
+          encodeURIComponent(JSON.stringify(configuration.merchant_site_tags))
+      );
+    }
+  
+    if (configuration.countries_supported) {
+      current_hash_array.push(
+        "countries_supported=" +
+          encodeURIComponent(JSON.stringify(configuration.countries_supported))
+      );
+    }
+  
+    if (configuration.bin_ranges) {
+      current_hash_array.push(
+        "bin_ranges=" +
+          encodeURIComponent(JSON.stringify(configuration.bin_ranges))
+      );
+    }
+  
+    if (configuration.ga_measurement_id)
+      current_hash_array.push(
+        "ga_measurement_id=" + encodeURIComponent(configuration.ga_measurement_id)
+      );
+
+    if (configuration.embedded)
+    current_hash_array.push(
+      "embedded=" + encodeURIComponent(configuration.embedded)
+    );
+    return current_hash_array;
+  }
+  
+  function style_template_hash_string(current_hash_array, style_template) {
+
+    if (style_template.merchant_selection_message) {
+      current_hash_array.push("merchant_selection_message=" + encodeURIComponent(style_template.merchant_selection_message));
+    }
+  
+    if (style_template.page_title) {
+      current_hash_array.push(
+        "page_title=" + encodeURIComponent(style_template.page_title)
+      );
+    }
+  
+    if (style_template.card_description) {
+      current_hash_array.push(
+        "card_description=" + encodeURIComponent(style_template.card_description)
+      );
+    }
+  
+    if (style_template.final_message) {
+      current_hash_array.push(
+        "final_message=" + encodeURIComponent(style_template.final_message)
+      );
+    }
+  
+    if (style_template.favicon_url) {
+      current_hash_array.push(
+        "favicon_url=" + encodeURIComponent(style_template.favicon_url)
+      );
+    }
+  
+    if (style_template.landing_page_image_url) {
+      current_hash_array.push(
+        "landing_page_image_url=" +
+          encodeURIComponent(style_template.landing_page_image_url)
+      );
+    }
+  
+    if (style_template.card_brand_image_url) {
+      current_hash_array.push(
+        "card_brand_image_url=" +
+          encodeURIComponent(style_template.card_brand_image_url)
+      );
+    }
+  
+    if (style_template.header_background_color) {
+      current_hash_array.push(
+        "header_background_color=" +
+          encodeURIComponent(style_template.header_background_color)
+      );
+    }
+  
+    if (style_template.link_color) {
+      current_hash_array.push(
+        "link_color=" + encodeURIComponent(style_template.link_color)
+      );
+    }
+  
+    if (style_template.button_color) {
+      current_hash_array.push(
+        "button_color=" + encodeURIComponent(style_template.button_color)
+      );
+    }
+  
+    if (style_template.border_color) {
+      current_hash_array.push(
+        "border_color=" + encodeURIComponent(style_template.border_color)
+      );
+    }
+
+    if (typeof style_template.drop_shadow !== "undefined") {
+      current_hash_array.push(
+        "drop_shadow=" + encodeURIComponent(style_template.drop_shadow)
+      );
+    }
+
+    if (typeof style_template.dynamic_height !== "undefined") {
+      current_hash_array.push(
+        "dynamic_height=" + encodeURIComponent(style_template.dynamic_height)
+      );
+    }
+    return current_hash_array;
+  }
+  
+  function sso_user_hash_string(current_hash_array, user) {
+    if (typeof user !== "undefined") {
+      var grant = user.grant;
+      var card_id = user.card_id;
+      var selected_sites = user.selected_sites;
+      var custom_data = user.custom_data;
+  
+      if (typeof grant !== "undefined") {
+        current_hash_array.push("grant=" + encodeURIComponent(grant));
+      }
+  
+      if (typeof card_id !== "undefined") {
+        current_hash_array.push("card_id=" + card_id);
+      }
+
+      if (typeof selected_sites !== "undefined") {
+        current_hash_array.push("selected_sites=" + selected_sites);
+      }
+  
+      if (typeof custom_data !== "undefined") {
+        current_hash_array.push(
+          "custom_data=" + encodeURIComponent(JSON.stringify(custom_data))
+        );
+      }
+    }
+  
+    return current_hash_array;
+  }
+
+  function get_hash_key_values() {
+    const hash = window.location.hash ? window.location.hash.substring(1) : "";
+    const res = hash.split("&").reduce(function (result, item) {
+      const parts = item.split("="); 
+      result[parts[0]] = decodeURIComponent(parts[1]); 
+      return result;
+  }, {});
+
+  return res;
+}
+  

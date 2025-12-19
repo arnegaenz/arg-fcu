@@ -1,0 +1,2539 @@
+
+/* THIS IS STYLEING FOR IN DEBUGGING MODE */
+.style_sheet_hint
+{
+	position: fixed;
+	bottom: 0;
+	display: block;
+	width: 100%;
+	height: 10px;
+	background-color: lightblue;
+	z-index: 600;
+}
+
+@font-face
+{
+	font-family: 'Open Sans';
+	src: url("https://media.msufcu.org/font_library/open_sans/OpenSans-Regular.ttf");
+}
+body 
+{
+	font-family: 'Open Sans', 'Arial' !important;
+	margin: 0;
+        display: block;
+        
+}
+
+
+/***** PUBLIC SITE HEADER *****/
+
+	#ps_header_main_container
+	{
+		min-width: 240px;
+	}
+	#ps_header_secondary_container 
+	{
+		position: relative;
+	}
+	#psh_logo_container
+	{
+		display: block;
+		width: 100px;
+		margin: 0 auto;
+		padding: 5px;
+	}
+	.psh_brand_logo_small
+	{
+		width: 100%;
+	}
+	.psh_brand_logo
+	{
+		display: none;
+	}
+
+	.psh_menu_icon
+	{
+		overflow: hidden;
+	}
+	
+	.psh_route_number
+	{
+		display: block;
+		position: absolute;
+		margin: 13px 0;
+		color: #434343;
+		font-size: 7pt;
+		font-weight: 700;
+		line-height: 15px;
+		letter-spacing: 0.2px;
+                overflow:hidden;
+                text-align:right;
+                width:100%;
+	}
+        
+        .psh_route_number span {
+            display:block;
+            padding:0 10px;
+            float:left;
+        }
+	
+        .psh_route_number span:last-child {
+            float:right;
+        }
+        
+	#psh_secondary_nav_container, 
+	.psh_main_nav, 
+	.psh_main_nav_sub_container, .submenus,
+	#ps_header_main_search_container
+	{
+		display: none;
+	}
+        .psh_signin_container
+        {
+            position:relative;
+            display:inline-block;
+            vertical-align:top;
+            margin-top:5px;
+        }
+	.psh_mobile_menu_icon
+	{
+		display: inline-block;
+		position: absolute;
+		width: 40px;
+		height: 40px;
+		bottom: 10px; 
+		left: 20px;
+		cursor: pointer;
+		background-image: url('https://media.msufcu.org/publicsites/publicsite/icons/hamburger.png');
+		background-repeat: no-repeat;
+		background-position:center center; 
+		background-size: 40px;
+	}
+	.psh_mobile_menu_icon_back
+	{
+		display: inline-block;
+		position: absolute;
+		width: 40px;
+		height: 40px;
+		bottom: 8px; 
+		left: 5px;
+		cursor: pointer;
+		background-image: url('https://media.msufcu.org/publicsites/publicsite/icons/arrow_left.png');
+		background-repeat: no-repeat;
+		background-position:left center; 
+		background-size: 20px;
+		padding: 0 20px;
+	}
+	.psh_main_nav_primary /*Navigation Primary Container (including search icon)*/
+	{
+		position: relative;
+		width: 100%;
+	}
+	.psh_mobile_menu_icon_back > span
+	{
+		position: relative;
+		top: 8px;
+		font-weight: bold;
+		text-transform: uppercase;
+		color: #434343;
+	}
+        .psh_omla_full_icon
+        {
+            margin-left: 15px;
+            display: inline-block;
+        }
+	.psh_icons_container
+        {
+            display: inline-block;
+            position: absolute;
+            width: 100px;
+            height: 40px;
+            bottom: 0px;
+            right: 0px;
+            margin-left: 30px;
+        }
+        .psh_omla_mobile
+        {
+            display: inline-block;
+            vertical-align: middle;
+            max-width: 40px;
+        }
+	#ps_header_search_icon
+	{
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            cursor: pointer;
+            background-image: url('https://media.msufcu.org/publicsites/publicsite/icons/search.png');
+            background-repeat: no-repeat;
+            background-position:center center; 
+            background-size: 20px;
+            vertical-align: middle;
+	}
+	#ps_header_search_icon:hover, .ps_header_search_icon_selected
+	{
+		background-image: url('https://media.msufcu.org/publicsites/publicsite/icons/search_white.png') !important;
+		background-color: #666666;
+	}
+	#ps_header_search_icon > img
+	{
+		width: 20px;
+	}
+	.psh_post_nav_container
+	{
+		position: relative;
+		background-color: #d1d2d4;
+	}
+	#ps_header_main_search_container
+	{
+		display: none;
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 100%;
+		background-color: #666666;
+		z-index: 300;
+	}
+	.psh_secondary_search_container
+	{
+		display: block;
+		margin: 40px auto;
+		width: 100%;
+	}
+	.psh_popular_questions 
+	{
+		display: none;
+		width: 49%;
+	}
+	.psh_search_container
+	{
+		display: block;
+		width: 100%;
+	}
+	.psh_search_container > form
+	{
+		text-align: center;
+		margin: 0;
+	}
+	.psh_search_input
+	{
+		font-size: 12pt;
+		width: 80%;
+		margin: 0 0 0 auto;
+		border: none;
+		border-radius: 5px;
+		padding: 5px 5px 5px 35px;
+		background-image: url('https://media.msufcu.org/publicsites/publicsite/icons/search.png');
+		background-repeat: no-repeat;
+		background-position: 5px center; 
+		background-size: 20px;
+	}	
+	
+	.psh_mobile_menu_container
+	{
+		position: fixed;
+		top: 43px;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		overflow-y: scroll;
+		width: 100%;
+		padding: 0;
+		margin: 0;
+		list-style-type: none;
+		border: 1px solid #000000;
+		background-color: #ffffff;
+		z-index: 300;
+	}
+	.psh_mobile_menu_item
+	{
+		position: relative;
+		border-bottom: 1px solid #d1d2d4;
+		padding: 10px 20px;
+		font-size: 14pt;
+		font-weight: bold;
+	}
+	.psh_mobile_menu_item > a 
+	{
+		display: block; 
+		color: #434343;
+		text-decoration: none;
+		width: auto;
+	}
+        .psh_mobile_menu_item > a #psh_chat_active_mobile
+        {
+            display: inline-block;
+            vertical-align: middle;
+            width: 25px;
+        }
+        .psh_mobile_menu_item > a #psh_chat_active_mobile img
+        {
+            width: 100%;
+        }
+	
+	.psh_mm_header
+	{
+		text-transform: uppercase;
+	}
+	
+	.psh_mm_top
+	{
+		font-size: 12pt;
+	}
+	
+	.psh_mm_special_open_an_account
+	{
+		background-color: #666666;
+	}
+	.psh_mm_special_open_an_account > a
+	{
+		color: #ffffff;
+	}
+	
+	.psh_mm_special_live_chat
+	{
+		text-transform: uppercase;
+	}
+	.psh_mm_right_arrow
+	{
+		position: absolute;
+		top: 27%;
+		right: 10px;
+		width: 20px;
+	}
+
+	.ps_full_screen
+	{
+		position: fixed;
+		top: 55px;
+		left: 0;
+		width: 100%;
+		height: 100%;
+		background-color: rgba(0, 0, 0, 0.6);
+		z-index: 280;
+	}
+	.psh_mobile_submenu_container
+	{
+		/*position: fixed;
+		top: 54px;
+		left: 0; */
+		width: 100%;
+		padding: 0;
+		margin: 0;
+		list-style-type: none;
+		/*border: 1px solid #000000;*/
+		background-color: #ffffff;
+		z-index: 300;
+	}
+	.psh_mobile_submenu_item
+	{
+		position: relative;
+		border-bottom: 1px solid #d1d2d4;
+		padding: 10px 30px;
+		font-size: 12pt;
+		font-weight: bold;
+	}
+	.psh_mobile_submenu_item > a 
+	{
+		display: block; 
+		color: #434343;
+		text-decoration: none;
+		width: auto;
+	}
+	
+	.psh_secondary_menu_mobile_container
+	{
+		padding: 20px 0 0;
+		background-color: #ffffff;
+	}
+	.psh_secondary_menu_mobile_container UL
+	{
+		margin-left: 0;
+                padding-left: 10px;
+                text-align:left;
+	}
+	.psh_computerline_signin_button_mobile,
+	.psh_computerline_view_account_mobile
+	{
+		width: 35%; 
+		display: inline-block; 
+		padding-right: 10px; 
+		text-align: center;
+		box-sizing: border-box;
+		vertical-align: middle;
+	}
+	.psh_computerline_signin_button_mobile a
+	{
+		padding: 8px 0 10px;
+		font-size: 10pt;
+		border-radius: 15px;
+	}
+	.psh_computerline_signin_button_mobile a > img
+	{
+		width: auto;
+                height: 1em;
+	}
+	
+	.psh_computerline_signin_box_mobile 
+	{
+		padding: 10px 0;
+	}
+	.psh_computerline_signin_box_mobile > .computerline_login_container
+	{
+		width: 100%;
+	}
+	.psh_computerline_signin_box_mobile .cl_login_forgot_username, .psh_computerline_signin_box_mobile .cl_login_forgot_password
+	{
+		font-size: 11pt;
+	}
+	.psh_secondary_nav_mobile 
+	{
+		width: 65%; 
+		display: inline-block; 
+		text-align: center;
+		box-sizing: border-box;
+		vertical-align: middle;
+	}
+	.psh_secondary_nav_mobile_item
+	{
+		display: inline-block;
+                margin-right:5%;
+                width:30%;
+	}
+	.ps_special_open_account {
+		width:60%;
+	}
+	.ps_special_open_an_account 
+	{
+		display: block;
+	}
+	.ps_special_ask_fran { 
+		font-style:italic;
+	}
+	.ps_special_ask_fran .psh_menu_icon { 
+		margin-left: 5px;
+		border: 1px solid #004f39;
+		border-radius: 50% 50%;
+	}
+	
+	.psh_secondary_nav_mobile a
+	{
+		display: block;
+		color: #666666;
+		text-decoration: none;
+		padding: 10px 0;
+		font-size: 10pt;
+		border-radius: 15px;
+                text-align:center;
+		cursor: pointer;
+	}
+	
+	
+/***** END PUBLIC SITE HEADER *****/
+
+/***** PUBLIC SITE FOOTER CSS *****/
+
+	#ps_footer_main_container
+        {
+            background-color: #d9d9d9;
+            padding: 0 15px;
+            overflow: hidden;
+            min-width: 250px;
+            box-sizing: border-box;
+        }
+	#ps_footer_secondary_container
+	{
+		position: relative;
+		display: block;
+		width: 100%;
+		min-width: 250px;
+		margin: 0 auto;
+		padding-bottom: 50px;
+	}
+	#psf_main_nav_contianer
+	{
+		margin: 0 0 25px;
+		padding: 25px 0 0;
+	}
+	.psf_main_nav
+	{
+		display: block;
+		margin: 0 auto;
+		padding: 0;
+		list-style-type: none;
+                text-align: left;
+                max-width: 400px;
+                width: 100%;
+	}
+	.psf_main_nav_item
+	{
+            display: inline-block;
+            font-weight: bold;
+            margin: 0;
+            line-height: 15px;
+            display: inline-block;
+            padding: 0 10px;
+            vertical-align: middle;
+            box-sizing: border-box;
+            width: initial;
+	}
+        .psf_main_nav_item:first-child
+        {
+            padding-left: 0;
+        }
+        .psf_main_nav_item:last-child
+        {
+            border: none;
+            text-align: left;
+        }
+        .psf_main_nav_item:nth-child(2)
+        {
+            border-right: 2px solid #000000;
+            border-left: 2px solid #000000;
+            text-align: center;
+        }
+	.psf_main_nav_item > a
+	{
+		color: #000000;
+		font-size: 8pt;
+		text-decoration: none;
+		text-align: center;
+		cursor: pointer;
+                font-family: 'Open Sans', 'Arial' !important;/*To ensure font style on older pages*/
+	}
+	.psf_main_nav_item > a:hover
+	{
+		color: #ffffff;
+	}
+	#psf_diclaimer_container
+	{
+            display: block;
+            color: #000000;
+            font-size: 9pt;
+            text-align: left;
+            margin: 0;
+            width: auto;
+            padding-bottom: 0;
+	}
+        .copyright_container,
+        #psf_diclaimer_container
+        {
+            font-size: 8pt;
+            color: #000000;
+            line-height: 15px;
+            box-sizing: border-box;
+            max-width: 400px;
+            margin: auto;
+        }
+	#psf_diclaimer_container > a
+	{
+            font-size: 9pt;
+            color: #000000;
+            font-family: 'Open Sans', 'Arial' !important; /*This is to allow for proper font on older pages*/
+	}
+	#psf_image_containers
+	{
+		position: absolute;
+		bottom: 50px;
+		left: 0;
+	}
+        #psf_image_containers,
+        #psf_main_nav_contianer,
+        #psf_diclaimer_container
+        {
+            display: block;
+        }
+	.psf_ncua_img, .psf_ehl_img
+	{
+            display: inline-block;
+            vertical-align: middle;
+            margin: 10px;
+	}
+	.psf_ehl_img img
+        {
+            width: 80px;
+        }
+        .psf_ncua_img img
+        {
+            width: 100px;
+        }
+	
+        .ps_footer_info_container
+        {
+            background-color: #ffffff;
+            min-width: 250px;
+        }
+        .ps_footer_info_secondary_container
+        {
+            max-width: 1200px;
+            margin: auto;
+            padding-bottom: 50px;
+        }
+        hr.info_divider 
+        {
+            border: 0;
+            height: 1px;
+            background-image: linear-gradient(to right, rgba(153, 153, 153, 0.1), rgba(153, 153, 153, 0.75), rgba(153, 153, 153, 0.1));
+            max-width: 1200px;
+            margin-top: 0;
+        }
+        .social_media_container
+        {
+            padding: 10px 0 25px;
+            box-sizing: border-box;
+        }
+        .social_media_title
+        {
+            color: #999999;
+            font-size: 14pt;
+            font-weight: 500;
+            padding: 10px 0;
+        }
+        .social_media
+        {
+            display: inline-block;
+            padding-right: 20px;
+            cursor: pointer;
+        }
+        img.hover
+        {
+            display: none;
+        }
+        .social_media img
+        {
+            width: 30px;
+            vertical-align: middle;
+            border: 0; /*Necessary for old ie not to place blue border around linked img*/
+        }
+        .information_container
+        {
+            max-width: 1200px;
+            padding-top: 25px;
+            box-sizing: border-box;
+            position: relative;
+            overflow: hidden;
+        }
+        .psf_mobile_route_number 
+        {
+            display: block;
+            padding: 10px 10px 10px 25px;
+        }
+        .mobile_route_number
+        {
+            display: block;
+            width: calc(50%-10px);
+            margin: 3px auto;
+            color: #434343;
+            font-size: 10pt;
+            font-weight: 700;
+            text-align: left;
+            line-height: 15px;
+            letter-spacing: 0.2px;
+        }
+        .information_column
+        {
+            display: inline-block;
+            width: 18%;
+            vertical-align: top;
+        }
+        .column_2
+        {
+            padding-left: 35px;
+        }
+        .column_4
+        {
+            padding-left: 40px;
+        }
+        .column_3
+        {
+            padding-left: 60px;
+        }
+        .info_box
+        {
+            box-sizing: border-box;
+            text-align: left;
+            padding: 10px;
+            font-size: 14pt;
+            font-weight: 600;
+        }
+        .info_box span
+        {
+            font-family: 'Open Sans', 'Arial' !important;
+        }
+        .info_box a
+        {
+            text-decoration: none;
+            color: #999999;
+        }
+        .information_container img,
+        .info_box_title
+        {
+            vertical-align: middle;
+        }
+        .information_container img
+        {
+            width: 35px;
+            margin-right: 10px;
+        }
+        .information_title
+        {
+            font-size: 15pt;
+            color: #666666;
+            font-weight: bold;
+            padding-bottom: 20px;
+        }
+        .info_phone
+        {
+            font-size: 9pt;
+            color: #434343;
+            font-weight: 500;
+            padding-left: 50px;
+            line-height: 20px;
+            letter-spacing: 0.25px;
+        }
+        .top_arrow
+        {
+            position: absolute;
+            right: 0;
+            top: 25px;
+            text-align: center;
+            color: #999999;
+            cursor: pointer;
+        }
+        .top_arrow img
+        {
+            width: 45px;
+            margin: 0;
+        }
+        .top_title
+        {
+            display: block;
+            font-weight: 600;
+            box-sizing: border-box;
+            padding-top: 5px;
+        }
+        .footer_nav_list
+        {
+            list-style: none;
+            padding: 0;
+            font-size: 11pt;
+            line-height: 30px;
+            margin: 0;
+        }
+        .footer_nav_list a
+        {
+            text-decoration: none;
+            color: #585858;
+            font-weight: 500;
+            font-family: 'Open Sans', 'Arial' !important;
+            font-size: 11pt;
+        }
+        .footer_nav_list a:hover
+        {
+            color: #666666;
+        }
+        #psf_image_containers
+        {
+            display: none;
+        }
+        #psf_image_containers_2
+        {
+            display: block;
+            text-align: center;
+            padding: 10px;
+            box-sizing: border-box;
+        }
+        .psf_main_nav_item
+        {
+            width: 31%;
+        }
+        .psf_main_nav_item a
+        {
+            font-size: 10pt;
+        }
+        .psf_main_nav,
+        .psf_main_nav_item:last-child
+        {
+            text-align: center;
+        }
+        .social_media_container,
+        .information_container
+        {
+            max-width: 350px;
+            margin: auto;
+            padding-left: 15px;  
+        }
+        .info_box
+        {
+            padding-left: 0;
+        }
+        .social_media_icons
+        {
+            display: block;
+            width: 100%;
+            text-align: left;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        .social_media_like
+        {
+            display: block;
+            width: 100%;
+            box-sizing: border-box;
+            padding-top: 25px;
+        }
+        .social_media
+        {
+            display: inline-block;
+            padding-right: 20px;
+            padding-left: 0;
+            cursor: pointer;
+        }
+        .facebook_large
+        {
+            display: none;
+        }
+        .facebook_small
+        {
+            overflow: hidden;
+        }
+        .column_1
+        {
+            display: block;
+            width: 100%;
+            max-width: 400px;
+            margin: auto;
+        }
+      .top_arrow
+      {
+          right: 50px;
+      }
+      .column_2,
+      .column_3,
+      .column_4
+      {
+          display: none;
+      }
+      .mobile_information_column
+      {
+           display: none;
+      }
+      .ada_footer
+      {
+          color: #ffffff;
+          font-size: 0.7em;
+          padding:16px;
+      }
+      .ada_footer p
+      {
+          text-align: left;
+          display:inline-block;
+          margin:0;
+          padding:0;
+          max-width:400px;
+          color: #ffffff;
+      }
+      
+        @media screen and (max-width: 900px)
+        {
+           .mobile_information_column
+           {
+               display: block;
+               width: 100%;
+               margin: 20px 25px 0;
+           }
+        }
+    @media only screen and (max-width: 280px)
+    {
+            #psf_diclaimer_container
+            {
+                    margin: 10px 2% 0 auto;
+            }
+    }
+      @media screen and (max-width: 400px)
+      {
+        .psf_main_nav_item a 
+        {
+            font-size: 8pt;
+        }
+      }
+        
+/***** END PUBLIC SITE FOOTER CSS *****/
+
+/***** PUBLIC SITE COMPUTERLINE LOGIN *****/
+	.cl_login_container
+	{
+		display: block;
+		width: 100%;
+		min-width: 230px;
+	}
+	.cl_login_header_container
+	{
+		position: relative;
+		color: #ffffff;
+		background-color: #666666;
+		padding: 0;
+	}
+	
+	.cl_login_container > #alert_2nd
+	{
+		background-color: #ffffff;
+	}
+	.cl_login_container > #alert_2nd > h1
+	{
+		margin: 0;
+		font-size: 12pt;
+		color: #ffffff;
+	}
+	.cl_login_container > #alert_2nd > p
+	{
+		margin: 0;
+	}
+	.cl_login_container > #alert_2nd > .form-title
+	{
+		font-size: 12pt;
+		padding: 10px !important;
+	}
+	
+	.cl_login_secondary_header_container
+	{
+		display: block;
+		width: 80%;
+		margin: 0 auto;
+	}
+	.cl_login_header_box
+	{
+		display: inline-block;
+		width: 80%;
+		vertical-align: middle;
+	}
+	.cl_login_secure_icon_container
+	{
+		position: absolute;
+		top: 7px;
+		right: 10px ;
+		display: inline-block;
+		width: 10%;
+		vertical-align: middle;
+		text-align: right;
+	}
+	.cl_login_secure_icon
+	{
+		width: 20px;
+	}
+	.cl_login_header 
+	{
+		font-size: 18pt;
+		font-weight: normal; 
+	}
+	.cl_login_secondary_header
+	{
+		position: relative;
+		top: -5px;
+		font-size: 9pt;
+		font-weight: normal;
+	}
+	.cl_login_form_container
+	{
+		background-color: #e6e6e6;
+		width: 100%;
+	}
+	.cl_login_form
+	{
+		display: block;
+		width: 80%;
+		margin: 0 auto;
+		padding: 20px 0 0;
+	}
+	.username_container,
+	.password_container
+	{
+		max-width: 350px;
+		margin: auto;
+	}
+	.cl_login_form input[type=text], .cl_login_form input[type=password]
+	{
+		display:  block;
+		width: 100%;
+		max-width: 350px;
+		margin: 0 auto 20px;
+		font-size: 12pt;
+		font-weight: normal;
+		padding: 10px 10px;
+		border: none;
+		box-sizing: border-box;
+	}
+	.username_error,
+	.password_error,
+	.caps_notice
+	{
+		position: absolute;
+		top: 3px;
+		color: #ff0000;
+		padding: 6px;
+		display:none; 
+		font-size: 11pt;
+		z-index:200; 
+		font-weight:bold;
+	}
+	
+	.username_error,
+	.password_error
+	{
+		left: 4px;
+	}
+	
+	.caps_notice
+	{
+		right: 1px;
+	}
+	.cl_login_submit
+	{
+		display:  block;
+		width: 100%;
+		max-width: 350px;
+		margin: 10px auto 0;
+		padding: 8px 5px;
+		color: #ffffff;
+		background-color: #565656;
+		font-family: 'Open Sans', 'Arial';
+		font-size: 14pt;
+		font-weight: bold;
+		border: none;
+		-moz-border-radius: 5px;
+		border-radius: 5px;
+		cursor: pointer;
+	}
+	.cl_login_forgots_container
+	{
+		display: block;
+		width: 80%;
+		max-width: 350px;
+		margin: 0 auto;
+	}
+	.cl_login_forgot_username, .cl_login_forgot_password
+	{
+		display: inline-block;
+		width: 50%;
+		margin: 5px 0 0;
+		color: #666666;
+		font-size: 8pt;
+		font-weight: bold;
+		text-decoration: none;
+		cursor: pointer;
+	}
+	.cl_login_forgot_password
+	{
+		text-align: right;
+	}
+	.cl_login_message_container
+	{
+		display: block;
+		width: 100%;
+		margin: 0 auto;
+	}
+	.cl_login_error_1
+	{
+		display: block;
+		font-size: 12pt;
+		font-weight: bold;
+		color: #ff0000;
+	}
+	.cl_login_error_2
+	{
+		display: block;
+		font-size: 10pt;
+		font-weight: normal;
+		color: #ff0000;
+	}
+	.cl_login_error_cldown
+	{
+		display: block;
+		width: 90%;
+		border: 1px solid #e6e6e6;
+		padding: 10px;
+		font-size: 10pt;
+		font-weight: 600;
+		color: #b84d4c;
+	}
+	
+	/*RoutingNumber and SwiftCode Display*/
+	.hprn_main_container
+	{
+		width: 100%;
+		min-width: 230px;
+		background-color: #e6e6e6;
+		padding: 30px 0;
+		font-size: 9pt;
+	}
+	.hprn_secondary_container
+	{
+		display: block;
+		width: 80%;
+		max-width: 350px;
+		margin: auto;
+	}
+	.hprn_rn_title, .hprn_sc_title
+	{
+		display: inline-block;
+		width: 65%;
+		font-weight: bold;
+		text-align: left;
+	}
+	.hprn_routing_number, .hprn_swift_code
+	{
+		display: inline-block;
+		width: 34%;
+		font-weight: bold;
+		text-align: right;
+	}
+	
+/***** END PUBLIC SITE COMPUTERLINE LOGIN *****/
+
+/***** PUBLIC SITE RATES DISPLAY ******/
+
+	
+	.hp_rates_mobile_container
+	{
+		background-color: #e6e6e6;
+		
+		min-width: 230px;
+		padding: 10px;
+	}
+	.hp_rates_mobile_container .hp_rates_header
+	{
+		display: block;
+		width: 70%;
+		margin: 0 auto;
+		color: #ffffff;
+		background-color: #565656;
+		font-size: 9pt;
+		font-size: 3.5vw;
+		text-transform: uppercase;
+		text-align: center;
+		padding: 1%;
+	}
+	.hp_rates_mobile_container > #hp_rates_table_container
+	{
+		display: block;
+		width: 72%;
+		margin: 0 auto;
+	}
+	.hp_rates_mobile_container .hpr_rate_shortname
+	{
+		font-size: 9pt;
+		font-size: 3.5vw;
+	}
+	.hp_rates_mobile_container .hpr_rate
+	{
+		font-size: 8pt;
+		font-size: 3vw;
+	}
+	.hp_rates_mobile_container .hpr_menu_item_anchor
+	{
+		font-size: 7pt;
+		font-size: 2.5vw;
+	}
+	.hp_rates_mobile_container .hpr_rate_image > img
+	{
+		width: 18%;
+	}
+	.hp_rates_mobile_container .hpr_rate_icon_loans
+	{
+		width: 35% !important;
+	}
+	
+	.hp_rates_mobile_container .hpr_rate_icon_business
+	{
+		width: 28% !important;
+	}
+	.hp_rates_in_clbox
+	{
+		display: none; 
+	}
+	
+/***** END PUBLIC SITE RATES DISPLAY ******/
+
+/***** PS HOMEPAGE PROMOTIONAL *****/
+	.hp_promotional_container
+        {
+            overflow: hidden;
+            position: relative;
+            max-height: 245px;
+        }
+        .hp_promo_main_container
+        {
+            position: relative;
+            top: 0;
+        }
+        .promotional_card_container
+        {
+            position: relative;
+            display: inline-block;
+            width: 100%;
+            max-height: 400px;
+            overflow: hidden;
+        }
+        .current_promotion
+        {
+            display: inline-block;
+        }
+        .hp_pm_image_hover
+	{
+            width: 100%;
+            height: 100%;
+            position: absolute;
+	}
+        .hp_promo_main_container
+        {
+            max-height: 400px;
+            overflow: hidden;
+        }
+        .hp_pm_image_hover
+        {
+            background-color: rgba(0,0,0,0.5);
+        }
+        .promo_left,
+        .promo_right
+        {
+            display:block;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            width: 50px;
+            background-image: none;
+            background-repeat: no-repeat;
+            background-position: center center;
+            background-size: 50px;
+            z-index: 100;
+            padding: 0 10px;
+            cursor: pointer;
+            user-select: none;
+        }
+        .promo_left
+        {
+            left: 0;
+        }
+        .promo_right
+        {
+            right: 0;
+        }
+        .hp_pro_main_image
+        {
+            display: none;
+        }
+        .hp_pro_main_image_mobile
+        {
+            display: block;
+            width: 100%;
+        }
+        .hp_pm_title_container 
+        {
+            position: absolute;
+            display: block;
+            top: 20px;
+            width: 100%;
+        }
+        .hp_pm_secondary_title_container 
+        {
+            max-width: 1000px;
+            margin: auto;
+        }
+        .hp_pm_action_tag 
+        {
+            display: block;
+            margin: 0 auto;
+            text-decoration: none;
+            cursor: pointer;
+        }
+        .hp_pm_title 
+        {
+            display: block;
+            width: 85%;
+            margin: 20px auto 10px;
+            color: #ffffff;
+            font-size: 14pt;
+            font-weight: lighter;
+            text-align: center;
+        }
+        .hp_pm_action_container 
+        {
+            position: relative;
+            display: block;
+            width: 86.6%;
+            margin: 0 auto 20px;
+            text-align: center;
+        }
+        .hp_pm_action_tag_group 
+        {
+            position: relative;
+            display: inline-block;
+            width: auto;
+            margin: 10px auto;
+            padding: 10px 20px;
+            color: #ffffff;
+            font-size: 10pt;
+            font-weight: bold;
+            text-align: center;
+            background-image: url(https://media.msufcu.org/publicsites/publicsite/icons/arrow_right_white.png);
+            background-repeat: no-repeat;
+            background-position: 98% 50%;
+            background-size: 16px;
+        }
+        .promo_dot_nav_container
+        {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            text-align: center;
+            padding: 10px 0;
+        }
+        .promo_dot_nav
+        {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            border: 1px solid #FFFFFF;
+            background-color: #FFFFFF;
+            display: inline-block;
+            margin: 0 10px;
+            cursor: pointer;
+        }
+        .promo_dot_nav:hover
+        {
+            background-color: transparent;
+        }
+        .nav_select
+        {
+            background-color: transparent;
+        }
+        
+        
+        .hp_prod_mbr_savings_container
+        {
+            text-align: center;
+            max-width: 400px;
+            margin: auto;
+        }
+		.hp_prod_mbr_savings_title
+        {
+            text-transform: uppercase;
+            font-weight: 800;
+            font-size: 18pt;
+        }
+        .hp_prod_mbr_savings
+        {
+            font-weight: 600;
+            font-size: 20pt;
+            padding: 10px 0;
+        }
+        .mbr_savings_bg
+        {
+            padding: 5px 20px;
+            box-sizing: border-box;
+            display: inline-block;
+            background-color: #FFFFFF;
+            border-radius: 5px;
+            box-shadow: 0px 0px 50px 0px #666;
+            font-size: 22pt;
+        }
+        .hp_prod_mbr_savings_desc_1,
+        .hp_prod_mbr_savings_desc_2
+        {
+            padding: 0 15px;
+            font-size: 11pt;
+            font-weight: 600;
+            
+        }
+        .hp_prod_mbr_savings_desc_2
+        {
+           
+            max-width: 260px;
+            margin: auto;
+        }
+        .hp_prod_mbr_savings_action a
+        {
+            text-decoration: none;
+            color: #434343;
+            font-weight: 600;
+            display: block;
+            padding: 15px 25px;
+            box-sizing: border-box;
+            background-image: url(https://media.msufcu.org/publicsites/publicsite/icons/arrow_right_gray.png);
+            background-repeat: no-repeat;
+            background-origin: content-box;
+            background-position: 270px 50%;
+            background-size: 16px;
+        }
+        .no_savings_show
+        {
+            display: none;
+        }
+        .rates_group
+        {
+            display: inline-block;
+        }
+        .rates_group
+        {
+            border-left: 2px solid #CCCCCC;
+        }
+        .rates_group:first-child
+        {
+            border-left: none;
+        }
+        .single_rate_container
+        {
+            display: inline-block;
+            padding: 0 20px;
+            box-sizing: border-box;
+            border-right: 2px solid #CCCCCC;
+        }
+        .single_rate_container:last-child
+        {
+            border-right: none;
+        }
+        .rate_cat_name
+        {
+            font-weight: 600;
+            font-size: 11pt;
+        }
+        .rate_cat_prefix
+        {
+            font-size: 9pt;
+            color: #666666;
+        }
+        .rate_cat_rate
+        {
+            font-size: 18pt;
+            color: #434343;
+        }
+        .rate_cat_rate sup
+        {
+            font-weight: 600;
+            font-size: 10pt;
+            color: #999999;
+            vertical-align: top;
+        }
+        .rate_cat_apply
+        {
+            text-transform: uppercase;
+            font-size: 10pt;
+            font-weight: 600;
+            color: #999999;
+        }
+        .rate_cat_apply a,
+        .see_more_rates a
+        {
+            text-decoration: none;
+        }
+        .rate_cat_apply a
+        {
+            color: #999999;
+            display: inline-block;
+            padding: 10px 0;
+            box-sizing: border-box;
+        }
+        .see_more_rates a
+        {
+            color: #434343;
+            display: inline-block;
+            padding: 20px;
+            box-sizing: border-box;
+            font-size: 11pt;
+            font-weight: 600;
+            color: #434343;
+            text-transform: uppercase;
+            background-image: url('https://media.msufcu.org/publicsites/publicsite/icons/arrow_right_gray.png');
+            background-repeat: no-repeat;
+            background-position:center right;
+            background-origin: padding-box;
+            background-size: 15px;
+        }
+        .see_more_rates
+        {
+            max-width: 700px;
+            text-align: right;
+            width: 60%;
+            margin: auto;
+        }
+		.see_more_rates a:hover
+        {
+			color: #999999;
+		}
+        .hp_prod_rates_container
+        {
+            max-width: 800px;
+            margin: auto;
+        }
+	.hp_promos_container
+	{
+		position: relative;
+		margin: 4px 0;
+		min-width: 230px;
+	}
+	.hp_promos_left
+	{
+		position: absolute;
+		top: 0; 
+		left: 0;
+		width: 50px;
+		height: 99%;
+		margin: 0.2% 0;
+		background: rgba(109,110,112,0.6);
+		z-index: 150;
+	}
+	.hp_promos_left > a
+	{
+		display: block;
+		width: 100%;
+		height: 100%;
+		color: #ffffff;
+		font-weight: bold;
+		text-decoration: none;
+	}
+	.hp_promos_right
+	{
+		position: absolute;
+		top: 0; 
+		right: 0;
+		width: 50px;
+		height: 99.5%;
+		margin: 0.2% 0;
+		color: #ffffff;
+		background: rgba(109,110,112,0.8);
+		z-index: 150;
+	}
+	.hp_promos_right > a 
+	{
+		display: block;
+		width: 100%;
+		height: 100%;
+		color: #ffffff;
+		font-weight: bold;
+		text-decoration: none;
+	}
+	.hp_promo_arrow
+	{
+		position: absolute;
+		top: 40%;
+		width: 35px;
+	}
+	.hp_promos_group
+	{
+		position: relative;
+		z-index: 100;
+	}
+	.hp_promo_group
+	{
+		display: inline-block;
+		width: 100%;
+		vertical-align: top;
+		position: relative;
+		margin: 0.2% 0.17%;
+	}
+	.hp_promo_group:nth-child(n+3), .hp_promo_group:nth-child(1)
+	{
+		display: none;
+	}
+	.hp_promo_group_leftmost
+	{
+		width: 11.95%;
+		height: auto;
+		margin-left: 0;
+		overflow: hidden;
+	}
+	.hp_promo_group_leftmost img
+	{
+		position: relative;
+		top: 0; 
+		right: 100%;
+		width: 207%;
+	}
+	.hp_promo_group_leftmost a
+	{
+		pointer-events: none;
+		cursor: default;
+	}
+	.hp_promo_group_leftmost .hp_promo_title
+	{
+		width: 207%;
+		left: -118%;
+		/*display: none;*/
+	}
+	.hp_promo_group_rightmost
+	{
+		width: 11.95%;
+		height: auto;
+		margin-right: 0;
+		overflow: hidden;
+	}
+	.hp_promo_group_rightmost .hp_promo_title
+	{
+		width: 207%;
+		left: 0;
+		/*display: none;*/
+	}
+	.hp_promo_group_rightmost img
+	{
+		position: relative;
+		top: 0; 
+		left: 0;
+		width: 207%;
+	}
+	.hp_promo_group_rightmost a
+	{
+		pointer-events: none;
+		cursor: default;
+	}
+	.hp_pro_image
+	{
+		width: 100%;
+		border: none;
+	}
+	.hp_p_action_tag
+	{
+		text-decoration: none;
+	}
+	.hp_promo_title_container
+	{
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+		text-align: center;
+		background-color: rgba(0,0,0,0.4);
+	}
+	.hp_promo_title
+	{
+		position: absolute;
+		top: 35%;
+		left: 60px;
+		right: 60px;
+		color: #ffffff;
+		font-size: 12pt;
+		font-size: 4vw;
+		font-weight: bold;
+		text-align: center;
+		text-decoration: none;
+		text-transform: uppercase;
+	}
+        .hp_promo_group_2
+        {
+            display: none;
+        }
+        @media screen and (max-width:900px)
+        {
+            .hp_promo_group_2
+            {
+                display: inline-block;
+            }
+        }
+        @media screen and (min-width:900px) and (max-width: 1300px)
+        {
+            .hp_promo_group
+            {
+                width: 32.8%;
+            }
+            .hp_promos_group
+            {
+                text-align: center;
+            }
+        }
+	@media only screen and (max-width: 230px)
+	{
+		.hp_promo_arrow
+		{
+			top: 35%;
+			width: 30px;
+		}
+		.hp_promo_title
+		{
+			top: 20%;
+			font-size: 8pt;
+		}
+	}
+        @media screen and (max-width:800px)
+        {
+            .rates_group
+            {
+                display: block;
+                border-left: none;
+                width: 80%;
+                margin: auto;
+                text-align: center;
+            }
+            .single_rate_container
+            {
+                width: 190px;
+                text-align: left;
+            }
+        }
+        @media screen and (max-width:491px)
+        {
+            .single_rate_container
+            {
+                width: 128px;
+            }
+            .rate_cat_name
+            {
+                font-size: 10pt;
+            }
+            .rate_cat_prefix
+            {
+                font-size: 8pt;
+            }
+            .rate_cat_rate
+            {
+                font-size: 16pt;
+            }
+            .rate_cat_rate sup
+            {
+                font-size: 9pt;
+            }
+        }
+        
+	
+/***** END PS HOMEPAGE PROMOTIONAL *****/
+
+/*HOMPAGE PRODUCT CARDS CSS */
+	.hp_prod_main_contianer
+	{
+		position: relative;
+		margin-top: 0;
+	}
+	.hp_prod_secondary_contianer
+	{
+		display: block;
+		min-width: 230px;
+		margin: 0 auto;
+                box-sizing: border-box;
+                vertical-align: top;
+	}
+        .hp_prod_left,
+        .hp_prod_right
+        {
+            padding: 40px 0;
+            box-sizing: border-box;
+        }
+        .hp_prod_left
+        {
+            background-color: #efefef;
+            padding: 40px 10px;
+            background-size: cover;
+            background-position: center center;
+        }
+	.hp_prod_move_left
+	{
+		position: relative;
+		display: inline-block;
+		width: 15%;
+		height: 200px;
+		vertical-align: top;
+		z-index: 150;
+	}
+	.hp_prod_move_left > a
+	{
+		display: block;
+		color: #ffffff;
+		text-decoration: none;
+	}
+	.hp_prod_move_right 
+	{
+		position: relative;
+		display: inline-block;
+		width: 15%;
+		height: 300px;
+		vertical-align: top;
+		text-align: right;
+		z-index: 150;
+	}
+	.hp_prod_move_right > a
+	{
+		display: block;
+		height: 100%;
+		color: #ffffff;
+		text-decoration: none;
+	}
+	.hp_product_arrow
+	{
+		position: relative;
+		top: 100px;
+		width: 50px;
+	}
+	.hp_prod_groups
+	{
+		position: relative;
+		display: inline-block;
+		width: 70%;
+		height: 45%;
+		margin: 0 0;
+		vertical-align: top;
+		z-index: 100;
+	}
+	.hp_prod_group
+	{
+		display: inline-block;
+		width: 100%;
+		height: auto;
+		margin: 20px 1%;
+		text-align: center;
+		vertical-align: top;
+	}
+	.hp_prod_group:nth-child(n+2)
+	{
+		display: none;
+	}
+	.hp_prod_action_tag
+	{
+		text-decoration: none;
+		color: #333333;
+		cursor: pointer;
+	}
+	.hp_prod_icon_container
+	{
+		min-height: 100px;
+	}
+	.hp_prod_image_icon
+	{
+		width: 100px;
+	}
+	.hp_prod_title
+	{
+		width: 80%;
+		height: auto;
+		margin: 20px auto 10px;
+		color: #000000;
+		font-size: 14pt;
+		font-weight: bold;
+	}
+	.hp_prod_body 
+	{
+		width: 60%;
+		height: auto;
+		margin: 0 auto;
+		color: #000000;
+		font-size: 12pt;
+		font-weight: normal;
+	}
+	.hp_prod_aslowas
+	{
+		width: 60%;
+		height: auto;
+		margin: 0 auto;
+		font-size: 12pt;
+		font-weight: normal;
+	}
+	.hp_prod_rate
+	{
+		width: 60%;
+		height: auto;
+		margin: 0 auto;
+		color: #434343;
+		font-size: 20pt;
+		font-weight: normal;
+	}
+	.hp_prod_action_label
+	{
+		width: 70%;
+		margin: 10px auto 0;
+		color: #666666;
+		font-size: 14pt;
+		font-weight: bold;
+		text-transform: uppercase;
+	}
+	
+	@media only screen and (max-width: 350px)
+	{
+		.hp_prod_image_icon
+		{
+			width: 75px;
+		}
+		.hp_prod_title
+		{
+			font-size: 12pt;
+		}
+		.hp_prod_body 
+		{
+			font-size: 10pt;
+		}
+		.hp_prod_aslowas
+		{
+			font-size: 10pt;
+		}
+		.hp_prod_rate
+		{
+			font-size: 17pt;
+		}
+		.hp_prod_action_label
+		{
+			font-size: 10pt;
+		}
+	}
+/*END HOMPAGE PRODUCT CARDS CSS */
+
+/*HOMPAGE NEWS STORY CARDS CSS */
+	.hp_ns_main_container
+	{
+		display: block;
+		width: 90%;
+		min-width: 230px;
+		margin: 0 auto;
+		text-align: left;
+	}
+	.hp_ns_secondary_container
+	{
+		display: block;
+		width: 100%;
+		min-width: 230px;
+		margin: 0 auto;
+		padding: 40px 0;
+	}
+	.hp_ns_header_container
+	{
+		margin: 20px 0 60px;
+	}
+	.hp_ns_header_title
+	{
+		display: inline-block;
+		width: 60%;
+		color: #666666;
+		font-size: 28pt;
+		font-weight: normal;
+		vertical-align: middle;
+	}
+	.hp_ns_header_social_media
+	{
+		display: inline-block;
+		width: 40%;
+		text-align: right;
+		vertical-align: middle;
+	}
+	.hp_ns_header_social_media > a 
+	{
+		display: inline-block;
+		text-decoration: none;
+		cursor: pointer;
+		vertical-align: middle;
+	}
+	.hp_ns_header_social_media > a > img
+	{
+		width: 25px;
+		margin: 2px;
+		border: none;
+	}
+	.hp_ns_story_container
+	{
+		position: relative;
+		display: inline-block;
+		width: 48%;
+		margin: 0 1% 40px;
+		vertical-align: top;
+	}
+	.hp_ns_story_container_leftmost
+	{
+		margin-left: 0;
+	}
+	.hp_ns_story_container_rightmost
+	{
+		margin-right: 0;
+	}
+	.hp_ns_action_tag
+	{
+		text-decoration: none;
+		color: #333333;
+		cursor: pointer;
+	}
+	.hp_ns_image_container
+	{
+		position: relative;
+		width: 100%;
+		height: 100px;
+		overflow: hidden;
+	}
+	.hp_ns_image
+	{
+		position: absolute;
+		top: -9999px;
+		bottom: -9999px;
+		left: -9999px;
+		right: -9999px;
+		margin: auto;
+		width: 150%;
+		border: none;
+	}
+	.hp_ns_title
+	{
+		display: block;
+		width: 90%;
+		margin: 5px auto;
+		text-align: center;
+		color: #666666;
+		font-size: 13pt;
+		font-weight: bold;
+	}
+	.hp_ns_show_more
+	{
+		text-align: right;
+		padding: 0;
+		color: #999999;
+		font-size: 13pt;
+		font-weight: bold;
+	}
+	@media only screen and (max-width: 390px)
+	{
+		.hp_ns_header_title 
+		{
+			width: 100%;
+		}
+		.hp_ns_header_social_media
+		{
+			width: 100%;
+		}
+		.hp_ns_title
+		{
+			font-size: 10pt;
+			font-size: 4vw;
+		}
+	}
+	@media only screen and (max-width: 350px)
+	{
+		.hp_ns_image_container
+		{
+			height: 75px;
+		}
+		
+	}
+
+/*END HOMPAGE NEWS STORY CARDS CSS */
+
+/*HOMEPAGE HIGHLIGHTED LINKS CSS */
+	.hp_highlighted_links_container
+	{
+		display: block;
+		width: 100%;
+		background-color: #efefef; 
+		color: #666666;
+		font-size: 12pt;
+		font-weight: bold;
+		text-align: left;
+	}
+	.hp_highlighted_links_secondary_container
+	{
+		display: block;
+		width: 100%;
+		min-width: 230px;
+		margin: 0 auto;
+		padding: 80px 0;
+	}
+	.hp_hl_inner_container
+	{
+		display: block;
+	}
+	.hp_hl_container
+	{
+		display: inline-block;
+		width: 48%;
+		margin: 20px 1%;
+		vertical-align: top;
+	}
+	.hp_hl_action_tag
+	{
+		display: block;
+		color: #666666;
+		text-decoration: none;
+		cursor: pointer;
+	}
+	.hp_hl_image_container
+	{
+		display: block;
+		width: 70px;
+		margin: 0 auto;
+		padding: 2px;
+		vertical-align: middle;
+	}
+	.hp_hl_image
+	{
+		width: 70px;
+                border:none;
+	}
+	.hp_hl_title
+	{
+		display: block;
+		width: 80%;
+		margin: 0 auto;
+		padding: 5px;
+		font-weight: bold;
+		text-align: center;
+		vertical-align: middle;
+	}
+/* END HOMEPAGE HIGHLIGHTED LINKS CSS */
+
+
+/**** HOMEPAGE SMALL RATES BOX ****/
+	.hpr_rates_container
+	{
+	}
+	.hpr_rates_grouping
+	{
+		background-color: #ffffff;
+	}
+	.hpr_rates_group
+	{
+		display: table;
+		width: auto;
+		padding: 5px 0;
+	}
+	.hpr_rates_title 
+	{
+		padding: 0;
+		display: table-cell;
+		text-align: left;
+		white-space:nowrap;
+		vertical-align: middle;
+	}
+	.hpr_rate_shortname 
+	{
+		display: block;
+		padding: 0 5px 0;
+		text-align: left;
+		color: #000000;
+		font-size: 9pt;
+		font-weight: bold;
+	}
+	.hpr_rate 
+	{
+		display: block;
+		padding: 0 5px;
+		text-align: left;
+		color: #000000;
+		font-size: 8pt;
+		font-weight: bold;
+	}
+	.hpr_rate_image
+	{
+		display: table-cell;
+		width: 100%;
+		text-align: right;
+		vertical-align: middle;
+		padding-right: 20px;
+	}
+	.hpr_rate_image > img
+	{
+		width: 30px;
+	}
+	.hpr_rate_icon_business
+	{
+		width: 25px !important;
+	}
+	.hpr_rate_icon_loans
+	{
+		width: 50px !important;
+	}
+	.hpr_menu_container
+	{
+		display: table;
+		width: 100%;
+		list-style-type: none;
+		margin: 0;
+	}
+	.hpr_menu_item
+	{
+		display: table-cell;
+		padding-left: 3px;
+	}
+	.hpr_menu_item_leftmost
+	{
+		display: table-cell;
+		padding-left: 0;
+	}
+	.hpr_menu_item > a
+	{
+		display: block;
+		color: #ffffff;
+		background-color: #666666;
+		font-size: 7pt;
+		font-weight: bold;
+		text-decoration: none;
+		text-align: center;
+		padding: 4px;
+	}
+	.hpr_menu_item_selected > a
+	{
+		color: #666666;
+		background-color: #ffffff;
+		padding-top: 5px;
+	}
+	.hpr_hide_div
+	{
+		display: none;
+	}
+/**** END HOMEPAGE SMALL RATES BOX ****/
+	
+
+/**** ALERTS CSS ****/
+
+	.alerts_secondary_container 
+	{
+		display: block;
+		width: auto;
+		min-width: 300px;
+		padding: 5px;
+	}
+	.alerts_header 
+	{
+		display: inline-block;
+		width: 20%;
+		vertical-align: top;
+		color: #ffffff;
+		font-size: 10pt;
+		font-weight: bold;
+	}
+	.alerts_body
+	{
+		display: inline-block;
+		width: 68%;
+		vertical-align: top;
+		color: #ffffff;
+		font-size: 9pt;
+		text-align: left;
+	}
+	.alerts_hide
+	{
+		display: inline-block;
+		width: 12%;
+		vertical-align: top;
+		text-align: right;
+	}
+	.alerts_hide > a 
+	{
+		display: block;
+		width: 100%;
+		height: 100%;
+		font-size: 9pt;
+		color: #ffffff;
+		text-decoration: none;
+	}
+	
+/***** END ALERTS CSS *****/
+
+
+
+/***** IMAGE COLLAGE CSS *****/
+	
+	.cpig_tile_main_container
+	{
+	}
+	.cpig_tile_secondary_container
+	{
+		display: block;
+		width: 250px;
+		height: 250px;
+		margin: 0 auto;
+		overflow: hidden;
+	}
+	.cpig_tile_groups
+	{
+	}
+	.cpig_tile_subgroup
+	{
+		display: inline-block;
+		margin: 6.25px 0 0 6.25px;
+		vertical-align: top;
+	}
+	
+	.psig_tile_background
+	{
+		
+	}
+	.psig_tile 
+	{
+	}
+	.psig_tile_small
+	{
+		width: 156.25px;
+		height: 156.25px;
+	}
+	
+	.psig_tile_tiny
+	{
+		width: 75px;
+		height: 75px;
+	}
+	.psig_tile_tiny_special
+	{
+		width: 75px;
+		height: 75px;
+		margin-top: 6.25px;
+	}
+	.psig_tile_content
+	{
+		
+	}
+	.psig_tile_title
+	{
+		
+	}
+	.psig_tile img
+	{
+		width: 100%;
+	}
+	.psig_tile_background
+	{
+		width: 100%;
+		height: 100%;
+	}
+
+
+	.cpic_scroll_group
+	{
+		position: relative; 
+		left: -580px;
+	}
+	
+	.cpic_tile_carousel_main_container
+	{
+		width: 100%;
+		height: 207.5px;
+		margin: 40px 0 45px;
+	}
+	.cpic_tile_carousel_secondary_container
+	{
+		position: relative;
+	}
+	.cpic_previous_tile, .cpic_next_tile
+	{
+		display: block;
+		position: absolute;
+		top: 0;
+		width: 50px;
+		height: 100%;
+		background-color: rgba(0, 0, 0, 0.4);
+		text-align: center;
+		z-index: 100;
+		cursor: pointer;
+	}
+	.cpic_previous_tile > img, .cpic_next_tile > img
+	{
+		display: inline-block;
+		width: 36px;
+		margin: 0 auto;
+		vertical-align: middle;
+	}
+	.cpic_previous_tile:before,  .cpic_next_tile:before
+	{
+		content: '';
+		display: inline-block;
+		height: 100%;
+		vertical-align: middle;
+		margin: -0.25em;
+	}
+	.cpic_previous_tile
+	{
+		left: 0;
+	}
+	.cpic_next_tile
+	{
+		right: 0;
+	}
+	.cpic_tile_groups
+	{
+		width: 100%;
+		overflow: hidden;
+		white-space: nowrap;
+	}
+	.cpic_tile_group
+	{
+		display: inline-block;
+		vertical-align: top;
+	}
+	.cpic_tile_subgroup
+	{
+		display: inline-block;
+		vertical-align: top;
+	}
+	.psic_tile 
+	{
+		display: block;
+		position: relative;
+		overflow: hidden;
+		white-space: normal;
+	}
+	.psic_tile_content
+	{
+		display: block;
+		width: 100%;
+		height: 100%;
+		position: absolute;
+		top: 0;
+		left: 0;
+		text-align: center;
+	}
+	.psic_tile_title
+	{
+		display: inline-block;
+		vertical-align: middle;
+		padding: 7.5px;
+		font-size: 7pt;
+		font-weight: 700;
+	}
+	.psic_tile_content:before 
+	{
+		content: '';
+		display: inline-block;
+		height: 100%;
+		vertical-align: middle;
+		margin: -0.25em;
+	}
+	
+	.psic_tile_background
+	{
+		display: block;
+		width: 100%;
+		height: 100%;
+	}
+	
+	.psic_tile_small
+	{
+		width: 207.5px;
+		height: 207.5px;
+		margin: 0 5px;
+	}
+	
+	.psic_tile_tiny_top, .psic_tile_tiny_bottom
+	{
+		width: 100px;
+		height: 100px;
+		margin: 0;
+	}
+	.psic_tile_tiny_top
+	{
+		margin-bottom: 7.5px;
+	}
+
+/***** END IMAGE COLLAGE CSS *****/
+
+/* Insite Code File Links Style */
+
+.file_link 
+{
+	display: inline-block;
+	margin: 5px;
+	width: 200px;
+	color: #939597;
+	text-decoration: none;
+	cursor: pointer;
+}
+.file_link:hover
+{
+	color: #aaaaaa;
+}
+.file_link > img 
+{
+	display: inline-block;
+	width: 20%;
+	vertical-align: middle;
+}
+.file_link > span
+{
+	display: inline-block;
+	width: 75%;
+	margin-left: 5%;
+	font-size: 8pt;
+	font-weight: 700;
+	text-align: left;
+	vertical-align: middle;
+	line-height: 1.2;
+}
+
+/* END Insite Code File Links Style */
+
+
+.computerline_signin_helper
+{
+	display: none;
+}
+
+.psh_computerline_signin_filler
+{
+	background-color: #666666;
+	position: relative;
+	top: -5px;
+	height: 20px;
+	z-index: 100;
+}
+.psh_computerline_signin_box
+{
+	position: absolute; 
+	top: 35px; 
+	right: 0; 
+	z-index: 600;
+}
+
+.toggle {
+	height: 20px;
+	width: 36px;
+	background-color: #FFFFFF;
+	padding: 2% 1% 4% 2%;
+	border: 1px solid #d1d2d4;
+	border-left: none;
+	box-sizing: content-box;
+}
+
+.eyeIcon-passwordHidden {
+	background-image: url("https://media.msufcu.org/publicsites/eyeHide.svg");
+	height: 36px;
+	background-repeat: no-repeat;
+	background-size: 80%;
+}
+
+.eyeIcon-passwordVisible {
+	background-image: url("https://media.msufcu.org/publicsites/eyeShow.svg");
+	height: 36px;
+	background-repeat: no-repeat;
+	background-size: 80%;
+}
+
+#toggleLoginPassword {
+	display: inline-block;
+	width: 24%;
+	width: 50px;
+	position: relative;
+	z-index: 1;
+	background-color: white;
+	border: none;
+	border: 1px solid #d1d2d4;
+	cursor: pointer;
+	border-left: none;
+}
+
+.computerline_login_password_div {
+	display: flex;
+	align-items: center;
+	width: 100%;
+}
+
+input#omla_cl_password {
+	width: 82%;
+	margin-left: 3%;
+	display: inline;
+	border-right: none;
+}
+
+#toggleOMLALoginPassword{
+	display: inline-block;
+	width: 24%;
+	width: 44px;
+	position: relative;
+	z-index: 1;
+	background-color: white;
+	border: none;
+	border: 1px solid #d1d2d4;
+	cursor: pointer;
+	border-left: none;
+	float: right;
+	margin-top: 10px;
+	margin-right: 3%;
+	height: 36px;
+}

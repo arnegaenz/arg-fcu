@@ -1,0 +1,508 @@
+<!--
+    Version v2_02
+    This update reduces the demo options.  SSO -> Defaults to Jack Skellington, with demo sites and CVV request.
+    SSO CVV -> Defaults to Pepper Potts, with demo sites and no CVV request.
+    non-SSO -> weblink is simply the open / no card scenario.
+-->
+
+
+<html lang="en" class="in-browser"><head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no, viewport-fit=cover">
+    <script src="https://argfcu.customer-dev.cardupdatr.app/cardupdatr-client-v2.js"></script>
+
+    <title></title>
+    <script>window.self!==window.top&&document.documentElement.classList.add("in-browser");</script>
+      
+    <style>
+        @font-face {
+          font-family: 'roboto-web';
+          src: local('roboto Regular'),
+          url('/fonts/roboto-regular-webfont.woff2') format('woff2'),
+          url('/fonts/roboto-regular-webfont.woff') format('woff');
+          font-weight: 400;
+          font-style: normal;
+        }
+        @font-face {
+          font-family: 'roboto-web';
+          src: local('roboto Medium'),
+          url('/fonts/roboto-medium-webfont.woff2') format('woff2'),
+          url('/fonts/roboto-medium-webfont.woff') format('woff');
+          font-weight: 500;
+          font-style: normal;
+        }
+        *,
+        *::before,
+        *::after {
+          box-sizing: border-box;
+        }
+        :root {
+          --background-color: rgb(255,255,255);
+          --body-text-primary-color: #000000; 
+        }
+        html {
+          font-size: 100%;
+          font-family: system-ui, -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+          -webkit-tap-highlight-color: transparent;
+          -webkit-font-smoothing: antialised;
+          font-smoothing: antialiased;
+          -webkit-text-size-adjust: 100%;
+          text-size-adjust: 100%;
+          -webkit-user-select: none;
+          user-select: none;
+        }
+        .in-browser {
+          overflow: hidden;
+          font-family: 'roboto-web', system-ui, -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+        }
+        body {
+          margin: 0;
+          font-size: 1rem;
+          font-weight: 400;
+          line-height: 1.5;
+          padding: 5px 16px 16px 16px;
+          background-color:  rgb(255, 255, 255);
+          background-size: cover;
+          background-position: center;
+          background-repeat: no-repeat;
+          background-blend-mode: multiply;
+          color:  rgb(0, 0, 0);
+        }
+        .layout {
+          position: relative;
+          z-index: 2;
+        }
+        .callout,
+        .headline {
+          font-weight: 500;
+          color: rgb(0, 71, 49);
+          margin: 0;
+          margin-bottom: .5625rem;
+        }
+        .callout {
+          margin-top: .25rem;
+          font-size: .975 rem;
+          text-align: center;
+          color: rgb(0, 0, 0);
+        }
+        .callout h3 {
+          text-align: center;
+          font-weight: normal;
+        }
+        .callout-icon {
+          display: inline-block;
+          width: 18px;
+          height: 18px;
+          vertical-align: middle;
+          fill: currentColor;
+          position: relative;
+          top: -1px;
+        }
+        .headline {
+          font-size: 1.25rem;
+        }
+        .body-copy {
+          margin: 0;
+          margin-bottom: 1.125rem;
+          font-size: .8125rem;
+          opacity: 0.9;
+        }
+        .clock-icon {
+          width: 50px; 
+          height: auto;
+          vertical-align: middle; 
+        }
+        .horizontal-bar {
+          height: 1px; 
+          background-color: #000; 
+          margin-top: 10px; 
+          margin-bottom: 10px; 
+          margin-right: 15px;
+          margin-left: 15px;
+        }
+        .launchCardUpdatr {
+          display: block;
+          width: 100%;
+          background: rgb(217, 169, 127);
+          border-radius: 24px;
+          font-size: .9375rem;
+          font-weight: 500;
+          font-weight: bold; 
+          font-family: 'roboto-web', system-ui, -apple-system, BlinkMacSystemFont, Roboto, sans-serif; 
+          color: rgb(38, 57, 55);
+          border: 1px solid rgb(217, 169, 127);
+          line-height: 1;
+          text-align: center;
+          white-space: nowrap;
+          padding: .75rem 1.25rem;
+          text-decoration: none;
+          transition: all .2s ease;
+        }
+        .launchCardUpdatr:hover {
+          background-color: rgb(165, 104, 49);
+          border-color: rgb(165, 104, 49);
+          color: rgb(255, 255, 255);
+        }
+        .launchCardUpdatr:focus {
+          outline: none;
+          background-color: rgb(200, 131, 70);
+          border-color: rgb(200, 131, 70);
+          color: rgb(31, 46, 44);
+        }
+  
+        /* adjust the padding of .step p for different screen sizes */
+
+        .step {
+          width: 100%; 
+        }
+
+        @media (min-width: 361px) {
+          .step {
+            width: 90%; 
+          }
+        }
+
+        @media (min-width: 361px) {
+          .step {
+            width: 80%; 
+          }
+        }
+
+        @media (min-width: 401px) {
+          .step {
+            width: 75%; 
+          }
+        }
+  
+        @media (min-width: 451px) {
+          .step {
+            width: 70%; 
+          }
+        }
+  
+        @media (min-width: 501px) {
+          .step {
+            width: 65%; 
+          }
+        }
+        
+          @media screen and (prefers-color-scheme: dark) {
+              body {
+                  background-color: rgb(48, 70, 67);
+                  color: rgb(230, 230, 230);
+              }
+              .product-description {
+                  color: rgb(177, 174, 159);
+              }
+              .rate {
+                  color: rgb(230, 230, 230);
+              }
+              .body-copy {
+                  color: rgb(230, 230, 230);
+              }
+            .button {
+              background-color: rgb(217, 169, 127);
+              border-color: rgb(217, 169, 127);
+              color: rgb(38, 57, 55);
+            }
+            .button:hover {
+              background-color: rgb(165, 104, 49);
+              border-color: rgb(165, 104, 49);
+              color: rgb(255, 255, 255);
+            }
+            .button:focus {
+              outline: none;
+              background-color: rgb(200, 131, 70);
+              border-color: rgb(200, 131, 70);
+              color: rgb(255, 255, 255);
+            }
+          }
+          .steps-container {
+            display: flex;
+            justify-content: center; 
+            align-items: flex-start; 
+            flex-wrap: wrap; 
+            gap: 20px; 
+            }
+
+            .step {
+            display: flex;
+            flex-direction: column; 
+            align-items: center; 
+            }
+
+            .step p {
+              text-align: center;
+            }
+
+            .step-icon {
+            align-self: center; 
+            margin-bottom: 0px; 
+            }
+
+            
+            .step-title {
+            display: flex;
+            align-items: center; 
+            justify-content: center; 
+            gap: 10px; 
+            }
+
+            
+            .step-title h4 {
+            margin: 0; 
+            color: rgb(0, 77, 59);
+            }
+
+            .step-info {
+            text-align: center;
+            }
+
+            .step-info h3 {
+            margin: 0;
+            }
+
+            .step-info p {
+            margin: 0;
+            }
+            .launchCardUpdatr {
+            margin-top: 1.5rem; 
+            margin-bottom: 1rem;
+            }
+            .content select {
+            display: block;
+            width: 100%; 
+            padding: 0.5rem 1rem; 
+            font-size: 0.9375rem;
+            color: #2a2c2e; 
+            background-color: #fff; 
+            border: 1px solid #ccc; 
+            border-radius: 24px; 
+            margin-top: 10px; 
+            margin-bottom: 20px; 
+            }
+
+            .content label {
+            display: block;
+            margin-bottom: 0.5rem; 
+            font-weight: 500; 
+            }
+
+      </style>
+
+  </head>
+  <body data-new-gr-c-s-check-loaded="14.1154.0" data-gr-ext-installed="">
+    <div class="layout">
+        <div class="content">
+            <h1 class="headline">Update your card info everywhere you pay, the easier way!</h1>
+            <div class="callout">
+                <img src="./assets/clock.png" alt="Clock" class="clock-icon">
+                Save time. Log in. We'll do the rest.
+            </div>
+            <div class="horizontal-bar"></div>
+            <div class="callout">
+                <h3>Here's how:</h3>
+            </div>
+            <div class="steps-container">
+                <div class="step">
+                  <div class="step-title">
+                    <img src="./assets/step-1.png" alt="Step 1" class="step-icon">
+                    <h4>Step 1</h4>
+                  </div>
+                  <p>Select the Launch CardUpdatr below, choose the sites you shop with, and log in to each.</p>
+                </div>
+                <div class="step">
+                  <div class="step-title">
+                    <img src="./assets/step-2b.png" alt="Step 2" class="step-icon">
+                    <h4>Step 2</h4>
+                  </div>
+                  <p>After logging in, we'll promptly update your card information across all the chosen sites for you.</p>
+                </div>
+              </div>
+
+        <div class="horizontal-bar"></div> 
+
+        <button id="placeCardsButton" class="launchCardUpdatr">Launch CardUpdatr!</button>
+
+        <div class="content">
+            <label for="characterSelect">Select CardHolder Journey:</label>
+            <select id="characterSelect">
+                <option value="jack_skellington">SSO Demo CVV request</option>
+                <option value="pepper_potts">SSO Demo without CVV request</option>
+                <option value="no_card">non-SSO with No Card</option>
+            </select>
+        </div>  
+    </div>
+  
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var ssoGrant = '';
+            var ssoCardID = '';
+    
+            function getCurrentDateFormatted() {
+                const date = new Date();
+                const year = date.getFullYear();
+                const month = String(date.getMonth() + 1).padStart(2, '0');
+                const day = String(date.getDate()).padStart(2, '0');
+                return `${year}${month}${day}`;
+            }
+    
+            function getDeviceType() {
+                const ua = navigator.userAgent;
+                if (/iPhone/i.test(ua)) {
+                    return 'iphone';
+                } else if (/iPad/i.test(ua)) {
+                    return 'ipad';
+                } else if (/Android/i.test(ua)) {
+                    return 'android';
+                } else if (/Mobi/i.test(ua)) {
+                    return 'mobile';
+                } else {
+                    return 'desktop';
+                }
+            }
+
+            function callApiGateway(character) {
+                const currentDate = getCurrentDateFormatted();
+                const deviceType = getDeviceType();
+                let url = 'https://bswpcoqak3b7elcynskytiapyu0eokxs.lambda-url.us-west-2.on.aws/';
+                let data = {};
+    
+                if (character === "jack_skellington") {
+                    data = {
+                        "cardholder_data": {
+                            "email": "jack_skellington@scareme.com",
+                            "type": "ephemeral",
+                            "custom_data": {
+                               "campaignid": currentDate + "demo" + deviceType
+                            }
+                        },
+                        "address_data": {
+                            "is_primary": "true",
+                            "address1": "1122 Boogie Boogie Ave.",
+                            "city": "Halloween Town",
+                            "subnational": "CA",
+                            "postal_code": "92802",
+                            "country": "USA",
+                            "email": "jack_skellington@scareme.com",
+                            "phone_number": "7141122222",
+                            "first_name": "Jack",
+                            "last_name": "Skellington"
+                        },
+                        "card_data": {
+                            "name_on_card": "Jack Skellington",
+                            "pan": "4114411441144114",
+                            "cvv": "",
+                            "expiration_month": "10",
+                            "expiration_year": "24"
+                        }
+                    };
+                } else if (character === "pepper_potts") {
+                    data = {
+                        "cardholder_data": {
+                            "email": "pepper_potts@starkindustries.com",
+                            "type": "ephemeral",
+                            "custom_data": {
+                              "campaignid": currentDate + "demo" + deviceType
+                            }
+                        },
+                        "address_data": {
+                            "is_primary": "true",
+                            "address1": "10880 Malibu Point",
+                            "city": "Malibu",
+                            "subnational": "CA",
+                            "postal_code": "90265",
+                            "country": "USA",
+                            "email": "pepper_potts@starkindustries.com",
+                            "phone_number": "3105550187",
+                            "first_name": "Pepper",
+                            "last_name": "Potts"
+                        },
+                        "card_data": {
+                            "name_on_card": "Pepper Potts",
+                            "pan": "5555555555554444",
+                            "cvv": "123",
+                            "expiration_month": "08",
+                            "expiration_year": "26"
+                        }
+                    };
+                }
+    
+                if (character !== "no_card") {
+                    fetch(url, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify(data)
+                    })
+                    .then(response => response.json())
+                    .then(apiResponse => {
+                        ssoGrant = apiResponse.grant;
+                        ssoCardID = apiResponse.cardId;
+                        launchCardUpdatr(character);
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                    });
+                } else {
+                    ssoGrant = "";
+                    ssoCardID = "";
+                    launchCardUpdatr(character);
+                }
+            }
+    
+            function launchCardUpdatr(character) {
+                const currentDate = getCurrentDateFormatted();
+                const deviceType = getDeviceType();
+                
+                let config = {
+                    "app_container_id": "cardupdatr-frame",
+                    "hostname": "https://argfcu.customer-dev.cardupdatr.app/",
+                    "top_sites": "",
+                    "merchant_site_tags": "prod",
+                    "overlay" : "true",
+                    "show_close_overlay_button" : true,
+                };
+
+                if (character === "jack_skellington") {
+                    config.merchant_site_tags = "demo";
+                } else if (character === "pepper_potts") {
+                    config.merchant_site_tags = "synthetic";
+                }
+                        
+                window.embedCardUpdatr({
+                    "config": config,
+                    "user": {
+                        "grant": ssoGrant,
+                        "card_id": ssoCardID,
+                        "custom_data": {
+                               "campaignid": currentDate + "open" + deviceType
+                            }
+                    },
+                    "style": {
+                        "name": "Garden Bank",
+                        "page_title":"Garden Bank CardUpdatr Tool!",
+                        "card_description": "Garden Bank Debit Card",
+                        "final_message":"Thank you for placing your card at your favorite merchant sites, select more sites if you are having fun!",
+                        "merchant_selection_message": "Select the sites below to make your {{{card_description}}} the primary payment method.  Save time by selecting multiples sites!",
+                        "landing_page_image_url": "https://swch-site-images-mgmt.s3-us-west-2.amazonaws.com/branding/customer-dev/msu_dev/images/landing-page-image.jpg",
+                        "header_background_color": "#004f39",
+                        "link_color": "#25b570",
+                        "button_color": "#004f39",
+                        "drop_shadow": "false",
+                        "border_color": "#004f39"
+                    }
+                });
+            }
+    
+            document.getElementById('placeCardsButton').addEventListener('click', function() {
+                const selectedCharacter = document.getElementById('characterSelect').value;
+                callApiGateway(selectedCharacter);
+            });
+        });
+    </script>
+      
+
+</body>
+</html>
