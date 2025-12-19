@@ -26,21 +26,22 @@
       </p>
 
       <div class="form">
-        <div class="full">
+        <div class="full inline-options">
           <div><b>Integration Type</b></div>
-          <label><input type="radio" name="integrationType" id="integrationEmbedded" value="embedded" checked /> Embedded</label>
-          <label><input type="radio" name="integrationType" id="integrationWeblink" value="weblink" /> Weblink</label>
+          <label class="inline-field"><input type="radio" name="integrationType" id="integrationEmbedded" value="embedded" checked /> Embedded</label>
+          <label class="inline-field"><input type="radio" name="integrationType" id="integrationWeblink" value="weblink" /> Weblink</label>
         </div>
 
         <div class="full">
-          <div><b>Device Platform</b></div>
-          <label><input type="radio" name="devicePlatform" id="deviceDesktop" value="desktop" checked /> Desktop</label>
-          <label><input type="radio" name="devicePlatform" id="deviceMobile" value="mobile" /> Mobile</label>
+          <div><b>Financial Institution</b></div>
         </div>
 
-        <label>
-          Financial Institution
-          <input id="fi" type="text" value="orb_prod" />
+        <label class="full">
+          <span class="label-title">Host</span>
+          <select id="fiHost">
+            <option value="orb_prod.customer-dev.cardupdatr.app" selected>orb_prod.customer-dev.cardupdatr.app</option>
+            <option value="alkami.cardupdatr.pkumar.cardsavr.io">alkami.cardupdatr.pkumar.cardsavr.io</option>
+          </select>
         </label>
 
         <div class="full">
@@ -48,47 +49,50 @@
         </div>
 
         <label>
-          BG Color (Hex)
-          <input id="containerBgColor" type="text" value="#00FF00" />
+          <span class="label-title">BG Color (Hex)</span>
+          <div class="color-input">
+            <input id="containerBgColor" type="text" value="#00FF00" />
+            <input id="containerBgColorPicker" type="color" value="#00FF00" aria-label="BG Color picker" />
+          </div>
         </label>
 
         <label>
-          Width
+          <span class="label-title">Width</span>
           <input id="containerWidth" type="text" value="800px" />
         </label>
 
         <label>
-          Height
+          <span class="label-title">Height</span>
           <input id="containerHeight" type="text" value="800px" />
         </label>
 
         <label>
-          Min Height
+          <span class="label-title">Min Height</span>
           <input id="containerMinHeight" type="text" value="50vh" />
         </label>
 
         <label>
-          Max Height
+          <span class="label-title">Max Height</span>
           <input id="containerMaxHeight" type="text" value="100vh" />
         </label>
 
         <label>
-          Text Align
+          <span class="label-title">Text Align</span>
           <input id="containerTextAlign" type="text" value="center" />
         </label>
 
         <label>
-          Pad Top
+          <span class="label-title">Pad Top</span>
           <input id="containerPadTop" type="text" value="3vh" />
         </label>
 
         <label>
-          Pad Bottom
+          <span class="label-title">Pad Bottom</span>
           <input id="containerPadBottom" type="text" value="3vh" />
         </label>
 
         <label>
-          Overflow
+          <span class="label-title">Overflow</span>
           <select id="containerOverflow">
             <option value="visible">visible</option>
             <option value="scroll" selected>scroll</option>
@@ -99,7 +103,7 @@
         </label>
 
         <label>
-          Overscroll
+          <span class="label-title">Overscroll</span>
           <select id="containerOverscroll">
             <option value="auto">auto</option>
             <option value="contain" selected>contain</option>
@@ -108,10 +112,12 @@
         </label>
 
         <label>
-          Border
+          <span class="label-title">Border</span>
           <select id="border">
             <option value="none" selected>none</option>
             <option value="thin">thin</option>
+            <option value="medium">medium</option>
+            <option value="bold">bold</option>
           </select>
         </label>
 
@@ -120,18 +126,28 @@
           <div class="muted">Config Object (passed to CardUpdatr)</div>
         </div>
 
+        <label class="inline-field">
+          Overlay
+          <input id="overlayEnabled" type="checkbox" />
+        </label>
+
         <label>
-          Top Sites (comma delimited)
+          <span class="label-title">Close URL</span>
+          <input id="closeUrl" type="text" value="/select-merchants" />
+        </label>
+
+        <label>
+          <span class="label-title">Top Sites (comma delimited)</span>
           <input id="topSites" type="text" value="" />
         </label>
 
         <label>
-          Exclude Sites (comma delimited)
+          <span class="label-title">Exclude Sites (comma delimited)</span>
           <input id="excludeSites" type="text" value="" />
         </label>
 
         <label>
-          Merchant Site Tags
+          <span class="label-title">Merchant Site Tags</span>
           <select id="merchantSiteTags">
             <option value="prod" selected>prod</option>
             <option value="demo">demo</option>
@@ -140,7 +156,7 @@
         </label>
 
         <label>
-          Countries Supported
+          <span class="label-title">Countries Supported</span>
           <input id="countriesSupported" type="text" value="USA" />
         </label>
 
@@ -149,53 +165,75 @@
         </div>
 
         <label>
-          Card Description
+          <span class="label-title">Card Description</span>
           <input id="cardDescription" type="text" maxlength="40" value="ARG-FCU Credit & Debit Card" />
         </label>
 
         <label>
-          Merchant Selection Message
-          <input id="merchantSelectionMessage" type="text" value="Ability for an FI to update the merchant_selection_message and provide a focused call to action" />
+          <span class="label-title">Merchant Selection Message</span>
+          <input id="merchantSelectionMessage" type="text" value="" />
         </label>
 
         <label class="full">
-          Final Message
+          <span class="label-title">Final Message</span>
           <input id="finalMessage" type="text" value="Thank you for updating your card, if you would like to update this message send to final_message." />
         </label>
 
-        <label class="full">
-          Invalid Session URL
-          <input id="invalidSessionUrl" type="text" value="https://www.strivve.com" />
+        <label>
+          <span class="label-title">Link Color</span>
+          <div class="color-input">
+            <input id="linkColor" type="text" value="#FF0000" />
+            <input id="linkColorPicker" type="color" value="#FF0000" aria-label="Link color picker" />
+          </div>
         </label>
 
         <label>
-          Link Color
-          <input id="linkColor" type="text" value="#FF0000" />
+          <span class="label-title">Button Color</span>
+          <div class="color-input">
+            <input id="buttonColor" type="text" value="#5e35b1" />
+            <input id="buttonColorPicker" type="color" value="#5e35b1" aria-label="Button color picker" />
+          </div>
         </label>
 
         <label>
-          Button Color
-          <input id="buttonColor" type="text" value="#5e35b1" />
+          <span class="label-title">Button Radius</span>
+          <input id="buttonBorderRadius" type="text" value="0.00rem" />
         </label>
 
         <label>
-          Border Color
-          <input id="borderColor" type="text" value="#FFA500" />
+          <span class="label-title">Button Padding</span>
+          <input id="buttonPadding" type="text" value="0.375rem 0.75rem" />
         </label>
 
         <label>
+          <span class="label-title">Border Color</span>
+          <div class="color-input">
+            <input id="borderColor" type="text" value="#FFA500" />
+            <input id="borderColorPicker" type="color" value="#FFA500" aria-label="Border color picker" />
+          </div>
+        </label>
+
+        <label>
+          <span class="label-title">Overlay BG Color</span>
+          <div class="color-input">
+            <input id="overlayBgColor" type="text" value="rgba(0,0,0,.5)" />
+            <input id="overlayBgColorPicker" type="color" value="#000000" aria-label="Overlay background color picker" />
+          </div>
+        </label>
+
+        <label class="inline-field">
           Drop Shadow
           <input id="dropShadow" type="checkbox" checked />
         </label>
 
-        <label>
+        <label class="inline-field">
           Dynamic Height
           <input id="dynamicHeight" type="checkbox" checked />
         </label>
 
         <label class="full">
-          Advanced Config Override (JSON) — optional
-          <textarea id="configOverride" rows="10" placeholder='{"countriesSupported":["USA"]}'></textarea>
+          <span class="label-title">Advanced Config Override (JSON) — optional</span>
+          <textarea id="configOverride" rows="10" placeholder='{"countriesSupported":["USA"]}' readonly></textarea>
         </label>
 
         <div class="actions full">
@@ -214,7 +252,7 @@
     </section>
   </main>
 
-  <script defer src="https://orb_prod.customer-dev.cardupdatr.app/cardupdatr-client-v2.js"></script>
+  <script id="cardupdatr-script" defer src="https://orb_prod.customer-dev.cardupdatr.app/cardupdatr-client-v2.js"></script>
   <script src="./assets/playground.js"></script>
 </body>
 </html>
