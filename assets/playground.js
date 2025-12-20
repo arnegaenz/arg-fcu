@@ -950,6 +950,16 @@ function applyContainerStyles(preview) {
   preview.style.border = getBorderStyle(border);
 }
 
+function syncPreviewHeightToForm() {
+  const preview = $("preview");
+  const formCard = document.querySelector("main .card");
+  if (!preview || !formCard) return;
+  const height = formCard.offsetHeight;
+  if (height > 0) {
+    preview.style.height = `${height}px`;
+  }
+}
+
 function getBorderStyle(size) {
   if (size === "thin") return "1px solid #ddd";
   if (size === "medium") return "2px solid #ccc";
@@ -1065,6 +1075,7 @@ document.querySelectorAll("#merchantSiteTags input[type=\"checkbox\"]").forEach(
 });
 
 initSsoDebug();
+syncPreviewHeightToForm();
 
 function isSafari() {
   const ua = navigator.userAgent;
