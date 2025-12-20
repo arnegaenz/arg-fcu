@@ -1,5 +1,548 @@
 const $ = (id) => document.getElementById(id);
 
+const SSO_DEBUG_REDACT_KEYS = new Set([
+  "api_key",
+  "apikey",
+  "key",
+  "token",
+  "jwt",
+  "authorization",
+  "password",
+  "secret",
+  "private_key",
+  "client_email",
+  "encrypted_body"
+]);
+const SSO_DEBUG_REDACT_SUBSTRINGS = ["credential"];
+
+const ssoDebugState = {
+  enabled: false,
+  authorize: {
+    request: null,
+    response: null
+  },
+  libraryError: null
+};
+
+function isSsoDebugEnabled() {
+  try {
+    const params = new URLSearchParams(window.location.search || "");
+    return params.get("debug_sso") === "1" || window.SIS_DEBUG_SSO === true;
+  } catch (e) {
+    return window.SIS_DEBUG_SSO === true;
+  }
+}
+
+function normalizeKey(key) {
+  return String(key || "").toLowerCase();
+}
+
+function shouldRedactKey(key) {
+  const normalized = normalizeKey(key);
+  if (SSO_DEBUG_REDACT_KEYS.has(normalized)) return true;
+  if (SSO_DEBUG_REDACT_SUBSTRINGS.some((entry) => normalized.includes(entry))) return true;
+  if (normalized.includes("token")) return true;
+  if (normalized.includes("secret")) return true;
+  if (normalized.includes("password")) return true;
+  if (normalized.includes("authorization")) return true;
+  if (normalized.includes("jwt")) return true;
+  if (normalized.includes("api-key") || normalized.includes("apikey") || normalized.includes("api_key")) return true;
+  if (/(_|-)key$/.test(normalized)) return true;
+  return false;
+}
+
+function redactClientEmail(value) {
+  if (typeof value !== "string") return "[REDACTED]";
+  const parts = value.split("@");
+  if (parts.length !== 2) return "[REDACTED]";
+  return `***@${parts[1]}`;
+}
+
+function extractEncryptedBodyMeta(value) {
+  if (typeof value !== "string") {
+    return { redacted: true, length: 0, alg: null, hasDollarSep: false };
+  }
+  const algMatch = value.match(/aes-256-[a-z0-9-]+/i);
+  return {
+    redacted: true,
+    length: value.length,
+    alg: algMatch ? algMatch[0] : null,
+    hasDollarSep: value.includes("$")
+  };
+}
+
+function redactDeep(value, key) {
+  if (value == null) return value;
+  const normalizedKey = normalizeKey(key);
+
+  if (normalizedKey === "client_email") {
+    return redactClientEmail(value);
+  }
+  if (normalizedKey === "encrypted_body") {
+    return extractEncryptedBodyMeta(value);
+  }
+  if (shouldRedactKey(normalizedKey)) {
+    return "[REDACTED]";
+  }
+
+  if (Array.isArray(value)) {
+    return value.map((entry) => redactDeep(entry, key));
+  }
+  if (typeof value === "object") {
+    const output = {};
+    Object.keys(value).forEach((childKey) => {
+      output[childKey] = redactDeep(value[childKey], childKey);
+    });
+    return output;
+  }
+  return value;
+}
+
+function safeStringify(value) {
+  const seen = new WeakSet();
+  return JSON.stringify(value, (key, val) => {
+    if (typeof val === "object" && val !== null) {
+      if (seen.has(val)) return "[Circular]";
+      seen.add(val);
+    }
+    return val;
+  }, 2);
+}
+
+function truncateText(text, maxLength = 2000) {
+  const raw = String(text || "");
+  if (raw.length <= maxLength) return raw;
+  return `${raw.slice(0, maxLength)}…[truncated]`;
+}
+
+function sanitizeRawText(text) {
+  let output = String(text || "");
+  if (!output) return output;
+
+  const redactValue = (key, value) => {
+    const normalized = normalizeKey(key);
+    if (normalized === "client_email") return redactClientEmail(value);
+    if (normalized === "encrypted_body") {
+      const meta = extractEncryptedBodyMeta(value);
+      const alg = meta.alg ? ` alg=${meta.alg}` : "";
+      return `[REDACTED len=${meta.length}${alg}]`;
+    }
+    if (shouldRedactKey(normalized)) return "[REDACTED]";
+    return value;
+  };
+
+  Array.from(SSO_DEBUG_REDACT_KEYS).forEach((key) => {
+    const jsonRegex = new RegExp(`("${key}"\\s*:\\s*")(.*?)(")`, "gi");
+    output = output.replace(jsonRegex, (match, p1, p2, p3) => `${p1}${redactValue(key, p2)}${p3}`);
+    const singleQuoteRegex = new RegExp(`('${key}'\\s*:\\s*')(.*?)(')`, "gi");
+    output = output.replace(singleQuoteRegex, (match, p1, p2, p3) => `${p1}${redactValue(key, p2)}${p3}`);
+    const queryRegex = new RegExp(`([?&]${key}=)([^&\\s]+)`, "gi");
+    output = output.replace(queryRegex, (match, p1, p2) => `${p1}${redactValue(key, p2)}`);
+  });
+
+  SSO_DEBUG_REDACT_SUBSTRINGS.forEach((fragment) => {
+    const jsonRegex = new RegExp(`("${fragment}[^"]*"\\s*:\\s*")(.*?)(")`, "gi");
+    output = output.replace(jsonRegex, (match, p1, p2, p3) => `${p1}[REDACTED]${p3}`);
+  });
+
+  ["token", "secret", "password", "authorization", "credential", "api-key", "api_key", "apikey"].forEach((fragment) => {
+    const jsonRegex = new RegExp(`("([^"]*${fragment}[^"]*)"\\s*:\\s*")(.*?)(")`, "gi");
+    output = output.replace(jsonRegex, (match, p1, p2, p3, p4) => `${p1}[REDACTED]${p4}`);
+    const queryRegex = new RegExp(`([?&][^=]*${fragment}[^=]*=)([^&\\s]+)`, "gi");
+    output = output.replace(queryRegex, (match, p1) => `${p1}[REDACTED]`);
+  });
+
+  return output;
+}
+
+function headersToObject(headers) {
+  if (!headers) return {};
+  const output = {};
+  if (typeof headers.forEach === "function") {
+    headers.forEach((value, key) => {
+      output[key] = value;
+    });
+    return output;
+  }
+  if (Array.isArray(headers)) {
+    headers.forEach(([key, value]) => {
+      output[key] = value;
+    });
+    return output;
+  }
+  return { ...headers };
+}
+
+function redactHeaders(headers) {
+  const output = {};
+  Object.keys(headers || {}).forEach((key) => {
+    const normalizedKey = normalizeKey(key);
+    if (normalizedKey === "client_email") {
+      output[key] = redactClientEmail(headers[key]);
+      return;
+    }
+    if (shouldRedactKey(normalizedKey)) {
+      output[key] = "[REDACTED]";
+      return;
+    }
+    output[key] = headers[key];
+  });
+  return output;
+}
+
+function summarizeBody(body) {
+  if (body == null) {
+    return { bodyType: "none", bodyLen: 0, bodyHasDollarSep: false };
+  }
+  if (typeof body === "string") {
+    return { bodyType: "string", bodyLen: body.length, bodyHasDollarSep: body.includes("$") };
+  }
+  if (body instanceof URLSearchParams) {
+    const text = body.toString();
+    return { bodyType: "urlencoded", bodyLen: text.length, bodyHasDollarSep: text.includes("$") };
+  }
+  if (body instanceof Blob) {
+    return { bodyType: body.type || "blob", bodyLen: body.size, bodyHasDollarSep: false };
+  }
+  if (body instanceof FormData) {
+    return { bodyType: "formdata", bodyLen: null, bodyHasDollarSep: false };
+  }
+  if (typeof body === "object") {
+    try {
+      const text = JSON.stringify(body);
+      return { bodyType: "json", bodyLen: text.length, bodyHasDollarSep: text.includes("$") };
+    } catch (e) {
+      return { bodyType: "object", bodyLen: null, bodyHasDollarSep: false };
+    }
+  }
+  return { bodyType: typeof body, bodyLen: null, bodyHasDollarSep: false };
+}
+
+function parseEncryptedBodyFromText(text) {
+  const output = { hasEncryptedBody: false, alg: null, encryptedLen: null };
+  if (!text) return output;
+  let parsed = null;
+  try {
+    parsed = JSON.parse(text);
+  } catch (e) {
+    parsed = null;
+  }
+
+  const scanValue = (value) => {
+    if (output.hasEncryptedBody) return;
+    if (value == null) return;
+    if (typeof value === "string") {
+      if (value.includes("$")) {
+        const algMatch = value.match(/aes-256-[a-z0-9-]+/i);
+        output.hasEncryptedBody = true;
+        output.alg = algMatch ? algMatch[0] : null;
+        output.encryptedLen = value.length;
+      }
+      return;
+    }
+    if (Array.isArray(value)) {
+      value.forEach(scanValue);
+      return;
+    }
+    if (typeof value === "object") {
+      Object.keys(value).forEach((key) => {
+        if (normalizeKey(key) === "encrypted_body") {
+          const meta = extractEncryptedBodyMeta(value[key]);
+          output.hasEncryptedBody = true;
+          output.alg = meta.alg;
+          output.encryptedLen = meta.length;
+          return;
+        }
+        scanValue(value[key]);
+      });
+    }
+  };
+
+  if (parsed && typeof parsed === "object") {
+    scanValue(parsed);
+    return output;
+  }
+
+  if (/encrypted_body/i.test(text)) {
+    output.hasEncryptedBody = true;
+    const algMatch = text.match(/aes-256-[a-z0-9-]+/i);
+    output.alg = algMatch ? algMatch[0] : null;
+  }
+  return output;
+}
+
+function buildResponseSummary(response, text) {
+  const headers = headersToObject(response.headers);
+  const redactedHeaders = redactHeaders(headers);
+  const encryptedMeta = parseEncryptedBodyFromText(text);
+  let rawTextSnippetRedacted = "";
+
+  if (text) {
+    try {
+      const parsed = JSON.parse(text);
+      rawTextSnippetRedacted = truncateText(safeStringify(redactDeep(parsed)));
+    } catch (e) {
+      rawTextSnippetRedacted = truncateText(sanitizeRawText(text));
+    }
+  }
+
+  return {
+    status: response.status,
+    headers: redactedHeaders,
+    hasEncryptedBody: encryptedMeta.hasEncryptedBody,
+    alg: encryptedMeta.alg,
+    encryptedLen: encryptedMeta.encryptedLen,
+    rawTextSnippetRedacted
+  };
+}
+
+function recordAuthorizeRequest(details) {
+  if (!ssoDebugState.enabled) return;
+  const redactedDetails = redactDeep(details);
+  ssoDebugState.authorize.request = {
+    ...(ssoDebugState.authorize.request || {}),
+    ...redactedDetails
+  };
+  renderSsoDebugPanel();
+}
+
+function recordAuthorizeResponse(details) {
+  if (!ssoDebugState.enabled) return;
+  ssoDebugState.authorize.response = details;
+  renderSsoDebugPanel();
+}
+
+function captureLibraryError(err) {
+  if (!ssoDebugState.enabled) return;
+  if (!err) {
+    ssoDebugState.libraryError = null;
+    renderSsoDebugPanel();
+    return;
+  }
+  const errorDetails = {
+    status: err.status,
+    message: err.message,
+    keys: Object.keys(err || {})
+  };
+  ["body", "response", "data", "details"].forEach((field) => {
+    if (err && err[field] !== undefined) {
+      errorDetails[field] = redactDeep(err[field], field);
+    }
+  });
+  ssoDebugState.libraryError = redactDeep(errorDetails);
+  renderSsoDebugPanel();
+}
+
+function buildDebugBundle() {
+  const bundle = {
+    ts: new Date().toISOString(),
+    location: window.location.href,
+    userAgent: navigator.userAgent,
+    authorize: {
+      request: ssoDebugState.authorize.request,
+      response: ssoDebugState.authorize.response
+    },
+    libraryError: ssoDebugState.libraryError
+  };
+  return redactDeep(bundle);
+}
+
+function renderSsoDebugPanel() {
+  if (!ssoDebugState.enabled) return;
+  const requestEl = $("ssoDebugAuthorizeRequest");
+  const responseEl = $("ssoDebugAuthorizeResponse");
+  const errorEl = $("ssoDebugLibraryError");
+  if (requestEl) {
+    requestEl.textContent = ssoDebugState.authorize.request
+      ? safeStringify(ssoDebugState.authorize.request)
+      : "Waiting for authorize request…";
+  }
+  if (responseEl) {
+    responseEl.textContent = ssoDebugState.authorize.response
+      ? safeStringify(ssoDebugState.authorize.response)
+      : "Waiting for authorize response…";
+  }
+  if (errorEl) {
+    errorEl.textContent = ssoDebugState.libraryError
+      ? safeStringify(ssoDebugState.libraryError)
+      : "Waiting for library error…";
+  }
+}
+
+function installSsoDebugFetchPatch() {
+  if (!ssoDebugState.enabled || window.__ssoDebugFetchPatched) return;
+  const originalFetch = window.fetch;
+
+  window.fetch = async (input, init) => {
+    const requestUrl = typeof input === "string" ? input : (input && input.url) || "";
+    const requestMethod = (init && init.method) || (input && input.method) || "GET";
+    const headersFromInit = headersToObject(init && init.headers);
+    const headersFromRequest = headersToObject(input && input.headers);
+    const mergedHeaders = { ...headersFromRequest, ...headersFromInit };
+    const contentType = mergedHeaders["Content-Type"] || mergedHeaders["content-type"] || "";
+    const isAuthorize = requestUrl.includes("/cardholders/authorize");
+
+    let bodySummary = null;
+    if (init && Object.prototype.hasOwnProperty.call(init, "body")) {
+      bodySummary = summarizeBody(init.body);
+    } else if (typeof Request !== "undefined" && input instanceof Request) {
+      const shouldReadBody = !contentType || /json|text|x-www-form-urlencoded/i.test(contentType);
+      if (shouldReadBody) {
+        input.clone().text().then((text) => {
+          const summary = summarizeBody(text);
+          if (isAuthorize) {
+            recordAuthorizeRequest(summary);
+          }
+        }).catch(() => {});
+      }
+    }
+
+    if (isAuthorize) {
+      recordAuthorizeRequest({
+        url: requestUrl,
+        method: requestMethod,
+        headers: redactHeaders(mergedHeaders),
+        contentType: contentType || "unknown",
+        ...(bodySummary || {})
+      });
+    }
+
+    const response = await originalFetch(input, init);
+
+    if (isAuthorize) {
+      response.clone().text().then((text) => {
+        recordAuthorizeResponse(buildResponseSummary(response, text));
+      }).catch(() => {
+        recordAuthorizeResponse(buildResponseSummary(response, ""));
+      });
+    }
+
+    return response;
+  };
+
+  window.__ssoDebugFetchPatched = true;
+  window.__ssoDebugFetchOriginal = originalFetch;
+}
+
+function installSsoDebugXhrPatch() {
+  if (!ssoDebugState.enabled || window.__ssoDebugXhrPatched || !window.XMLHttpRequest) return;
+  const OriginalXhr = window.XMLHttpRequest;
+
+  function SsoDebugXhr() {
+    const xhr = new OriginalXhr();
+    let requestUrl = "";
+    let requestMethod = "GET";
+    let requestHeaders = {};
+    let requestBodySummary = null;
+
+    const originalOpen = xhr.open;
+    const originalSend = xhr.send;
+    const originalSetRequestHeader = xhr.setRequestHeader;
+
+    xhr.open = function open(method, url, async, user, password) {
+      requestMethod = method || "GET";
+      requestUrl = String(url || "");
+      return originalOpen.call(xhr, method, url, async, user, password);
+    };
+
+    xhr.setRequestHeader = function setRequestHeader(key, value) {
+      requestHeaders[key] = value;
+      return originalSetRequestHeader.call(xhr, key, value);
+    };
+
+    xhr.send = function send(body) {
+      requestBodySummary = summarizeBody(body);
+      const isAuthorize = requestUrl.includes("/cardholders/authorize");
+      if (isAuthorize) {
+        recordAuthorizeRequest({
+          url: requestUrl,
+          method: requestMethod,
+          headers: redactHeaders(requestHeaders),
+          contentType: requestHeaders["Content-Type"] || requestHeaders["content-type"] || "",
+          ...requestBodySummary
+        });
+      }
+
+      const finalize = () => {
+        if (!isAuthorize) return;
+        const responseText = xhr.responseText || "";
+        const responseLike = {
+          status: xhr.status,
+          headers: headersToObject(parseXhrHeaders(xhr.getAllResponseHeaders()))
+        };
+        recordAuthorizeResponse(buildResponseSummary(responseLike, responseText));
+      };
+
+      xhr.addEventListener("loadend", finalize);
+      return originalSend.call(xhr, body);
+    };
+
+    return xhr;
+  }
+
+  function parseXhrHeaders(headerString) {
+    const output = {};
+    if (!headerString) return output;
+    headerString.trim().split(/[\r\n]+/).forEach((line) => {
+      const parts = line.split(": ");
+      const key = parts.shift();
+      if (!key) return;
+      const value = parts.join(": ");
+      output[key] = value;
+    });
+    return output;
+  }
+
+  window.XMLHttpRequest = SsoDebugXhr;
+  window.__ssoDebugXhrPatched = true;
+  window.__ssoDebugXhrOriginal = OriginalXhr;
+}
+
+function installSsoDebugErrorHooks() {
+  if (!ssoDebugState.enabled || window.__ssoDebugErrorHooks) return;
+  window.addEventListener("error", (event) => {
+    captureLibraryError(event?.error || event);
+  });
+  window.addEventListener("unhandledrejection", (event) => {
+    captureLibraryError(event?.reason || event);
+  });
+  window.__ssoDebugErrorHooks = true;
+}
+
+function initSsoDebug() {
+  ssoDebugState.enabled = isSsoDebugEnabled();
+  if (!ssoDebugState.enabled) return;
+  const indicator = $("ssoDebugIndicator");
+  const panel = $("ssoDebugPanel");
+  if (indicator) indicator.hidden = false;
+  if (panel) panel.hidden = false;
+  const copyBtn = $("ssoDebugCopyBtn");
+  const resetBtn = $("ssoDebugResetBtn");
+  if (copyBtn) {
+    copyBtn.addEventListener("click", async () => {
+      try {
+        const bundle = buildDebugBundle();
+        await navigator.clipboard.writeText(safeStringify(bundle));
+        setStatus("SSO debug bundle copied.");
+      } catch (e) {
+        setStatus(e?.message || String(e));
+      }
+    });
+  }
+  if (resetBtn) {
+    resetBtn.addEventListener("click", () => {
+      ssoDebugState.authorize.request = null;
+      ssoDebugState.authorize.response = null;
+      ssoDebugState.libraryError = null;
+      renderSsoDebugPanel();
+    });
+  }
+  installSsoDebugFetchPatch();
+  installSsoDebugXhrPatch();
+  installSsoDebugErrorHooks();
+  renderSsoDebugPanel();
+}
+
 function safeParseJson(text) {
   if (!text || !text.trim()) return null;
   try { return JSON.parse(text); }
@@ -227,6 +770,17 @@ async function renderPreview(settings, { resetSession = false } = {}) {
   try {
     setStatus("Loading script…");
     await ensureCardupdatrScript(settings.config.hostname, resetSession);
+    if (settings && settings.config && settings.config.hostname) {
+      const bodySummary = settings.user ? summarizeBody(settings.user) : summarizeBody(null);
+      recordAuthorizeRequest({
+        url: `${settings.config.hostname.replace(/\/?$/, "/")}cardholders/authorize`,
+        method: "POST",
+        contentType: "application/json",
+        headers: { "Content-Type": "application/json" },
+        source: "playground",
+        ...bodySummary
+      });
+    }
     if (typeof window.embedCardUpdatr !== "function") {
       setStatus("CardUpdatr script loaded, but embedCardUpdatr is missing.");
       return;
@@ -246,6 +800,7 @@ async function renderPreview(settings, { resetSession = false } = {}) {
     window.embedCardUpdatr(settings);
     setStatus("Loaded.");
   } catch (e) {
+    captureLibraryError(e);
     setStatus(`Embed failed: ${e?.message || e}`);
   }
 }
@@ -270,6 +825,7 @@ $("loadBtn").addEventListener("click", () => {
     const settings = buildConfigFromForm();
     const resetSession = $("resetSession").checked;
     if (resetSession) {
+      setStatus("Resetting CardUpdatr session…");
       clearCardupdatrStorage();
     }
     if ($("ssoEnabled").checked) {
@@ -407,6 +963,10 @@ function updateSsoOptionsVisibility() {
   $("excludePhoneNumber").disabled = !enabled;
   $("excludeEmail").disabled = !enabled;
   $("ssoPayload").disabled = !enabled;
+  const ssoDetails = $("ssoOptions");
+  if (ssoDetails) {
+    ssoDetails.open = !!enabled;
+  }
   if (!enabled) {
     $("excludeCVV").checked = false;
     $("excludePhoneNumber").checked = false;
@@ -465,6 +1025,9 @@ updateOverridePreview();
 
 $("ssoEnabled").addEventListener("change", () => {
   updateSsoOptionsVisibility();
+  if ($("ssoEnabled").checked) {
+    $("excludeCVV").checked = true;
+  }
   applySsoPromptRules();
   updateSsoPayloadPreview();
   updateOverridePreview();
@@ -500,6 +1063,8 @@ document.querySelectorAll("#merchantSiteTags input[type=\"checkbox\"]").forEach(
     updateOverridePreview();
   });
 });
+
+initSsoDebug();
 
 function isSafari() {
   const ua = navigator.userAgent;

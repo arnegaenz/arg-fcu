@@ -15,6 +15,7 @@
         <a class="active" href="./playground.html">Playground</a>
         <a href="./tests/">Tests</a>
       </nav>
+      <div id="ssoDebugIndicator" class="debug-indicator" hidden>Debug: ON</div>
     </div>
   </header>
 
@@ -26,13 +27,7 @@
       </p>
 
       <div class="form">
-        <div class="full inline-options">
-          <div><b>Integration Type</b></div>
-          <label class="inline-field"><input type="radio" name="integrationType" id="integrationEmbedded" value="embedded" checked /> Embedded</label>
-          <label class="inline-field"><input type="radio" name="integrationType" id="integrationWeblink" value="weblink" /> Weblink</label>
-        </div>
-
-        <div class="full">
+        <div class="full section-title">
           <div><b>Financial Institution</b></div>
         </div>
 
@@ -43,7 +38,7 @@
           </select>
         </label>
 
-        <div class="full">
+        <div class="full section-title">
           <div><b>SSO Testing Capabilities</b></div>
         </div>
 
@@ -52,257 +47,281 @@
           <input id="ssoEnabled" type="checkbox" />
         </label>
 
-        <div id="ssoOptions" class="full compact-label sso-options">
-          <div class="inline-options">
-            <label class="inline-field">
-              Exclude CVV
-              <input id="excludeCVV" type="checkbox" />
-            </label>
-            <label class="inline-field">
-              Exclude Phone Number
-              <input id="excludePhoneNumber" type="checkbox" />
-            </label>
-            <label class="inline-field">
-              Exclude Email
-              <input id="excludeEmail" type="checkbox" />
+        <details id="ssoOptions" class="full compact-label sso-options section-details">
+          <summary class="section-summary">SSO Demo Details</summary>
+          <div class="section-grid">
+            <div class="inline-options full">
+              <label class="inline-field">
+                Exclude CVV
+                <input id="excludeCVV" type="checkbox" />
+              </label>
+              <label class="inline-field">
+                Exclude Phone Number
+                <input id="excludePhoneNumber" type="checkbox" />
+              </label>
+              <label class="inline-field">
+                Exclude Email
+                <input id="excludeEmail" type="checkbox" />
+              </label>
+            </div>
+            <label class="full">
+              <span class="label-title">SSO Grant Request Payload (JSON)</span>
+              <textarea id="ssoPayload" rows="10" placeholder='{"cardsavr_server":"https://api.customer-dev.cardsavr.io"}'></textarea>
             </label>
           </div>
-          <label class="full">
-            <span class="label-title">SSO Grant Request Payload (JSON)</span>
-            <textarea id="ssoPayload" rows="10" placeholder='{"cardsavr_server":"https://api.customer-dev.cardsavr.io"}'></textarea>
+        </details>
+
+        <div class="full inline-options section-title tight-gap">
+          <div><b>Integration Type</b></div>
+          <label class="inline-field"><input type="radio" name="integrationType" id="integrationEmbedded" value="embedded" checked /> Embedded</label>
+          <label class="inline-field"><input type="radio" name="integrationType" id="integrationWeblink" value="weblink" /> Weblink</label>
+        </div>
+
+        <div class="full inline-options section-title">
+          <div><b>Load Options</b></div>
+          <label class="inline-field">
+            Overlay
+            <input id="overlayEnabled" type="checkbox" />
+          </label>
+          <label class="inline-field">
+            Reset session before load
+            <input id="resetSession" type="checkbox" checked />
           </label>
         </div>
 
-        <div class="full">
+        <div class="full section-title">
           <div><b>Container Parameters</b></div>
         </div>
 
-        <label>
-          <span class="label-title">BG Color (Hex)</span>
-          <div class="color-input">
-            <input id="containerBgColor" type="text" value="#00FF00" />
-            <input id="containerBgColorPicker" type="color" value="#00FF00" aria-label="BG Color picker" />
+        <details class="full section-details container-options">
+          <summary class="section-summary">Edit container parameters</summary>
+          <div class="section-grid">
+            <label>
+              <span class="label-title">BG Color (Hex)</span>
+              <div class="color-input">
+                <input id="containerBgColor" type="text" value="#00FF00" />
+                <input id="containerBgColorPicker" type="color" value="#00FF00" aria-label="BG Color picker" />
+              </div>
+            </label>
+
+            <label>
+              <span class="label-title">Width</span>
+              <input id="containerWidth" type="text" value="800px" />
+            </label>
+
+            <label>
+              <span class="label-title">Height</span>
+              <input id="containerHeight" type="text" value="800px" />
+            </label>
+
+            <label>
+              <span class="label-title">Min Height</span>
+              <input id="containerMinHeight" type="text" value="50vh" />
+            </label>
+
+            <label>
+              <span class="label-title">Max Height</span>
+              <input id="containerMaxHeight" type="text" value="100vh" />
+            </label>
+
+            <label>
+              <span class="label-title">Text Align</span>
+              <input id="containerTextAlign" type="text" value="center" />
+            </label>
+
+            <label>
+              <span class="label-title">Pad Top</span>
+              <input id="containerPadTop" type="text" value="3vh" />
+            </label>
+
+            <label>
+              <span class="label-title">Pad Bottom</span>
+              <input id="containerPadBottom" type="text" value="3vh" />
+            </label>
+
+            <label>
+              <span class="label-title">Overflow</span>
+              <select id="containerOverflow">
+                <option value="visible">visible</option>
+                <option value="scroll" selected>scroll</option>
+                <option value="hidden">hidden</option>
+                <option value="auto">auto</option>
+                <option value="clip">clip</option>
+              </select>
+            </label>
+
+            <label>
+              <span class="label-title">Overscroll</span>
+              <select id="containerOverscroll">
+                <option value="auto">auto</option>
+                <option value="contain" selected>contain</option>
+                <option value="none">none</option>
+              </select>
+            </label>
+
+            <label>
+              <span class="label-title">Border</span>
+              <select id="border">
+                <option value="none" selected>none</option>
+                <option value="thin">thin</option>
+                <option value="medium">medium</option>
+                <option value="bold">bold</option>
+              </select>
+            </label>
           </div>
-        </label>
+        </details>
 
-        <label>
-          <span class="label-title">Width</span>
-          <input id="containerWidth" type="text" value="800px" />
-        </label>
-
-        <label>
-          <span class="label-title">Height</span>
-          <input id="containerHeight" type="text" value="800px" />
-        </label>
-
-        <label>
-          <span class="label-title">Min Height</span>
-          <input id="containerMinHeight" type="text" value="50vh" />
-        </label>
-
-        <label>
-          <span class="label-title">Max Height</span>
-          <input id="containerMaxHeight" type="text" value="100vh" />
-        </label>
-
-        <label>
-          <span class="label-title">Text Align</span>
-          <input id="containerTextAlign" type="text" value="center" />
-        </label>
-
-        <label>
-          <span class="label-title">Pad Top</span>
-          <input id="containerPadTop" type="text" value="3vh" />
-        </label>
-
-        <label>
-          <span class="label-title">Pad Bottom</span>
-          <input id="containerPadBottom" type="text" value="3vh" />
-        </label>
-
-        <label>
-          <span class="label-title">Overflow</span>
-          <select id="containerOverflow">
-            <option value="visible">visible</option>
-            <option value="scroll" selected>scroll</option>
-            <option value="hidden">hidden</option>
-            <option value="auto">auto</option>
-            <option value="clip">clip</option>
-          </select>
-        </label>
-
-        <label>
-          <span class="label-title">Overscroll</span>
-          <select id="containerOverscroll">
-            <option value="auto">auto</option>
-            <option value="contain" selected>contain</option>
-            <option value="none">none</option>
-          </select>
-        </label>
-
-        <label>
-          <span class="label-title">Border</span>
-          <select id="border">
-            <option value="none" selected>none</option>
-            <option value="thin">thin</option>
-            <option value="medium">medium</option>
-            <option value="bold">bold</option>
-          </select>
-        </label>
-
-        <div class="full">
+        <div class="full section-title">
           <div><b>CardUpdatr Parameters</b></div>
           <div class="muted">Config Object (passed to CardUpdatr)</div>
         </div>
 
-        <label class="inline-field">
-          Overlay
-          <input id="overlayEnabled" type="checkbox" />
-        </label>
+        <details class="full section-details">
+          <summary class="section-summary">Edit config and style options</summary>
+          <div class="section-grid">
 
-        <label class="inline-field">
-          Reset session before load
-          <input id="resetSession" type="checkbox" checked />
-        </label>
+          <label>
+            <span class="label-title">Close URL</span>
+            <input id="closeUrl" type="text" value="none" />
+          </label>
 
-        <label>
-          <span class="label-title">Close URL</span>
-          <input id="closeUrl" type="text" value="none" />
-        </label>
+          <label>
+            <span class="label-title">Top Sites (comma delimited)</span>
+            <input id="topSites" type="text" value="amazon.com,apple.com,audible.com,netflix.com,spotify.com,target.com,walmart.com" />
+          </label>
 
-        <label>
-          <span class="label-title">Top Sites (comma delimited)</span>
-          <input id="topSites" type="text" value="amazon.com,apple.com,audible.com,netflix.com,spotify.com,target.com,walmart.com" />
-        </label>
+          <label>
+            <span class="label-title">Exclude Sites (comma delimited)</span>
+            <input id="excludeSites" type="text" value="" />
+          </label>
 
-        <label>
-          <span class="label-title">Exclude Sites (comma delimited)</span>
-          <input id="excludeSites" type="text" value="" />
-        </label>
+          <label>
+            <span class="label-title">Merchant Site Tags</span>
+            <div id="merchantSiteTags" class="multi-select">
+              <button id="merchantSiteTagsToggle" type="button" class="multi-select-toggle" aria-haspopup="listbox" aria-expanded="false">
+                Select tags
+              </button>
+              <div id="merchantSiteTagsMenu" class="multi-select-menu" role="listbox">
+                <label class="inline-field">
+                  <input type="checkbox" value="unrestricted" />
+                  unrestricted
+                </label>
+                <label class="inline-field">
+                  <input type="checkbox" value="demo" checked />
+                  demo
+                </label>
+                <label class="inline-field">
+                  <input type="checkbox" value="beta" />
+                  beta
+                </label>
+                <label class="inline-field">
+                  <input type="checkbox" value="synthetic" />
+                  synthetic
+                </label>
+                <label class="inline-field">
+                  <input type="checkbox" value="prod" checked />
+                  prod
+                </label>
+                <label class="inline-field">
+                  <input type="checkbox" value="limited" />
+                  limited
+                </label>
+                <label class="inline-field">
+                  <input type="checkbox" value="down" />
+                  down
+                </label>
+              </div>
+            </div>
+          </label>
 
-        <label>
-          <span class="label-title">Merchant Site Tags</span>
-          <div id="merchantSiteTags" class="multi-select">
-            <button id="merchantSiteTagsToggle" type="button" class="multi-select-toggle" aria-haspopup="listbox" aria-expanded="false">
-              Select tags
-            </button>
-            <div id="merchantSiteTagsMenu" class="multi-select-menu" role="listbox">
-              <label class="inline-field">
-                <input type="checkbox" value="unrestricted" />
-                unrestricted
-              </label>
-              <label class="inline-field">
-                <input type="checkbox" value="demo" checked />
-                demo
-              </label>
-              <label class="inline-field">
-                <input type="checkbox" value="beta" />
-                beta
-              </label>
-              <label class="inline-field">
-                <input type="checkbox" value="synthetic" />
-                synthetic
-              </label>
-              <label class="inline-field">
-                <input type="checkbox" value="prod" checked />
-                prod
-              </label>
-              <label class="inline-field">
-                <input type="checkbox" value="limited" />
-                limited
-              </label>
-              <label class="inline-field">
-                <input type="checkbox" value="down" />
-                down
-              </label>
+          <label>
+            <span class="label-title">Countries Supported</span>
+            <input id="countriesSupported" type="text" value="USA" />
+          </label>
+
+            <div class="full section-title">
+              <div><b>Style Template Object</b></div>
+            </div>
+
+          <label>
+            <span class="label-title">Card Description</span>
+            <input id="cardDescription" type="text" maxlength="40" value="ARG-FCU Credit & Debit Card" />
+          </label>
+
+          <label>
+            <span class="label-title">Merchant Selection Message</span>
+            <input id="merchantSelectionMessage" type="text" value="" />
+          </label>
+
+          <label class="full">
+            <span class="label-title">Final Message</span>
+            <input id="finalMessage" type="text" value="Thank you for updating your card, if you would like to update this message send to final_message." />
+          </label>
+
+          <label>
+            <span class="label-title">Link Color</span>
+            <div class="color-input">
+              <input id="linkColor" type="text" value="#FF0000" />
+              <input id="linkColorPicker" type="color" value="#FF0000" aria-label="Link color picker" />
+            </div>
+          </label>
+
+          <label>
+            <span class="label-title">Button Color</span>
+            <div class="color-input">
+              <input id="buttonColor" type="text" value="#5e35b1" />
+              <input id="buttonColorPicker" type="color" value="#5e35b1" aria-label="Button color picker" />
+            </div>
+          </label>
+
+          <label>
+            <span class="label-title">Button Radius</span>
+            <input id="buttonBorderRadius" type="text" value="0.00rem" />
+          </label>
+
+          <label>
+            <span class="label-title">Button Padding</span>
+            <input id="buttonPadding" type="text" value="0.375rem 0.75rem" />
+          </label>
+
+          <label>
+            <span class="label-title">Border Color</span>
+            <div class="color-input">
+              <input id="borderColor" type="text" value="#FFA500" />
+              <input id="borderColorPicker" type="color" value="#FFA500" aria-label="Border color picker" />
+            </div>
+          </label>
+
+          <label>
+            <span class="label-title">Overlay BG Color</span>
+            <div class="color-input">
+              <input id="overlayBgColor" type="text" value="rgba(0,0,0,.5)" />
+              <input id="overlayBgColorPicker" type="color" value="#000000" aria-label="Overlay background color picker" />
+            </div>
+          </label>
+
+          <label class="inline-field">
+            Drop Shadow
+            <input id="dropShadow" type="checkbox" checked />
+          </label>
+
+          <label class="inline-field">
+            Dynamic Height
+            <input id="dynamicHeight" type="checkbox" checked />
+          </label>
+
+            <label class="full">
+              <span class="label-title">Advanced Config Override (JSON) — optional</span>
+              <textarea id="configOverride" rows="10" placeholder='{"countriesSupported":["USA"]}' readonly></textarea>
+            </label>
+            <div class="actions full">
+              <button id="copyBtn" class="secondary" type="button">Copy Config JSON</button>
             </div>
           </div>
-        </label>
-
-        <label>
-          <span class="label-title">Countries Supported</span>
-          <input id="countriesSupported" type="text" value="USA" />
-        </label>
-
-        <div class="full">
-          <div><b>Style Template Object</b></div>
-        </div>
-
-        <label>
-          <span class="label-title">Card Description</span>
-          <input id="cardDescription" type="text" maxlength="40" value="ARG-FCU Credit & Debit Card" />
-        </label>
-
-        <label>
-          <span class="label-title">Merchant Selection Message</span>
-          <input id="merchantSelectionMessage" type="text" value="" />
-        </label>
-
-        <label class="full">
-          <span class="label-title">Final Message</span>
-          <input id="finalMessage" type="text" value="Thank you for updating your card, if you would like to update this message send to final_message." />
-        </label>
-
-        <label>
-          <span class="label-title">Link Color</span>
-          <div class="color-input">
-            <input id="linkColor" type="text" value="#FF0000" />
-            <input id="linkColorPicker" type="color" value="#FF0000" aria-label="Link color picker" />
-          </div>
-        </label>
-
-        <label>
-          <span class="label-title">Button Color</span>
-          <div class="color-input">
-            <input id="buttonColor" type="text" value="#5e35b1" />
-            <input id="buttonColorPicker" type="color" value="#5e35b1" aria-label="Button color picker" />
-          </div>
-        </label>
-
-        <label>
-          <span class="label-title">Button Radius</span>
-          <input id="buttonBorderRadius" type="text" value="0.00rem" />
-        </label>
-
-        <label>
-          <span class="label-title">Button Padding</span>
-          <input id="buttonPadding" type="text" value="0.375rem 0.75rem" />
-        </label>
-
-        <label>
-          <span class="label-title">Border Color</span>
-          <div class="color-input">
-            <input id="borderColor" type="text" value="#FFA500" />
-            <input id="borderColorPicker" type="color" value="#FFA500" aria-label="Border color picker" />
-          </div>
-        </label>
-
-        <label>
-          <span class="label-title">Overlay BG Color</span>
-          <div class="color-input">
-            <input id="overlayBgColor" type="text" value="rgba(0,0,0,.5)" />
-            <input id="overlayBgColorPicker" type="color" value="#000000" aria-label="Overlay background color picker" />
-          </div>
-        </label>
-
-        <label class="inline-field">
-          Drop Shadow
-          <input id="dropShadow" type="checkbox" checked />
-        </label>
-
-        <label class="inline-field">
-          Dynamic Height
-          <input id="dynamicHeight" type="checkbox" checked />
-        </label>
-
-        <label class="full">
-          <span class="label-title">Advanced Config Override (JSON) — optional</span>
-          <textarea id="configOverride" rows="10" placeholder='{"countriesSupported":["USA"]}' readonly></textarea>
-        </label>
+        </details>
 
         <div class="actions full">
           <button id="loadBtn">Load CardUpdatr</button>
-          <button id="copyBtn" class="secondary">Copy Config JSON</button>
           <span id="status" class="status muted"></span>
         </div>
       </div>
@@ -315,6 +334,35 @@
       </div>
     </section>
   </main>
+
+  <section id="ssoDebugPanel" class="wrap sso-debug-panel" hidden>
+    <div class="card">
+      <div class="debug-header">
+        <div>
+          <h2>SSO Debug Mode</h2>
+          <div class="muted">Local diagnostics only. No secrets are shown.</div>
+        </div>
+        <div class="debug-actions">
+          <button id="ssoDebugCopyBtn" class="secondary" type="button">Copy Debug Bundle</button>
+          <button id="ssoDebugResetBtn" class="secondary" type="button">Reset SSO Debug State</button>
+        </div>
+      </div>
+      <div class="debug-grid">
+        <div class="debug-block">
+          <h3>Authorize Request</h3>
+          <pre id="ssoDebugAuthorizeRequest" class="debug-pre">Waiting for authorize request…</pre>
+        </div>
+        <div class="debug-block">
+          <h3>Authorize Response</h3>
+          <pre id="ssoDebugAuthorizeResponse" class="debug-pre">Waiting for authorize response…</pre>
+        </div>
+        <div class="debug-block">
+          <h3>Library Error</h3>
+          <pre id="ssoDebugLibraryError" class="debug-pre">Waiting for library error…</pre>
+        </div>
+      </div>
+    </div>
+  </section>
 
   <script id="cardupdatr-script" defer src="https://orb_prod.customer-dev.cardupdatr.app/cardupdatr-client-v2.js"></script>
   <script src="./assets/playground.js"></script>
