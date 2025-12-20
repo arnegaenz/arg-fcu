@@ -21,11 +21,6 @@ function mergeSettings(base, override) {
 }
 
 const SSO_LAMBDA_URL = "https://bswpcoqak3b7elcynskytiapyu0eokxs.lambda-url.us-west-2.on.aws/";
-const DEMO_CUSTOM_DATA = {
-  SCOPE: {
-    CUSTOMER_KEY: "000000000000"
-  }
-};
 const DEMO_CARD = {
   email: "jack_skellington@scareme.com",
   phoneNumber: "7141122222",
@@ -87,8 +82,7 @@ function buildBaseSettingsFromForm() {
   if (ssoEnabled) {
     base.user = {
       grant: "",
-      card_id: "",
-      custom_data: { ...DEMO_CUSTOM_DATA }
+      card_id: ""
     };
   }
 
@@ -186,11 +180,11 @@ function setStatus(msg) {
   $("status").textContent = msg || "";
 }
 
-function ensureCardupdatrScript(hostname) {
+function ensureCardupdatrScript(hostname, forceReload = false) {
   const script = document.getElementById("cardupdatr-script");
   const desiredSrc = `${hostname}cardupdatr-client-v2.js`;
 
-  if (script && script.src === desiredSrc && typeof window.embedCardUpdatr === "function") {
+  if (!forceReload && script && script.src === desiredSrc && typeof window.embedCardUpdatr === "function") {
     return Promise.resolve();
   }
 
@@ -202,6 +196,11 @@ function ensureCardupdatrScript(hostname) {
     newScript.onload = () => resolve();
     newScript.onerror = () => reject(new Error("Failed to load CardUpdatr script."));
 
+    if (forceReload) {
+      window.embedCardUpdatr = undefined;
+      window.initCardupdatr = undefined;
+    }
+
     if (script && script.parentNode) {
       script.parentNode.replaceChild(newScript, script);
     } else {
@@ -210,7 +209,7 @@ function ensureCardupdatrScript(hostname) {
   });
 }
 
-async function renderPreview(settings) {
+async function renderPreview(settings, { resetSession = false } = {}) {
   const integrationType = getRadioValue("integrationType", "embedded");
   const preview = $("preview");
 
@@ -227,7 +226,7 @@ async function renderPreview(settings) {
 
   try {
     setStatus("Loading script…");
-    await ensureCardupdatrScript(settings.config.hostname);
+    await ensureCardupdatrScript(settings.config.hostname, resetSession);
     if (typeof window.embedCardUpdatr !== "function") {
       setStatus("CardUpdatr script loaded, but embedCardUpdatr is missing.");
       return;
@@ -251,10 +250,28 @@ async function renderPreview(settings) {
   }
 }
 
+function clearCardupdatrStorage() {
+  const keyPattern = /cardupdatr|cardsavr/i;
+  const clearMatchingKeys = (storage) => {
+    if (!storage) return;
+    Object.keys(storage).forEach((key) => {
+      if (keyPattern.test(key)) {
+        storage.removeItem(key);
+      }
+    });
+  };
+  clearMatchingKeys(sessionStorage);
+  clearMatchingKeys(localStorage);
+}
+
 $("loadBtn").addEventListener("click", () => {
   (async () => {
     setStatus("Loading…");
     const settings = buildConfigFromForm();
+    const resetSession = $("resetSession").checked;
+    if (resetSession) {
+      clearCardupdatrStorage();
+    }
     if ($("ssoEnabled").checked) {
       try {
         setStatus("Fetching SSO grant…");
@@ -266,15 +283,14 @@ $("loadBtn").addEventListener("click", () => {
         settings.user = {
           ...settings.user,
           grant: apiResponse.grant,
-          card_id: apiResponse.cardId,
-          custom_data: { ...DEMO_CUSTOM_DATA }
+          card_id: apiResponse.cardId
         };
       } catch (e) {
         setStatus(`SSO demo failed: ${e?.message || e}`);
         return;
       }
     }
-    renderPreview(settings).catch((e) => {
+    renderPreview(settings, { resetSession }).catch((e) => {
       setStatus(e?.message || String(e));
     });
   })();
