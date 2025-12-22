@@ -38,38 +38,42 @@
           </select>
         </label>
 
-        <div class="full section-title">
-          <div><b>SSO Testing Capabilities</b></div>
-        </div>
-
-        <label class="inline-field full compact-label sso-toggle">
-          SSO Demo Testing
-          <input id="ssoEnabled" type="checkbox" />
-        </label>
-
-        <details id="ssoOptions" class="full compact-label sso-options section-details">
-          <summary class="section-summary">SSO Demo Details</summary>
-          <div class="section-grid">
-            <div class="inline-options full">
-              <label class="inline-field">
-                Exclude CVV
-                <input id="excludeCVV" type="checkbox" />
-              </label>
-              <label class="inline-field">
-                Exclude Phone Number
-                <input id="excludePhoneNumber" type="checkbox" />
-              </label>
-              <label class="inline-field">
-                Exclude Email
-                <input id="excludeEmail" type="checkbox" />
-              </label>
+        <div class="full sso-disabled" data-tooltip="We are unable to cleanly pass SSO information without causing client side session issues - feature disabled.">
+          <div class="sso-disabled-content">
+            <div class="full section-title">
+              <div><b>SSO Testing Capabilities</b></div>
             </div>
-            <label class="full">
-              <span class="label-title">SSO Grant Request Payload (JSON)</span>
-              <textarea id="ssoPayload" rows="10" placeholder='{"cardsavr_server":"https://api.customer-dev.cardsavr.io"}'></textarea>
+
+            <label class="inline-field full compact-label sso-toggle">
+              SSO Demo Testing
+              <input id="ssoEnabled" type="checkbox" disabled />
             </label>
+
+            <details id="ssoOptions" class="full compact-label sso-options section-details">
+              <summary class="section-summary">SSO Demo Details</summary>
+              <div class="section-grid">
+                <div class="inline-options full">
+                  <label class="inline-field">
+                    Exclude CVV
+                    <input id="excludeCVV" type="checkbox" />
+                  </label>
+                  <label class="inline-field">
+                    Exclude Phone Number
+                    <input id="excludePhoneNumber" type="checkbox" />
+                  </label>
+                  <label class="inline-field">
+                    Exclude Email
+                    <input id="excludeEmail" type="checkbox" />
+                  </label>
+                </div>
+                <label class="full">
+                  <span class="label-title">SSO Grant Request Payload (JSON)</span>
+                  <textarea id="ssoPayload" rows="10" placeholder='{"cardsavr_server":"https://api.customer-dev.cardsavr.io"}'></textarea>
+                </label>
+              </div>
+            </details>
           </div>
-        </details>
+        </div>
 
         <div class="full inline-options section-title tight-gap">
           <div><b>Integration Type</b></div>

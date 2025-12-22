@@ -28,6 +28,55 @@ input, select { height: 42px; }
 .sso-options { margin-top: -8px; }
 .sso-options .inline-options { gap: 8px; }
 .sso-note { font-size: 12px; }
+.sso-disabled { position: relative; }
+.sso-disabled .sso-disabled-content { opacity: 0.45; pointer-events: none; }
+.sso-disabled input,
+.sso-disabled textarea,
+.sso-disabled summary,
+.sso-disabled label {
+  cursor: not-allowed;
+}
+.sso-disabled::after {
+  content: "Under Construction";
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #444;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  background: repeating-linear-gradient(
+    -45deg,
+    rgba(255, 196, 0, 0.18),
+    rgba(255, 196, 0, 0.18) 10px,
+    rgba(255, 255, 255, 0.25) 10px,
+    rgba(255, 255, 255, 0.25) 20px
+  );
+  border: 1px dashed #d1a84a;
+  border-radius: 12px;
+  z-index: 5;
+  pointer-events: none;
+}
+.sso-disabled:hover::before,
+.sso-disabled:focus-within::before {
+  content: attr(data-tooltip);
+  position: absolute;
+  left: 0;
+  top: -8px;
+  transform: translateY(-100%);
+  max-width: 320px;
+  background: #111;
+  color: #fff;
+  padding: 8px 10px;
+  border-radius: 8px;
+  font-size: 12px;
+  line-height: 1.4;
+  box-shadow: 0 10px 20px rgba(0,0,0,0.18);
+  z-index: 10;
+  pointer-events: none;
+}
 .section-details { border: 1px dashed #e1e1e1; border-radius: 12px; padding: 10px 12px 12px; background: #fafafa; }
 .section-details[open] { background: #fff; }
 .section-summary { cursor: pointer; font-size: 14px; font-weight: 600; list-style: none; padding: 2px 0; }

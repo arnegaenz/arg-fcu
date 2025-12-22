@@ -1,5 +1,7 @@
 const $ = (id) => document.getElementById(id);
 
+const SSO_DEMO_ENABLED = false;
+
 const SSO_DEBUG_REDACT_KEYS = new Set([
   "api_key",
   "apikey",
@@ -590,7 +592,7 @@ function buildBaseSettingsFromForm() {
   const hostname = `https://${fiHost}/`;
   const merchantSiteTags = getSelectedMerchantSiteTags();
   const topSites = parseCommaList($("topSites").value);
-  const ssoEnabled = $("ssoEnabled").checked;
+  const ssoEnabled = isSsoDemoEnabled();
   const closeUrl = normalizeCloseUrl($("closeUrl").value, hostname);
 
   const base = {
@@ -828,7 +830,7 @@ $("loadBtn").addEventListener("click", () => {
       setStatus("Resetting CardUpdatr session…");
       clearCardupdatrStorage();
     }
-    if ($("ssoEnabled").checked) {
+    if (isSsoDemoEnabled()) {
       try {
         setStatus("Fetching SSO grant…");
         const rawPayload = $("ssoPayload").value;
@@ -968,7 +970,7 @@ function getBorderStyle(size) {
 }
 
 function updateSsoOptionsVisibility() {
-  const enabled = $("ssoEnabled").checked;
+  const enabled = isSsoDemoEnabled();
   $("excludeCVV").disabled = !enabled;
   $("excludePhoneNumber").disabled = !enabled;
   $("excludeEmail").disabled = !enabled;
@@ -985,6 +987,7 @@ function updateSsoOptionsVisibility() {
 }
 
 function applySsoPromptRules() {
+  if (!isSsoDemoEnabled()) return;
   const excludeCVV = $("excludeCVV").checked;
   const excludePhoneNumber = $("excludePhoneNumber").checked;
   const excludeEmail = $("excludeEmail").checked;
@@ -995,13 +998,13 @@ function applySsoPromptRules() {
     $("excludeEmail").checked = false;
   }
 
-  $("excludePhoneNumber").disabled = excludeCVV || !$("ssoEnabled").checked;
-  $("excludeEmail").disabled = excludeCVV || !$("ssoEnabled").checked;
-  $("excludeCVV").disabled = contactPrompted || !$("ssoEnabled").checked;
+  $("excludePhoneNumber").disabled = excludeCVV || !isSsoDemoEnabled();
+  $("excludeEmail").disabled = excludeCVV || !isSsoDemoEnabled();
+  $("excludeCVV").disabled = contactPrompted || !isSsoDemoEnabled();
 }
 
 function updateSsoPayloadPreview() {
-  if (!$("ssoEnabled").checked) return;
+  if (!isSsoDemoEnabled()) return;
   const payload = buildSsoRequestFromForm();
   $("ssoPayload").value = JSON.stringify(payload, null, 2);
 }
@@ -1033,9 +1036,23 @@ document.querySelectorAll(".form input, .form select").forEach((el) => {
 });
 updateOverridePreview();
 
+function isSsoDemoEnabled() {
+  return SSO_DEMO_ENABLED && $("ssoEnabled").checked;
+}
+
+function disableSsoDemoUi() {
+  if (SSO_DEMO_ENABLED) return;
+  const toggle = $("ssoEnabled");
+  if (!toggle) return;
+  toggle.checked = false;
+  toggle.disabled = true;
+}
+
+disableSsoDemoUi();
+
 $("ssoEnabled").addEventListener("change", () => {
   updateSsoOptionsVisibility();
-  if ($("ssoEnabled").checked) {
+  if (isSsoDemoEnabled()) {
     $("excludeCVV").checked = true;
   }
   applySsoPromptRules();
