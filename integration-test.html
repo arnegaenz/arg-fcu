@@ -6,35 +6,148 @@
   <title>Integration Testing - ARG-FCU</title>
   <link rel="stylesheet" href="./assets/styles.css" />
   <style>
-    .integration-section {
-      margin-bottom: 2rem;
-      padding: 1.5rem;
-      border: 1px solid #e0e0e0;
+    .page-disabled {
+      pointer-events: none;
+      opacity: 0.5;
+      filter: grayscale(1);
+    }
+    .location-error {
+      background: #ffebee;
+      border: 2px solid #f44336;
       border-radius: 8px;
-      background: #fff;
+      padding: 2rem;
+      text-align: center;
+      margin: 2rem 0;
     }
-    .integration-section h2 {
+    .location-error h2 {
+      color: #c62828;
       margin-top: 0;
-      color: #333;
-      font-size: 1.25rem;
     }
-    .partners {
+    .location-error p {
       color: #666;
-      font-size: 0.9rem;
-      font-style: italic;
-      margin-bottom: 1rem;
+      margin-bottom: 0;
     }
-    .integration-controls {
+    .test-controls {
+      background: #f5f5f5;
+      padding: 2rem;
+      border-radius: 8px;
+      margin-bottom: 2rem;
+    }
+    .control-group {
+      margin-bottom: 1.5rem;
+    }
+    .control-group:last-child {
+      margin-bottom: 0;
+    }
+    label {
       display: flex;
       flex-direction: column;
+      gap: 0.5rem;
+      font-weight: 500;
+      color: #333;
+    }
+    label span {
+      font-size: 0.95rem;
+    }
+    select, input, button {
+      padding: 0.75rem;
+      font-size: 1rem;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+      font-family: inherit;
+    }
+    select:disabled, input:disabled {
+      background: #e0e0e0;
+      cursor: not-allowed;
+    }
+    button {
+      background: #5e35b1;
+      color: white;
+      border: none;
+      cursor: pointer;
+      font-weight: 500;
+      width: 100%;
+      margin-top: 1rem;
+    }
+    button:hover:not(:disabled) {
+      background: #4527a0;
+    }
+    button:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+    }
+    .location-status {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-top: 0.5rem;
+      font-size: 0.9rem;
+      padding: 0.5rem;
+      border-radius: 4px;
+    }
+    .location-status.enabled {
+      background: #e8f5e9;
+      color: #2e7d32;
+    }
+    .location-status.denied {
+      background: #ffebee;
+      color: #c62828;
+    }
+    .location-status.pending {
+      background: #fff3e0;
+      color: #e65100;
+    }
+    .flow-description {
+      background: #e3f2fd;
+      border-left: 4px solid #2196f3;
+      padding: 1rem;
+      margin-top: 1rem;
+      border-radius: 4px;
+      font-size: 0.95rem;
+      line-height: 1.6;
+    }
+    .flow-description strong {
+      display: block;
+      margin-bottom: 0.5rem;
+      color: #1565c0;
+    }
+    .flow-description .partners {
+      font-style: italic;
+      color: #666;
+      margin-top: 0.5rem;
+      font-size: 0.9rem;
+    }
+    .custom-card-fields {
+      display: none;
+      margin-top: 1rem;
+      padding: 1rem;
+      background: #fff;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+    }
+    .custom-card-fields.visible {
+      display: block;
+    }
+    .custom-card-fields h4 {
+      margin: 0 0 1rem 0;
+      color: #333;
+      font-size: 1rem;
+    }
+    .field-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
       gap: 1rem;
       margin-bottom: 1rem;
     }
+    .field-row.full {
+      grid-template-columns: 1fr;
+    }
     .preview-container {
-      min-height: 600px;
+      width: 100%;
+      min-height: 800px;
       border: 2px dashed #ddd;
       border-radius: 4px;
-      margin-top: 1rem;
+      margin-top: 2rem;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -44,54 +157,17 @@
     .preview-container.loaded {
       border-style: solid;
       border-color: #4CAF50;
+      align-items: stretch;
+      justify-content: stretch;
     }
-    .global-controls {
-      background: #f5f5f5;
-      padding: 1.5rem;
-      border-radius: 8px;
-      margin-bottom: 2rem;
+    .preview-container.loaded > div {
+      width: 100%;
+      min-height: 800px;
     }
-    .location-status {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      margin-top: 0.5rem;
-      font-size: 0.9rem;
-    }
-    .location-status.enabled {
-      color: #4CAF50;
-    }
-    .location-status.denied {
-      color: #f44336;
-    }
-    .location-status.pending {
-      color: #FF9800;
-    }
-    label {
-      display: flex;
-      flex-direction: column;
-      gap: 0.25rem;
-      font-weight: 500;
-    }
-    select, button {
-      padding: 0.5rem;
-      font-size: 1rem;
-      border-radius: 4px;
-      border: 1px solid #ccc;
-    }
-    button {
-      background: #5e35b1;
-      color: white;
-      border: none;
-      cursor: pointer;
-      font-weight: 500;
-    }
-    button:hover {
-      background: #4527a0;
-    }
-    button:disabled {
-      background: #ccc;
-      cursor: not-allowed;
+    @media (max-width: 768px) {
+      .field-row {
+        grid-template-columns: 1fr;
+      }
     }
   </style>
 </head>
@@ -101,100 +177,169 @@
       <div class="title">ARG-FCU</div>
       <nav class="nav">
         <a href="./index.html">Home</a>
+        <a class="active" href="./integration-test.html">Integration Testing</a>
         <a href="./playground.html">Playground</a>
       </nav>
     </div>
   </header>
 
-  <main class="wrap">
+  <main class="wrap" id="mainContent">
     <h1>CardUpdatr Integration Testing</h1>
     <p class="muted">Test all integration types with different SSO configurations and geolocation-based personas.</p>
 
-    <!-- Global Controls -->
-    <div class="global-controls">
-      <label>
-        <span>FI Host Environment</span>
-        <select id="fiHost">
-          <option value="orb_prod.customer-dev.cardupdatr.app" selected>Current CardUpdatr (customer-dev)</option>
-          <option value="alkami.pkumar.cardupdatr.app">CardUpdatr 2+ (pkumar)</option>
-        </select>
-      </label>
-      <div class="location-status pending" id="locationStatus">
-        📍 Requesting location permission...
-      </div>
+    <!-- Location Error (shown only when denied) -->
+    <div class="location-error" id="locationError" style="display: none;">
+      <h2>📍 Location Access Required</h2>
+      <p>This testing page requires location access to generate test data. Please enable location permissions in your browser and reload the page.</p>
     </div>
 
-    <!-- 1. Weblink (Non-SSO) -->
-    <section class="integration-section">
-      <h2>1. Weblink (Non-SSO)</h2>
-      <p class="partners">Partners: Alkami (ORNL)</p>
-      <p class="muted">Opens CardUpdatr in a new tab with header always visible. No SSO available.</p>
-      <div class="integration-controls">
-        <button onclick="loadWeblink()">Load Weblink Integration</button>
-      </div>
-    </section>
+    <!-- Location Status -->
+    <div class="location-status pending" id="locationStatus">
+      📍 Requesting location permission...
+    </div>
 
-    <!-- 2. Embedded - No SSO -->
-    <section class="integration-section">
-      <h2>2. Embedded (No SSO)</h2>
-      <p class="partners">Partners: Alkami, Others</p>
-      <p class="muted">CardUpdatr embedded directly in the page. User enters card manually.</p>
-      <div class="integration-controls">
-        <button onclick="loadEmbeddedNoSSO()">Load Embedded (No SSO)</button>
-      </div>
-      <div class="preview-container" id="embedded-nosso-preview">
-        Preview will appear here after loading
-      </div>
-    </section>
+    <!-- Tester Name (shown after location granted) -->
+    <div class="control-group" id="testerNameGroup" style="display: none; margin-bottom: 1rem;">
+      <label>
+        <span>Tester Name (for tracking)</span>
+        <input type="text" id="testerName" placeholder="Enter your name" />
+      </label>
+    </div>
 
-    <!-- 3. Embedded - With SSO -->
-    <section class="integration-section">
-      <h2>3. Embedded (With SSO)</h2>
-      <p class="partners">Partners: Advancial (SSO), Alkami, Others</p>
-      <p class="muted">CardUpdatr embedded with SSO grant. Card data pre-populated.</p>
-      <div class="integration-controls">
+    <!-- Test Controls -->
+    <div class="test-controls" id="testControls">
+      <!-- 1. FI Host Environment -->
+      <div class="control-group">
         <label>
-          <span>Card/Persona</span>
-          <select id="embeddedSsoCard">
-            <option value="use_location" selected>Use My Location</option>
-            <option value="jack_skellington">Jack Skellington</option>
-            <option value="pepper_potts">Pepper Potts</option>
+          <span>FI Host Environment</span>
+          <select id="fiHost">
+            <option value="orb_prod.customer-dev.cardupdatr.app" selected>Current CardUpdatr (customer-dev)</option>
+            <option value="alkami.pkumar.cardupdatr.app">CardUpdatr 2+ (pkumar)</option>
           </select>
         </label>
-        <button onclick="loadEmbeddedSSO()">Load Embedded (SSO)</button>
       </div>
-      <div class="preview-container" id="embedded-sso-preview">
-        Preview will appear here after loading
-      </div>
-    </section>
 
-    <!-- 4. Overlay - No SSO -->
-    <section class="integration-section">
-      <h2>4. Overlay (No SSO)</h2>
-      <p class="partners">Partners: Alkami</p>
-      <p class="muted">CardUpdatr opens as a modal overlay. User enters card manually.</p>
-      <div class="integration-controls">
-        <button onclick="loadOverlayNoSSO()">Load Overlay (No SSO)</button>
-      </div>
-    </section>
-
-    <!-- 5. Overlay - With SSO -->
-    <section class="integration-section">
-      <h2>5. Overlay (With SSO)</h2>
-      <p class="partners">Partners: Alkami (SSO Widget)</p>
-      <p class="muted">CardUpdatr opens as a modal overlay with SSO grant. Card data pre-populated.</p>
-      <div class="integration-controls">
+      <!-- 2. Integration Test Flow -->
+      <div class="control-group">
         <label>
-          <span>Card/Persona</span>
-          <select id="overlaySsoCard">
-            <option value="use_location" selected>Use My Location</option>
-            <option value="jack_skellington">Jack Skellington</option>
-            <option value="pepper_potts">Pepper Potts</option>
+          <span>Integration Test Flow</span>
+          <select id="testFlow">
+            <option value="weblink_nosso">Weblink (Non-SSO)</option>
+            <option value="embedded_nosso">Embedded (No SSO)</option>
+            <option value="embedded_sso" selected>Embedded (With SSO)</option>
+            <option value="overlay_nosso">Overlay (No SSO)</option>
+            <option value="overlay_sso">Overlay (With SSO)</option>
           </select>
         </label>
-        <button onclick="loadOverlaySSO()">Load Overlay (SSO)</button>
+
+        <!-- Flow Description (dynamic) -->
+        <div class="flow-description" id="flowDescription">
+          <!-- Populated by JavaScript -->
+        </div>
       </div>
-    </section>
+
+      <!-- 3. Cardholder Selection (shown only for SSO flows) -->
+      <div class="control-group" id="cardholderGroup" style="display: none;">
+        <label>
+          <span>Cardholder / Test Card</span>
+          <select id="cardholder">
+            <option value="use_location" selected>Default User Card</option>
+            <option value="jack_skellington">Jack Skellington</option>
+            <option value="pepper_potts">Pepper Potts</option>
+            <option value="custom">Custom Card...</option>
+          </select>
+        </label>
+
+        <!-- Custom Card Fields (revealed when "Custom Card..." selected) -->
+        <div class="custom-card-fields" id="customCardFields">
+          <h4>Custom Card Details</h4>
+
+          <div class="field-row full">
+            <label>
+              <span>Email</span>
+              <input type="email" id="customEmail" placeholder="test@example.com" />
+            </label>
+          </div>
+
+          <div class="field-row">
+            <label>
+              <span>First Name</span>
+              <input type="text" id="customFirstName" placeholder="John" />
+            </label>
+            <label>
+              <span>Last Name</span>
+              <input type="text" id="customLastName" placeholder="Doe" />
+            </label>
+          </div>
+
+          <div class="field-row full">
+            <label>
+              <span>Card Number (PAN)</span>
+              <input type="text" id="customPan" placeholder="4111111111111111" maxlength="16" />
+            </label>
+          </div>
+
+          <div class="field-row">
+            <label>
+              <span>Expiration Month</span>
+              <input type="text" id="customMonth" placeholder="12" maxlength="2" />
+            </label>
+            <label>
+              <span>Expiration Year</span>
+              <input type="text" id="customYear" placeholder="25" maxlength="2" />
+            </label>
+          </div>
+
+          <div class="field-row">
+            <label>
+              <span>CVV</span>
+              <input type="text" id="customCvv" placeholder="123" maxlength="4" />
+            </label>
+            <label>
+              <span>Phone Number</span>
+              <input type="text" id="customPhone" placeholder="5555555555" />
+            </label>
+          </div>
+
+          <div class="field-row full">
+            <label>
+              <span>Address</span>
+              <input type="text" id="customAddress1" placeholder="123 Main Street" />
+            </label>
+          </div>
+
+          <div class="field-row">
+            <label>
+              <span>City</span>
+              <input type="text" id="customCity" placeholder="Anaheim" />
+            </label>
+            <label>
+              <span>State (2-letter)</span>
+              <input type="text" id="customState" placeholder="CA" maxlength="2" />
+            </label>
+          </div>
+
+          <div class="field-row">
+            <label>
+              <span>Zip Code</span>
+              <input type="text" id="customZip" placeholder="92801" />
+            </label>
+            <label>
+              <span>Country</span>
+              <input type="text" id="customCountry" placeholder="USA" value="USA" />
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <!-- Load Test Button -->
+      <button id="loadTestBtn">Load Test</button>
+    </div>
+
+    <!-- Preview Container (for embedded integrations) -->
+    <div class="preview-container" id="previewContainer" style="display: none;">
+      Preview will appear here after loading
+    </div>
   </main>
 
   <script>
@@ -206,11 +351,44 @@
 
     // Global location data
     window.userLocation = null;
+    let locationGranted = false;
+
+    // LocalStorage key for custom cards
+    const CUSTOM_CARD_STORAGE_KEY = "argfcu_custom_card_data";
+
+    // Flow descriptions
+    const FLOW_DESCRIPTIONS = {
+      weblink_nosso: {
+        title: "Weblink (Non-SSO)",
+        description: "Opens CardUpdatr in a new browser tab with header always visible. User enters card data manually. No SSO grant required.",
+        partners: "Partners: Alkami (ORNL)"
+      },
+      embedded_nosso: {
+        title: "Embedded (No SSO)",
+        description: "CardUpdatr embedded directly in the page below. User enters card data manually within the iframe. No SSO grant required.",
+        partners: "Partners: Alkami, Others"
+      },
+      embedded_sso: {
+        title: "Embedded (With SSO)",
+        description: "CardUpdatr embedded directly in the page below. Card data is pre-populated via SSO grant token. User sees their selected card ready to use.",
+        partners: "Partners: Advancial (SSO), Alkami, Others"
+      },
+      overlay_nosso: {
+        title: "Overlay (No SSO)",
+        description: "CardUpdatr opens as a modal overlay on top of the page. User enters card data manually. No SSO grant required. Click outside to close.",
+        partners: "Partners: Alkami"
+      },
+      overlay_sso: {
+        title: "Overlay (With SSO)",
+        description: "CardUpdatr opens as a modal overlay with card data pre-populated via SSO grant token. User sees their selected card ready to use in the modal.",
+        partners: "Partners: Alkami (SSO Widget)"
+      }
+    };
 
     // Card/Persona Data
     const CARDS = {
       use_location: {
-        label: "Use My Location",
+        label: "Default User Card",
         generator: (location) => {
           if (!location) {
             return {
@@ -299,10 +477,14 @@
     // Request geolocation on page load
     function requestGeolocation() {
       const statusEl = $("locationStatus");
+      const errorEl = $("locationError");
+      const mainContent = $("mainContent");
 
       if (!navigator.geolocation) {
         statusEl.className = "location-status denied";
         statusEl.textContent = "📍 Geolocation not supported by browser";
+        errorEl.style.display = "block";
+        $("testControls").classList.add("page-disabled");
         return;
       }
 
@@ -312,7 +494,9 @@
         },
         (error) => {
           statusEl.className = "location-status denied";
-          statusEl.textContent = `📍 Location access denied: ${error.message}`;
+          statusEl.textContent = `📍 Location access denied`;
+          errorEl.style.display = "block";
+          $("testControls").classList.add("page-disabled");
           console.error('Geolocation error:', error);
         }
       );
@@ -342,20 +526,30 @@
         const zip = data.address.postcode || "00000";
 
         window.userLocation = { city, state, zip };
+        locationGranted = true;
 
         statusEl.className = "location-status enabled";
         statusEl.textContent = `📍 Location: ${city}, ${state} ${zip}`;
+
+        // Show tester name field
+        $("testerNameGroup").style.display = "block";
 
         console.log('Location detected:', window.userLocation);
       } catch (error) {
         statusEl.className = "location-status denied";
         statusEl.textContent = "📍 Failed to get location details";
+        $("locationError").style.display = "block";
+        $("testControls").classList.add("page-disabled");
         console.error('Reverse geocoding error:', error);
       }
     }
 
     // Get card data by key
     function getCardData(cardKey) {
+      if (cardKey === "custom") {
+        return getCustomCardData();
+      }
+
       const card = CARDS[cardKey];
       if (!card) return null;
 
@@ -364,6 +558,63 @@
       }
 
       return card;
+    }
+
+    // Get custom card data from form
+    function getCustomCardData() {
+      const firstName = $("customFirstName").value.trim();
+      const lastName = $("customLastName").value.trim();
+
+      const cardData = {
+        email: $("customEmail").value.trim() || "custom@test.com",
+        phoneNumber: $("customPhone").value.trim() || "5555555555",
+        cvv: $("customCvv").value.trim() || "123",
+        nameOnCard: `${firstName} ${lastName}`.trim() || "Custom Card",
+        pan: $("customPan").value.trim() || "4111111111111111",
+        expirationMonth: $("customMonth").value.trim() || "12",
+        expirationYear: $("customYear").value.trim() || "25",
+        address: {
+          is_primary: "true",
+          address1: $("customAddress1").value.trim() || "123 Test Street",
+          city: $("customCity").value.trim() || "Test City",
+          subnational: $("customState").value.trim() || "CA",
+          postal_code: $("customZip").value.trim() || "00000",
+          country: $("customCountry").value.trim() || "USA",
+          first_name: firstName || "Custom",
+          last_name: lastName || "Card"
+        }
+      };
+
+      // Save to localStorage
+      localStorage.setItem(CUSTOM_CARD_STORAGE_KEY, JSON.stringify(cardData));
+
+      return cardData;
+    }
+
+    // Load custom card data from localStorage
+    function loadCustomCardData() {
+      try {
+        const stored = localStorage.getItem(CUSTOM_CARD_STORAGE_KEY);
+        if (!stored) return;
+
+        const cardData = JSON.parse(stored);
+
+        $("customEmail").value = cardData.email || "";
+        $("customPhone").value = cardData.phoneNumber || "";
+        $("customCvv").value = cardData.cvv || "";
+        $("customPan").value = cardData.pan || "";
+        $("customMonth").value = cardData.expirationMonth || "";
+        $("customYear").value = cardData.expirationYear || "";
+        $("customFirstName").value = cardData.address?.first_name || "";
+        $("customLastName").value = cardData.address?.last_name || "";
+        $("customAddress1").value = cardData.address?.address1 || "";
+        $("customCity").value = cardData.address?.city || "";
+        $("customState").value = cardData.address?.subnational || "";
+        $("customZip").value = cardData.address?.postal_code || "";
+        $("customCountry").value = cardData.address?.country || "USA";
+      } catch (error) {
+        console.error('Error loading custom card data:', error);
+      }
     }
 
     // Infer CardsavrServer from FI host
@@ -453,6 +704,7 @@
       const fiHost = $("fiHost").value;
       const hostname = `https://${fiHost}/`;
       const fiName = fiHost.split('.')[0];
+      const testerName = $("testerName").value.trim() || "anonymous";
 
       return {
         config: {
@@ -483,10 +735,77 @@
           source: {
             type: "test",
             category: "other",
-            sub_category: "integration-testing"
+            sub_category: testerName
           }
         }
       };
+    }
+
+    // Update flow description
+    function updateFlowDescription() {
+      const flow = $("testFlow").value;
+      const desc = FLOW_DESCRIPTIONS[flow];
+      const descEl = $("flowDescription");
+
+      if (desc) {
+        descEl.innerHTML = `
+          <strong>${desc.title}</strong>
+          ${desc.description}
+          <div class="partners">${desc.partners}</div>
+        `;
+      }
+
+      // Show/hide cardholder group based on SSO
+      const isSso = flow.includes("_sso");
+      $("cardholderGroup").style.display = isSso ? "block" : "none";
+
+      // Show/hide preview container based on integration type
+      const isEmbedded = flow.startsWith("embedded_");
+      $("previewContainer").style.display = isEmbedded ? "flex" : "none";
+    }
+
+    // Toggle custom card fields
+    function toggleCustomCardFields() {
+      const cardholder = $("cardholder").value;
+      const customFields = $("customCardFields");
+
+      if (cardholder === "custom") {
+        customFields.classList.add("visible");
+        loadCustomCardData();
+      } else {
+        customFields.classList.remove("visible");
+      }
+    }
+
+    // Main load test function
+    async function loadTest() {
+      const flow = $("testFlow").value;
+      const fiHost = $("fiHost").value;
+
+      try {
+        switch (flow) {
+          case "weblink_nosso":
+            await loadWeblink();
+            break;
+          case "embedded_nosso":
+            await loadEmbeddedNoSSO();
+            break;
+          case "embedded_sso":
+            await loadEmbeddedSSO();
+            break;
+          case "overlay_nosso":
+            await loadOverlayNoSSO();
+            break;
+          case "overlay_sso":
+            await loadOverlaySSO();
+            break;
+          default:
+            alert("Unknown test flow");
+        }
+      } catch (error) {
+        console.error('Error loading test:', error);
+        alert(`Error: ${error.message}`);
+      }
     }
 
     // 1. Load Weblink
@@ -497,178 +816,166 @@
 
     // 2. Load Embedded No SSO
     async function loadEmbeddedNoSSO() {
-      try {
-        const settings = buildBaseSettings();
-        settings.config.app_container_id = "embedded-nosso-preview";
-        settings.config.overlay = false;
+      const settings = buildBaseSettings();
+      settings.config.app_container_id = "previewContainer";
+      settings.config.overlay = false;
 
-        const hostname = settings.config.hostname;
-        await ensureCardupdatrScript(hostname);
+      const hostname = settings.config.hostname;
+      await ensureCardupdatrScript(hostname);
 
-        const preview = $("embedded-nosso-preview");
-        preview.innerHTML = '';
-        preview.className = "preview-container loaded";
+      const preview = $("previewContainer");
+      preview.innerHTML = '';
+      preview.className = "preview-container loaded";
+      preview.style.display = "flex";
 
-        if (typeof window.embedCardUpdatr === "function") {
-          window.embedCardUpdatr(settings);
-        } else {
-          preview.textContent = "Error: embedCardUpdatr not available";
-        }
-      } catch (error) {
-        console.error('Error loading embedded no SSO:', error);
-        alert(`Error: ${error.message}`);
+      if (typeof window.embedCardUpdatr === "function") {
+        window.embedCardUpdatr(settings);
+      } else {
+        preview.textContent = "Error: embedCardUpdatr not available";
       }
     }
 
     // 3. Load Embedded SSO
     async function loadEmbeddedSSO() {
-      try {
-        const settings = buildBaseSettings();
-        settings.config.app_container_id = "embedded-sso-preview";
-        settings.config.overlay = false;
+      const settings = buildBaseSettings();
+      settings.config.app_container_id = "previewContainer";
+      settings.config.overlay = false;
 
-        const cardKey = $("embeddedSsoCard").value;
-        const cardData = getCardData(cardKey);
+      const cardKey = $("cardholder").value;
+      const cardData = getCardData(cardKey);
 
-        if (!cardData) {
-          throw new Error("Card data not available");
-        }
+      if (!cardData) {
+        throw new Error("Card data not available");
+      }
 
-        const fiHost = $("fiHost").value;
-        const cardsavrServer = inferCardsavrServer(fiHost);
+      const fiHost = $("fiHost").value;
+      const cardsavrServer = inferCardsavrServer(fiHost);
 
-        const ssoPayload = {
-          cardholder_data: {
-            type: "ephemeral",
-            email: cardData.email,
-            webhook_url1: "",
-            integrator_id1: 0
-          },
-          card_data: {
-            name_on_card: cardData.nameOnCard,
-            pan: cardData.pan,
-            expiration_month: cardData.expirationMonth,
-            expiration_year: cardData.expirationYear,
-            cvv: cardData.cvv
-          },
-          address_data: {
-            ...cardData.address,
-            email: cardData.email,
-            phone_number: cardData.phoneNumber
-          },
-          cardsavr_server: cardsavrServer,
-          api_instance: cardsavrServer
-        };
+      const ssoPayload = {
+        cardholder_data: {
+          type: "ephemeral",
+          email: cardData.email,
+          webhook_url1: "",
+          integrator_id1: 0
+        },
+        card_data: {
+          name_on_card: cardData.nameOnCard,
+          pan: cardData.pan,
+          expiration_month: cardData.expirationMonth,
+          expiration_year: cardData.expirationYear,
+          cvv: cardData.cvv
+        },
+        address_data: {
+          ...cardData.address,
+          email: cardData.email,
+          phone_number: cardData.phoneNumber
+        },
+        cardsavr_server: cardsavrServer,
+        api_instance: cardsavrServer
+      };
 
-        const apiResponse = await fetchSsoGrant(ssoPayload);
+      const apiResponse = await fetchSsoGrant(ssoPayload);
 
-        settings.user = {
-          grant: apiResponse.grant,
-          card_id: apiResponse.cardId
-        };
+      settings.user = {
+        grant: apiResponse.grant,
+        card_id: apiResponse.cardId
+      };
 
-        const hostname = settings.config.hostname;
-        await ensureCardupdatrScript(hostname);
+      const hostname = settings.config.hostname;
+      await ensureCardupdatrScript(hostname);
 
-        const preview = $("embedded-sso-preview");
-        preview.innerHTML = '';
-        preview.className = "preview-container loaded";
+      const preview = $("previewContainer");
+      preview.innerHTML = '';
+      preview.className = "preview-container loaded";
+      preview.style.display = "flex";
 
-        if (typeof window.embedCardUpdatr === "function") {
-          window.embedCardUpdatr(settings);
-        } else {
-          preview.textContent = "Error: embedCardUpdatr not available";
-        }
-      } catch (error) {
-        console.error('Error loading embedded SSO:', error);
-        alert(`Error: ${error.message}`);
+      if (typeof window.embedCardUpdatr === "function") {
+        window.embedCardUpdatr(settings);
+      } else {
+        preview.textContent = "Error: embedCardUpdatr not available";
       }
     }
 
     // 4. Load Overlay No SSO
     async function loadOverlayNoSSO() {
-      try {
-        const settings = buildBaseSettings();
-        settings.config.app_container_id = "cardupdatr-overlay";
-        settings.config.overlay = true;
+      const settings = buildBaseSettings();
+      settings.config.app_container_id = "cardupdatr-overlay";
+      settings.config.overlay = true;
 
-        const hostname = settings.config.hostname;
-        await ensureCardupdatrScript(hostname);
+      const hostname = settings.config.hostname;
+      await ensureCardupdatrScript(hostname);
 
-        if (typeof window.embedCardUpdatr === "function") {
-          window.embedCardUpdatr(settings);
-        } else {
-          alert("Error: embedCardUpdatr not available");
-        }
-      } catch (error) {
-        console.error('Error loading overlay no SSO:', error);
-        alert(`Error: ${error.message}`);
+      if (typeof window.embedCardUpdatr === "function") {
+        window.embedCardUpdatr(settings);
+      } else {
+        alert("Error: embedCardUpdatr not available");
       }
     }
 
     // 5. Load Overlay SSO
     async function loadOverlaySSO() {
-      try {
-        const settings = buildBaseSettings();
-        settings.config.app_container_id = "cardupdatr-overlay";
-        settings.config.overlay = true;
+      const settings = buildBaseSettings();
+      settings.config.app_container_id = "cardupdatr-overlay";
+      settings.config.overlay = true;
 
-        const cardKey = $("overlaySsoCard").value;
-        const cardData = getCardData(cardKey);
+      const cardKey = $("cardholder").value;
+      const cardData = getCardData(cardKey);
 
-        if (!cardData) {
-          throw new Error("Card data not available");
-        }
+      if (!cardData) {
+        throw new Error("Card data not available");
+      }
 
-        const fiHost = $("fiHost").value;
-        const cardsavrServer = inferCardsavrServer(fiHost);
+      const fiHost = $("fiHost").value;
+      const cardsavrServer = inferCardsavrServer(fiHost);
 
-        const ssoPayload = {
-          cardholder_data: {
-            type: "ephemeral",
-            email: cardData.email,
-            webhook_url1: "",
-            integrator_id1: 0
-          },
-          card_data: {
-            name_on_card: cardData.nameOnCard,
-            pan: cardData.pan,
-            expiration_month: cardData.expirationMonth,
-            expiration_year: cardData.expirationYear,
-            cvv: cardData.cvv
-          },
-          address_data: {
-            ...cardData.address,
-            email: cardData.email,
-            phone_number: cardData.phoneNumber
-          },
-          cardsavr_server: cardsavrServer,
-          api_instance: cardsavrServer
-        };
+      const ssoPayload = {
+        cardholder_data: {
+          type: "ephemeral",
+          email: cardData.email,
+          webhook_url1: "",
+          integrator_id1: 0
+        },
+        card_data: {
+          name_on_card: cardData.nameOnCard,
+          pan: cardData.pan,
+          expiration_month: cardData.expirationMonth,
+          expiration_year: cardData.expirationYear,
+          cvv: cardData.cvv
+        },
+        address_data: {
+          ...cardData.address,
+          email: cardData.email,
+          phone_number: cardData.phoneNumber
+        },
+        cardsavr_server: cardsavrServer,
+        api_instance: cardsavrServer
+      };
 
-        const apiResponse = await fetchSsoGrant(ssoPayload);
+      const apiResponse = await fetchSsoGrant(ssoPayload);
 
-        settings.user = {
-          grant: apiResponse.grant,
-          card_id: apiResponse.cardId
-        };
+      settings.user = {
+        grant: apiResponse.grant,
+        card_id: apiResponse.cardId
+      };
 
-        const hostname = settings.config.hostname;
-        await ensureCardupdatrScript(hostname);
+      const hostname = settings.config.hostname;
+      await ensureCardupdatrScript(hostname);
 
-        if (typeof window.embedCardUpdatr === "function") {
-          window.embedCardUpdatr(settings);
-        } else {
-          alert("Error: embedCardUpdatr not available");
-        }
-      } catch (error) {
-        console.error('Error loading overlay SSO:', error);
-        alert(`Error: ${error.message}`);
+      if (typeof window.embedCardUpdatr === "function") {
+        window.embedCardUpdatr(settings);
+      } else {
+        alert("Error: embedCardUpdatr not available");
       }
     }
 
+    // Event listeners
+    $("testFlow").addEventListener("change", updateFlowDescription);
+    $("cardholder").addEventListener("change", toggleCustomCardFields);
+    $("loadTestBtn").addEventListener("click", loadTest);
+
     // Initialize on page load
     requestGeolocation();
+    updateFlowDescription();
   </script>
 </body>
 </html>
