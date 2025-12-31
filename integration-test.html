@@ -1,0 +1,675 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Integration Testing - ARG-FCU</title>
+  <link rel="stylesheet" href="./assets/styles.css" />
+  <style>
+    .integration-section {
+      margin-bottom: 2rem;
+      padding: 1.5rem;
+      border: 1px solid #e0e0e0;
+      border-radius: 8px;
+      background: #fff;
+    }
+    .integration-section h2 {
+      margin-top: 0;
+      color: #333;
+      font-size: 1.25rem;
+    }
+    .partners {
+      color: #666;
+      font-size: 0.9rem;
+      font-style: italic;
+      margin-bottom: 1rem;
+    }
+    .integration-controls {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+    .preview-container {
+      min-height: 600px;
+      border: 2px dashed #ddd;
+      border-radius: 4px;
+      margin-top: 1rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #999;
+      font-style: italic;
+    }
+    .preview-container.loaded {
+      border-style: solid;
+      border-color: #4CAF50;
+    }
+    .global-controls {
+      background: #f5f5f5;
+      padding: 1.5rem;
+      border-radius: 8px;
+      margin-bottom: 2rem;
+    }
+    .location-status {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      margin-top: 0.5rem;
+      font-size: 0.9rem;
+    }
+    .location-status.enabled {
+      color: #4CAF50;
+    }
+    .location-status.denied {
+      color: #f44336;
+    }
+    .location-status.pending {
+      color: #FF9800;
+    }
+    label {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+      font-weight: 500;
+    }
+    select, button {
+      padding: 0.5rem;
+      font-size: 1rem;
+      border-radius: 4px;
+      border: 1px solid #ccc;
+    }
+    button {
+      background: #5e35b1;
+      color: white;
+      border: none;
+      cursor: pointer;
+      font-weight: 500;
+    }
+    button:hover {
+      background: #4527a0;
+    }
+    button:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+    }
+  </style>
+</head>
+<body>
+  <header class="site-header">
+    <div class="wrap">
+      <div class="title">ARG-FCU</div>
+      <nav class="nav">
+        <a href="./index.html">Home</a>
+        <a href="./playground.html">Playground</a>
+        <a class="active" href="./integration-test.html">Integration Tests</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <h1>CardUpdatr Integration Testing</h1>
+    <p class="muted">Test all integration types with different SSO configurations and geolocation-based personas.</p>
+
+    <!-- Global Controls -->
+    <div class="global-controls">
+      <label>
+        <span>FI Host Environment</span>
+        <select id="fiHost">
+          <option value="orb_prod.customer-dev.cardupdatr.app" selected>Current CardUpdatr (customer-dev)</option>
+          <option value="alkami.pkumar.cardupdatr.app">CardUpdatr 2+ (pkumar)</option>
+        </select>
+      </label>
+      <div class="location-status pending" id="locationStatus">
+        📍 Requesting location permission...
+      </div>
+    </div>
+
+    <!-- 1. Weblink (Non-SSO) -->
+    <section class="integration-section">
+      <h2>1. Weblink (Non-SSO)</h2>
+      <p class="partners">Partners: Alkami (ORNL)</p>
+      <p class="muted">Opens CardUpdatr in a new tab with header always visible. No SSO available.</p>
+      <div class="integration-controls">
+        <button onclick="loadWeblink()">Load Weblink Integration</button>
+      </div>
+    </section>
+
+    <!-- 2. Embedded - No SSO -->
+    <section class="integration-section">
+      <h2>2. Embedded (No SSO)</h2>
+      <p class="partners">Partners: Alkami, Others</p>
+      <p class="muted">CardUpdatr embedded directly in the page. User enters card manually.</p>
+      <div class="integration-controls">
+        <button onclick="loadEmbeddedNoSSO()">Load Embedded (No SSO)</button>
+      </div>
+      <div class="preview-container" id="embedded-nosso-preview">
+        Preview will appear here after loading
+      </div>
+    </section>
+
+    <!-- 3. Embedded - With SSO -->
+    <section class="integration-section">
+      <h2>3. Embedded (With SSO)</h2>
+      <p class="partners">Partners: Advancial (SSO), Alkami, Others</p>
+      <p class="muted">CardUpdatr embedded with SSO grant. Card data pre-populated.</p>
+      <div class="integration-controls">
+        <label>
+          <span>Card/Persona</span>
+          <select id="embeddedSsoCard">
+            <option value="use_location" selected>Use My Location</option>
+            <option value="jack_skellington">Jack Skellington</option>
+            <option value="pepper_potts">Pepper Potts</option>
+          </select>
+        </label>
+        <button onclick="loadEmbeddedSSO()">Load Embedded (SSO)</button>
+      </div>
+      <div class="preview-container" id="embedded-sso-preview">
+        Preview will appear here after loading
+      </div>
+    </section>
+
+    <!-- 4. Overlay - No SSO -->
+    <section class="integration-section">
+      <h2>4. Overlay (No SSO)</h2>
+      <p class="partners">Partners: Alkami</p>
+      <p class="muted">CardUpdatr opens as a modal overlay. User enters card manually.</p>
+      <div class="integration-controls">
+        <button onclick="loadOverlayNoSSO()">Load Overlay (No SSO)</button>
+      </div>
+    </section>
+
+    <!-- 5. Overlay - With SSO -->
+    <section class="integration-section">
+      <h2>5. Overlay (With SSO)</h2>
+      <p class="partners">Partners: Alkami (SSO Widget)</p>
+      <p class="muted">CardUpdatr opens as a modal overlay with SSO grant. Card data pre-populated.</p>
+      <div class="integration-controls">
+        <label>
+          <span>Card/Persona</span>
+          <select id="overlaySsoCard">
+            <option value="use_location" selected>Use My Location</option>
+            <option value="jack_skellington">Jack Skellington</option>
+            <option value="pepper_potts">Pepper Potts</option>
+          </select>
+        </label>
+        <button onclick="loadOverlaySSO()">Load Overlay (SSO)</button>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    // Utility function for element selection
+    const $ = (id) => document.getElementById(id);
+
+    // SSO Lambda URL
+    const SSO_LAMBDA_URL = "https://bswpcoqak3b7elcynskytiapyu0eokxs.lambda-url.us-west-2.on.aws/";
+
+    // Global location data
+    window.userLocation = null;
+
+    // Card/Persona Data
+    const CARDS = {
+      use_location: {
+        label: "Use My Location",
+        generator: (location) => {
+          if (!location) {
+            return {
+              email: "location_unavailable@test.com",
+              phoneNumber: "5555555555",
+              cvv: "123",
+              nameOnCard: "Location Unavailable",
+              pan: "4111111111111111",
+              expirationMonth: "12",
+              expirationYear: "25",
+              address: {
+                is_primary: "true",
+                address1: "123 Test Street",
+                city: "Unknown",
+                subnational: "CA",
+                postal_code: "00000",
+                country: "USA",
+                first_name: "Location",
+                last_name: "Unavailable"
+              }
+            };
+          }
+          return {
+            email: `${location.city.toLowerCase().replace(/\s/g, '')}@test.com`,
+            phoneNumber: "5555555555",
+            cvv: "123",
+            nameOnCard: `${location.city} ${location.state}`,
+            pan: "4111111111111111",
+            expirationMonth: "12",
+            expirationYear: "25",
+            address: {
+              is_primary: "true",
+              address1: "123 Test Street",
+              city: location.city,
+              subnational: location.state,
+              postal_code: location.zip,
+              country: "USA",
+              first_name: location.city,
+              last_name: location.state
+            }
+          };
+        }
+      },
+      jack_skellington: {
+        label: "Jack Skellington",
+        email: "jack_skellington@scareme.com",
+        phoneNumber: "7141122222",
+        cvv: "414",
+        nameOnCard: "Jack Skelington",
+        pan: "4114411441144114",
+        expirationMonth: "04",
+        expirationYear: "24",
+        address: {
+          is_primary: "true",
+          address1: "1122 Boogie Boogie Ave.",
+          city: "Anaheim",
+          subnational: "CA",
+          postal_code: "92801",
+          country: "USA",
+          first_name: "Jack",
+          last_name: "Skelington"
+        }
+      },
+      pepper_potts: {
+        label: "Pepper Potts",
+        email: "pepper_potts@starkindustries.com",
+        phoneNumber: "3105550187",
+        cvv: "123",
+        nameOnCard: "Pepper Potts",
+        pan: "5555555555554444",
+        expirationMonth: "08",
+        expirationYear: "26",
+        address: {
+          is_primary: "true",
+          address1: "10880 Malibu Point",
+          city: "Malibu",
+          subnational: "CA",
+          postal_code: "90265",
+          country: "USA",
+          first_name: "Pepper",
+          last_name: "Potts"
+        }
+      }
+    };
+
+    // Request geolocation on page load
+    function requestGeolocation() {
+      const statusEl = $("locationStatus");
+
+      if (!navigator.geolocation) {
+        statusEl.className = "location-status denied";
+        statusEl.textContent = "📍 Geolocation not supported by browser";
+        return;
+      }
+
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          reverseGeocode(position.coords.latitude, position.coords.longitude);
+        },
+        (error) => {
+          statusEl.className = "location-status denied";
+          statusEl.textContent = `📍 Location access denied: ${error.message}`;
+          console.error('Geolocation error:', error);
+        }
+      );
+    }
+
+    // Reverse geocode coordinates to address
+    async function reverseGeocode(lat, lon) {
+      const statusEl = $("locationStatus");
+
+      try {
+        const response = await fetch(
+          `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json`,
+          {
+            headers: {
+              'User-Agent': 'ARG-FCU Integration Test'
+            }
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}`);
+        }
+
+        const data = await response.json();
+        const city = data.address.city || data.address.town || data.address.village || "Unknown City";
+        const state = data.address.state_code || data.address.state || "Unknown";
+        const zip = data.address.postcode || "00000";
+
+        window.userLocation = { city, state, zip };
+
+        statusEl.className = "location-status enabled";
+        statusEl.textContent = `📍 Location: ${city}, ${state} ${zip}`;
+
+        console.log('Location detected:', window.userLocation);
+      } catch (error) {
+        statusEl.className = "location-status denied";
+        statusEl.textContent = "📍 Failed to get location details";
+        console.error('Reverse geocoding error:', error);
+      }
+    }
+
+    // Get card data by key
+    function getCardData(cardKey) {
+      const card = CARDS[cardKey];
+      if (!card) return null;
+
+      if (card.generator) {
+        return card.generator(window.userLocation);
+      }
+
+      return card;
+    }
+
+    // Infer CardsavrServer from FI host
+    function inferCardsavrServer(fiHost) {
+      const host = String(fiHost || "").toLowerCase().trim();
+
+      if (host.endsWith(".cardupdatr.app")) {
+        const parts = host.split(".");
+        const cardupdatrIndex = parts.lastIndexOf("cardupdatr");
+        const subdomain = cardupdatrIndex > 0 ? parts[cardupdatrIndex - 1] : "";
+        if (subdomain) {
+          return `https://api.${subdomain}.cardsavr.io`;
+        }
+      }
+
+      if (host.endsWith(".cardsavr.io")) {
+        const parts = host.split(".");
+        const cardsavrIndex = parts.lastIndexOf("cardsavr");
+        const subdomain = cardsavrIndex > 0 ? parts[cardsavrIndex - 1] : "";
+        if (subdomain) {
+          return `https://api.${subdomain}.cardsavr.io`;
+        }
+      }
+
+      if (host.includes("customer-dev")) {
+        return "https://api.customer-dev.cardsavr.io";
+      }
+
+      return "https://api.customer-dev.cardsavr.io";
+    }
+
+    // Fetch SSO grant from Lambda
+    async function fetchSsoGrant(payload) {
+      const response = await fetch(SSO_LAMBDA_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(payload)
+      });
+
+      if (!response.ok) {
+        throw new Error("SSO demo gateway returned an error.");
+      }
+
+      const apiResponse = await response.json();
+
+      if (!apiResponse?.grant || !apiResponse?.cardId) {
+        throw new Error("SSO demo response is missing grant or cardId.");
+      }
+
+      return apiResponse;
+    }
+
+    // Load CardUpdatr script
+    function ensureCardupdatrScript(hostname) {
+      const script = document.getElementById("cardupdatr-script");
+      const desiredSrc = `${hostname}cardupdatr-client-v2.js`;
+
+      if (script && script.src === desiredSrc && typeof window.embedCardUpdatr === "function") {
+        return Promise.resolve();
+      }
+
+      return new Promise((resolve, reject) => {
+        const newScript = document.createElement("script");
+        newScript.id = "cardupdatr-script";
+        newScript.defer = true;
+        newScript.src = desiredSrc;
+        newScript.onload = () => {
+          console.log('CardUpdatr script loaded from:', desiredSrc);
+          resolve();
+        };
+        newScript.onerror = () => {
+          reject(new Error("Failed to load CardUpdatr script."));
+        };
+
+        if (script && script.parentNode) {
+          script.parentNode.replaceChild(newScript, script);
+        } else {
+          document.body.appendChild(newScript);
+        }
+      });
+    }
+
+    // Build base settings
+    function buildBaseSettings() {
+      const fiHost = $("fiHost").value;
+      const hostname = `https://${fiHost}/`;
+      const fiName = fiHost.split('.')[0];
+
+      return {
+        config: {
+          app_container_id: "",
+          hostname: hostname,
+          financial_institution: fiName,
+          overlay: false,
+          close_url: "none",
+          exclude_sites: [],
+          merchant_site_tags: ["demo", "prod"],
+          countries_supported: ["USA"],
+          tags: "demo,prod",
+          top_sites: ["amazon.com", "apple.com", "audible.com", "netflix.com", "spotify.com"]
+        },
+        style: {
+          card_description: "ARG-FCU Credit & Debit Card",
+          final_message: "Thank you for updating your card!",
+          link_color: "#ff0000",
+          button_color: "#5e35b1",
+          button_border_radius: "0.00rem",
+          button_padding: "0.375rem 0.75rem",
+          border_color: "#ffa500",
+          overlay_background_color: "rgba(0,0,0,.5)",
+          drop_shadow: true,
+          dynamic_height: true
+        },
+        user: {
+          source: {
+            type: "test",
+            category: "other",
+            sub_category: "integration-testing"
+          }
+        }
+      };
+    }
+
+    // 1. Load Weblink
+    async function loadWeblink() {
+      const settings = buildBaseSettings();
+      window.open(settings.config.hostname, "_blank");
+    }
+
+    // 2. Load Embedded No SSO
+    async function loadEmbeddedNoSSO() {
+      try {
+        const settings = buildBaseSettings();
+        settings.config.app_container_id = "embedded-nosso-preview";
+        settings.config.overlay = false;
+
+        const hostname = settings.config.hostname;
+        await ensureCardupdatrScript(hostname);
+
+        const preview = $("embedded-nosso-preview");
+        preview.innerHTML = '';
+        preview.className = "preview-container loaded";
+
+        if (typeof window.embedCardUpdatr === "function") {
+          window.embedCardUpdatr(settings);
+        } else {
+          preview.textContent = "Error: embedCardUpdatr not available";
+        }
+      } catch (error) {
+        console.error('Error loading embedded no SSO:', error);
+        alert(`Error: ${error.message}`);
+      }
+    }
+
+    // 3. Load Embedded SSO
+    async function loadEmbeddedSSO() {
+      try {
+        const settings = buildBaseSettings();
+        settings.config.app_container_id = "embedded-sso-preview";
+        settings.config.overlay = false;
+
+        const cardKey = $("embeddedSsoCard").value;
+        const cardData = getCardData(cardKey);
+
+        if (!cardData) {
+          throw new Error("Card data not available");
+        }
+
+        const fiHost = $("fiHost").value;
+        const cardsavrServer = inferCardsavrServer(fiHost);
+
+        const ssoPayload = {
+          cardholder_data: {
+            type: "ephemeral",
+            email: cardData.email,
+            webhook_url1: "",
+            integrator_id1: 0
+          },
+          card_data: {
+            name_on_card: cardData.nameOnCard,
+            pan: cardData.pan,
+            expiration_month: cardData.expirationMonth,
+            expiration_year: cardData.expirationYear,
+            cvv: cardData.cvv
+          },
+          address_data: {
+            ...cardData.address,
+            email: cardData.email,
+            phone_number: cardData.phoneNumber
+          },
+          cardsavr_server: cardsavrServer,
+          api_instance: cardsavrServer
+        };
+
+        const apiResponse = await fetchSsoGrant(ssoPayload);
+
+        settings.user = {
+          grant: apiResponse.grant,
+          card_id: apiResponse.cardId
+        };
+
+        const hostname = settings.config.hostname;
+        await ensureCardupdatrScript(hostname);
+
+        const preview = $("embedded-sso-preview");
+        preview.innerHTML = '';
+        preview.className = "preview-container loaded";
+
+        if (typeof window.embedCardUpdatr === "function") {
+          window.embedCardUpdatr(settings);
+        } else {
+          preview.textContent = "Error: embedCardUpdatr not available";
+        }
+      } catch (error) {
+        console.error('Error loading embedded SSO:', error);
+        alert(`Error: ${error.message}`);
+      }
+    }
+
+    // 4. Load Overlay No SSO
+    async function loadOverlayNoSSO() {
+      try {
+        const settings = buildBaseSettings();
+        settings.config.app_container_id = "cardupdatr-overlay";
+        settings.config.overlay = true;
+
+        const hostname = settings.config.hostname;
+        await ensureCardupdatrScript(hostname);
+
+        if (typeof window.embedCardUpdatr === "function") {
+          window.embedCardUpdatr(settings);
+        } else {
+          alert("Error: embedCardUpdatr not available");
+        }
+      } catch (error) {
+        console.error('Error loading overlay no SSO:', error);
+        alert(`Error: ${error.message}`);
+      }
+    }
+
+    // 5. Load Overlay SSO
+    async function loadOverlaySSO() {
+      try {
+        const settings = buildBaseSettings();
+        settings.config.app_container_id = "cardupdatr-overlay";
+        settings.config.overlay = true;
+
+        const cardKey = $("overlaySsoCard").value;
+        const cardData = getCardData(cardKey);
+
+        if (!cardData) {
+          throw new Error("Card data not available");
+        }
+
+        const fiHost = $("fiHost").value;
+        const cardsavrServer = inferCardsavrServer(fiHost);
+
+        const ssoPayload = {
+          cardholder_data: {
+            type: "ephemeral",
+            email: cardData.email,
+            webhook_url1: "",
+            integrator_id1: 0
+          },
+          card_data: {
+            name_on_card: cardData.nameOnCard,
+            pan: cardData.pan,
+            expiration_month: cardData.expirationMonth,
+            expiration_year: cardData.expirationYear,
+            cvv: cardData.cvv
+          },
+          address_data: {
+            ...cardData.address,
+            email: cardData.email,
+            phone_number: cardData.phoneNumber
+          },
+          cardsavr_server: cardsavrServer,
+          api_instance: cardsavrServer
+        };
+
+        const apiResponse = await fetchSsoGrant(ssoPayload);
+
+        settings.user = {
+          grant: apiResponse.grant,
+          card_id: apiResponse.cardId
+        };
+
+        const hostname = settings.config.hostname;
+        await ensureCardupdatrScript(hostname);
+
+        if (typeof window.embedCardUpdatr === "function") {
+          window.embedCardUpdatr(settings);
+        } else {
+          alert("Error: embedCardUpdatr not available");
+        }
+      } catch (error) {
+        console.error('Error loading overlay SSO:', error);
+        alert(`Error: ${error.message}`);
+      }
+    }
+
+    // Initialize on page load
+    requestGeolocation();
+  </script>
+</body>
+</html>
