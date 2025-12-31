@@ -32,7 +32,7 @@
         </div>
 
         <label class="full compact-label">
-          <select id="fiHost">
+          <select id="fiHost" title="Pick the visual style the cardholder will see: the current CardUpdatr look or the new CardUpdatr 2+ look.">
             <option value="orb_prod.customer-dev.cardupdatr.app" selected>Current CardUpdatr - orb_prod.customer-dev.cardupdatr.app</option>
             <option value="alkami.pkumar.cardupdatr.app">CardUpdatr 2+ - alkami.pkumar.cardupdatr.app</option>
           </select>
@@ -44,13 +44,13 @@
               <div><b>SSO Testing Capabilities</b></div>
             </div>
 
-            <label class="inline-field full compact-label sso-toggle">
+            <label class="inline-field full compact-label sso-toggle" title="Pre-fills cardholder details so the flow skips the “enter card info” step and starts deeper in the journey.">
               SSO Demo Testing
               <input id="ssoEnabled" type="checkbox" />
             </label>
 
             <details id="ssoOptions" class="full compact-label sso-options section-details">
-              <summary class="section-summary">SSO Demo Details</summary>
+              <summary class="section-summary" title="Adjust what details the cardholder arrives with (email, phone, CVV) and view the demo payload.">SSO Demo Details</summary>
               <div class="section-grid">
                 <div class="inline-options full">
                   <label class="inline-field">
@@ -75,11 +75,11 @@
           </div>
         </div>
 
-        <div class="full inline-options section-title tight-gap">
+        <div class="full inline-options section-title tight-gap" title="Choose how the cardholder enters the experience. Only one journey at a time.">
           <div><b>Scenario</b></div>
-          <label class="inline-field"><input type="radio" name="scenarioType" id="scenarioOverlay" value="overlay" checked /> Overlay</label>
-          <label class="inline-field"><input type="radio" name="scenarioType" id="scenarioEmbedded" value="embedded" /> Embedded</label>
-          <label class="inline-field"><input type="radio" name="scenarioType" id="scenarioWeblink" value="weblink" /> Weblink</label>
+          <label class="inline-field" title="CardUpdatr opens on top of the current page, like a modal."><input type="radio" name="scenarioType" id="scenarioOverlay" value="overlay" checked /> Overlay</label>
+          <label class="inline-field" title="CardUpdatr is placed directly in the page layout."><input type="radio" name="scenarioType" id="scenarioEmbedded" value="embedded" /> Embedded</label>
+          <label class="inline-field" title="CardUpdatr opens in a new tab or window."><input type="radio" name="scenarioType" id="scenarioWeblink" value="weblink" /> Weblink</label>
         </div>
 
 
@@ -88,7 +88,7 @@
         </div>
 
         <details class="full section-details container-options tight-section-details">
-          <summary class="section-summary">Edit container parameters</summary>
+          <summary class="section-summary" title="Shape the space around the experience: size, background color, padding, scrolling, and border.">Edit container parameters</summary>
           <div class="section-grid">
             <label>
               <span class="label-title">BG Color (Hex)</span>
@@ -170,7 +170,7 @@
         </div>
 
         <details class="full section-details tight-section-details">
-          <summary class="section-summary">Edit config and style options</summary>
+          <summary class="section-summary" title="Tune the journey details: sources, messages, merchant lists, and visual styling.">Edit config and style options</summary>
           <div class="section-grid">
             <div class="full section-title">
               <div><b>Config Object (passed to CardUpdatr)</b></div>
