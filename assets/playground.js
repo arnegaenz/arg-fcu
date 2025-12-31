@@ -1,6 +1,6 @@
 const $ = (id) => document.getElementById(id);
 
-const SSO_DEMO_ENABLED = false;
+const SSO_DEMO_ENABLED = true; // Re-enabled for debugging
 
 const SSO_DEBUG_REDACT_KEYS = new Set([
   "api_key",
@@ -655,7 +655,9 @@ function buildSsoRequestFromForm() {
   const excludePhoneNumber = $("excludePhoneNumber").checked;
   const excludeEmail = $("excludeEmail").checked;
 
-  const cardsavrServer = inferCardsavrServer($("fiHost").value);
+  const fiHost = $("fiHost").value;
+  const cardsavrServer = inferCardsavrServer(fiHost);
+
   const payload = {
     cardholder_data: {
       type: "ephemeral",
@@ -668,7 +670,8 @@ function buildSsoRequestFromForm() {
       expiration_month: DEMO_CARD.expirationMonth,
       expiration_year: DEMO_CARD.expirationYear
     },
-    cardsavr_server: cardsavrServer
+    cardsavr_server: cardsavrServer,
+    api_instance: cardsavrServer  // Add api_instance field for SSO grant generation
   };
 
   if (!excludeEmail) {
@@ -693,6 +696,10 @@ function buildSsoRequestFromForm() {
 }
 
 async function fetchSsoGrant(payload) {
+  console.log('[SSO DEBUG] fetchSsoGrant() called');
+  console.log('  Request payload:', JSON.stringify(payload, null, 2));
+
+  const startTime = performance.now();
   const response = await fetch(SSO_LAMBDA_URL, {
     method: "POST",
     headers: {
@@ -700,13 +707,25 @@ async function fetchSsoGrant(payload) {
     },
     body: JSON.stringify(payload)
   });
+  const endTime = performance.now();
+
+  console.log(`  [SSO DEBUG] Lambda response time: ${(endTime - startTime).toFixed(2)}ms`);
+  console.log(`  Response status: ${response.status} ${response.statusText}`);
 
   if (!response.ok) {
+    console.error('[SSO DEBUG] Lambda returned error status');
     throw new Error("SSO demo gateway returned an error.");
   }
 
   const apiResponse = await response.json();
+  console.log('  [SSO DEBUG] Lambda response:', {
+    grant: apiResponse.grant ? `${apiResponse.grant.substring(0, 20)}...` : 'MISSING',
+    cardId: apiResponse.cardId || 'MISSING',
+    fullResponse: apiResponse
+  });
+
   if (!apiResponse?.grant || !apiResponse?.cardId) {
+    console.error('[SSO DEBUG] Response missing grant or cardId');
     throw new Error("SSO demo response is missing grant or cardId.");
   }
   return apiResponse;
@@ -726,36 +745,66 @@ function setStatus(msg) {
 }
 
 function ensureCardupdatrScript(hostname, forceReload = false) {
+  console.log('[SSO DEBUG] ensureCardupdatrScript() called');
+  console.log(`  Hostname: ${hostname}`);
+  console.log(`  Force reload: ${forceReload}`);
+
   const script = document.getElementById("cardupdatr-script");
   const desiredSrc = `${hostname}cardupdatr-client-v2.js`;
 
   if (!forceReload && script && script.src === desiredSrc && typeof window.embedCardUpdatr === "function") {
+    console.log('[SSO DEBUG] CardUpdatr script already loaded, reusing');
     return Promise.resolve();
   }
+
+  if (forceReload) {
+    console.log('[SSO DEBUG] Force reload requested - removing old script and clearing globals');
+    if (script && script.parentNode) {
+      console.log('  [SSO DEBUG] Removing old script element');
+      script.parentNode.removeChild(script);
+    }
+    console.log('  [SSO DEBUG] Clearing window.embedCardUpdatr');
+    delete window.embedCardUpdatr;
+  }
+
+  console.log('[SSO DEBUG] Loading CardUpdatr script from:', desiredSrc);
 
   return new Promise((resolve, reject) => {
     const newScript = document.createElement("script");
     newScript.id = "cardupdatr-script";
     newScript.defer = true;
     newScript.src = desiredSrc;
-    newScript.onload = () => resolve();
-    newScript.onerror = () => reject(new Error("Failed to load CardUpdatr script."));
+    newScript.onload = () => {
+      console.log('[SSO DEBUG] CardUpdatr script loaded successfully');
+      console.log('  window.embedCardUpdatr available:', typeof window.embedCardUpdatr === "function");
+      resolve();
+    };
+    newScript.onerror = () => {
+      console.error('[SSO DEBUG] Failed to load CardUpdatr script');
+      reject(new Error("Failed to load CardUpdatr script."));
+    };
 
-    if (forceReload) {
-      window.embedCardUpdatr = undefined;
-      window.initCardupdatr = undefined;
-    }
-
-    if (script && script.parentNode) {
+    // Append the new script (old script already removed if forceReload was true)
+    if (!forceReload && script && script.parentNode) {
+      console.log('  [SSO DEBUG] Replacing existing script');
       script.parentNode.replaceChild(newScript, script);
     } else {
+      console.log('  [SSO DEBUG] Appending new script to body');
       document.body.appendChild(newScript);
     }
   });
 }
 
 async function renderPreview(settings, { resetSession = false } = {}) {
+  console.log('[SSO DEBUG] renderPreview() called');
+  console.log('  Final settings:', JSON.stringify(settings, null, 2));
+  console.log('  resetSession option:', resetSession);
+
+  logSessionState('AT START of renderPreview()');
+
   const integrationType = getRadioValue("integrationType", "embedded");
+  console.log(`  Integration type: ${integrationType}`);
+
   const preview = $("preview");
 
   if (integrationType === "weblink") {
@@ -787,19 +836,16 @@ async function renderPreview(settings, { resetSession = false } = {}) {
       setStatus("CardUpdatr script loaded, but embedCardUpdatr is missing.");
       return;
     }
-    if (typeof window.initCardupdatr === "function") {
-      window.initCardupdatr(settings);
-      // Some builds render on init; only embed if the container is still empty.
-      setTimeout(() => {
-        const frame = $("cardupdatr-frame");
-        if (!frame || frame.children.length === 0) {
-          window.embedCardUpdatr(settings);
-        }
-        setStatus("Loaded.");
-      }, 50);
-      return;
-    }
+
+    // NOTE: initCardupdatr is deprecated - only use embedCardUpdatr
+    console.log('[SSO DEBUG] Calling window.embedCardUpdatr()');
+    console.log('  Settings being passed:', JSON.stringify(settings, null, 2));
+    logSessionState('IMMEDIATELY BEFORE embedCardUpdatr()');
+
     window.embedCardUpdatr(settings);
+
+    logSessionState('IMMEDIATELY AFTER embedCardUpdatr()');
+    console.log('[SSO DEBUG] embedCardUpdatr() completed');
     setStatus("Loaded.");
   } catch (e) {
     captureLibraryError(e);
@@ -808,47 +854,108 @@ async function renderPreview(settings, { resetSession = false } = {}) {
 }
 
 function clearCardupdatrStorage() {
+  console.log('[SSO DEBUG] clearCardupdatrStorage() called');
+  logSessionState('BEFORE storage clear');
+
   const keyPattern = /cardupdatr|cardsavr/i;
-  const clearMatchingKeys = (storage) => {
+  const clearMatchingKeys = (storage, storageName) => {
     if (!storage) return;
-    Object.keys(storage).forEach((key) => {
+    const allKeys = Object.keys(storage);
+    console.log(`  [SSO DEBUG] All ${storageName} keys:`, allKeys);
+
+    allKeys.forEach((key) => {
       if (keyPattern.test(key)) {
+        console.log(`  [SSO DEBUG] Removing ${storageName}["${key}"]`);
         storage.removeItem(key);
+      } else {
+        console.log(`  [SSO DEBUG] Skipping ${storageName}["${key}"] (doesn't match pattern)`);
       }
     });
   };
-  clearMatchingKeys(sessionStorage);
-  clearMatchingKeys(localStorage);
+  clearMatchingKeys(sessionStorage, 'sessionStorage');
+  clearMatchingKeys(localStorage, 'localStorage');
+
+  logSessionState('AFTER storage clear');
+}
+
+function logSessionState(label) {
+  const keyPattern = /cardupdatr|cardsavr/i;
+  const localKeys = Object.keys(localStorage).filter(k => keyPattern.test(k));
+  const sessionKeys = Object.keys(sessionStorage).filter(k => keyPattern.test(k));
+
+  console.log(`[SSO DEBUG] ${label}`);
+  console.log('  localStorage keys:', localKeys.length > 0 ? localKeys : '(none)');
+  console.log('  sessionStorage keys:', sessionKeys.length > 0 ? sessionKeys : '(none)');
+
+  if (localKeys.length > 0) {
+    localKeys.forEach(key => {
+      console.log(`    - localStorage["${key}"]`, localStorage.getItem(key));
+    });
+  }
+  if (sessionKeys.length > 0) {
+    sessionKeys.forEach(key => {
+      console.log(`    - sessionStorage["${key}"]`, sessionStorage.getItem(key));
+    });
+  }
 }
 
 $("loadBtn").addEventListener("click", () => {
   (async () => {
+    console.log('[SSO DEBUG] ========== LOAD BUTTON CLICKED ==========');
     setStatus("Loading…");
     const settings = buildConfigFromForm();
+    console.log('[SSO DEBUG] Base settings built from form');
+
     const resetSession = $("resetSession").checked;
+    console.log(`[SSO DEBUG] resetSession checkbox: ${resetSession}`);
+
     if (resetSession) {
       setStatus("Resetting CardUpdatr session…");
       clearCardupdatrStorage();
     }
-    if (isSsoDemoEnabled()) {
+
+    const ssoEnabled = isSsoDemoEnabled();
+    console.log(`[SSO DEBUG] SSO enabled: ${ssoEnabled}`);
+
+    if (ssoEnabled) {
+      console.log('[SSO DEBUG] Entering SSO flow');
+      console.log('  Settings BEFORE SSO injection:', JSON.stringify(settings, null, 2));
+
       try {
         setStatus("Fetching SSO grant…");
         const rawPayload = $("ssoPayload").value;
         const payload = rawPayload.trim()
           ? safeParseJson(rawPayload)
           : buildSsoRequestFromForm();
+
+        console.log('[SSO DEBUG] SSO payload prepared (see fetchSsoGrant for details)');
         const apiResponse = await fetchSsoGrant(payload);
+
+        console.log('[SSO DEBUG] Injecting grant into settings.user');
         settings.user = {
           ...settings.user,
           grant: apiResponse.grant,
           card_id: apiResponse.cardId
         };
+
+        console.log('  Settings AFTER SSO injection:', JSON.stringify(settings, null, 2));
+        console.log('  settings.user.grant length:', apiResponse.grant?.length);
+        console.log('  settings.user.card_id:', apiResponse.cardId);
+
       } catch (e) {
+        console.error('[SSO DEBUG] SSO flow failed:', e);
         setStatus(`SSO demo failed: ${e?.message || e}`);
         return;
       }
+    } else {
+      console.log('[SSO DEBUG] Skipping SSO flow (not enabled)');
     }
+
+    logSessionState('BEFORE renderPreview()');
+    console.log('[SSO DEBUG] Calling renderPreview()');
+
     renderPreview(settings, { resetSession }).catch((e) => {
+      console.error('[SSO DEBUG] renderPreview() failed:', e);
       setStatus(e?.message || String(e));
     });
   })();
@@ -911,6 +1018,18 @@ function parseCommaList(value) {
 
 function inferCardsavrServer(fiHost) {
   const host = String(fiHost || "").toLowerCase().trim();
+
+  // Handle new .cardupdatr.app domains
+  if (host.endsWith(".cardupdatr.app")) {
+    const parts = host.split(".");
+    const cardupdatrIndex = parts.lastIndexOf("cardupdatr");
+    const subdomain = cardupdatrIndex > 0 ? parts[cardupdatrIndex - 1] : "";
+    if (subdomain) {
+      return `https://api.${subdomain}.cardsavr.io`;
+    }
+  }
+
+  // Handle legacy .cardsavr.io domains
   if (host.endsWith(".cardsavr.io")) {
     const parts = host.split(".");
     const cardsavrIndex = parts.lastIndexOf("cardsavr");
@@ -919,6 +1038,7 @@ function inferCardsavrServer(fiHost) {
       return `https://api.${subdomain}.cardsavr.io`;
     }
   }
+
   if (host.includes("customer-dev")) {
     return "https://api.customer-dev.cardsavr.io";
   }
@@ -1048,7 +1168,32 @@ function disableSsoDemoUi() {
   toggle.disabled = true;
 }
 
-disableSsoDemoUi();
+// disableSsoDemoUi(); // Temporarily disabled for debugging
+
+// Track FI host and aggressively clean up when it changes
+let trackedFiHost = null;
+
+// Add listener after DOM is ready
+const fiHostElement = $("fiHost");
+if (fiHostElement) {
+  trackedFiHost = fiHostElement.value;
+  console.log('[SSO DEBUG] Attaching FI host change listener. Initial value:', trackedFiHost);
+
+  fiHostElement.addEventListener("change", () => {
+    const newFiHost = fiHostElement.value;
+    console.log('[SSO DEBUG] ========== FI HOST DROPDOWN CHANGED ==========');
+    console.log(`  Previous: ${trackedFiHost}`);
+    console.log(`  New: ${newFiHost}`);
+
+  if (trackedFiHost !== newFiHost) {
+    console.log('[SSO DEBUG] FI host changed - forcing page reload');
+    // Force a full page reload to completely reset everything
+    window.location.reload();
+  }
+  });
+} else {
+  console.error('[SSO DEBUG] ERROR: Could not find fiHost element!');
+}
 
 $("ssoEnabled").addEventListener("change", () => {
   updateSsoOptionsVisibility();
