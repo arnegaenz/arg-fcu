@@ -87,6 +87,9 @@ input, select { height: 42px; }
 .section-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin-top: 8px; }
 .section-grid .full { grid-column: 1 / -1; }
 .sso-options.section-details { padding-top: 6px; padding-bottom: 6px; }
+.sso-options { margin-bottom: -10px; }
+.section-spacer { margin-top: 16px; }
+.tight-section-details { margin-top: -6px; }
 .sso-options .section-grid { margin-top: 6px; }
 .sso-options .inline-options { flex-wrap: nowrap; gap: 12px; }
 .container-options .section-grid { row-gap: 8px; }

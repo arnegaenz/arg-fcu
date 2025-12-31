@@ -76,28 +76,18 @@
         </div>
 
         <div class="full inline-options section-title tight-gap">
-          <div><b>Integration Type</b></div>
-          <label class="inline-field"><input type="radio" name="integrationType" id="integrationEmbedded" value="embedded" checked /> Embedded</label>
-          <label class="inline-field"><input type="radio" name="integrationType" id="integrationWeblink" value="weblink" /> Weblink</label>
+          <div><b>Scenario</b></div>
+          <label class="inline-field"><input type="radio" name="scenarioType" id="scenarioOverlay" value="overlay" checked /> Overlay</label>
+          <label class="inline-field"><input type="radio" name="scenarioType" id="scenarioEmbedded" value="embedded" /> Embedded</label>
+          <label class="inline-field"><input type="radio" name="scenarioType" id="scenarioWeblink" value="weblink" /> Weblink</label>
         </div>
 
-        <div class="full inline-options section-title">
-          <div><b>Load Options</b></div>
-          <label class="inline-field">
-            Overlay
-            <input id="overlayEnabled" type="checkbox" />
-          </label>
-          <label class="inline-field">
-            Reset session before load
-            <input id="resetSession" type="checkbox" checked />
-          </label>
-        </div>
 
-        <div class="full section-title">
+        <div class="full section-title section-spacer">
           <div><b>Container Parameters</b></div>
         </div>
 
-        <details class="full section-details container-options">
+        <details class="full section-details container-options tight-section-details">
           <summary class="section-summary">Edit container parameters</summary>
           <div class="section-grid">
             <label>
@@ -179,7 +169,7 @@
           <div><b>CardUpdatr Parameters</b></div>
         </div>
 
-        <details class="full section-details">
+        <details class="full section-details tight-section-details">
           <summary class="section-summary">Edit config and style options</summary>
           <div class="section-grid">
             <div class="full section-title">
@@ -189,6 +179,34 @@
             <label>
               <span class="label-title">Close URL</span>
               <input id="closeUrl" type="text" value="none" />
+            </label>
+
+            <label>
+              <span class="label-title">Source Type</span>
+              <select id="sourceType">
+                <option value="email">email</option>
+                <option value="navigation">navigation</option>
+                <option value="push_notification">push_notification</option>
+                <option value="promo">promo</option>
+                <option value="qr_code">qr_code</option>
+                <option value="sms">sms</option>
+                <option value="test" selected>test</option>
+              </select>
+            </label>
+
+            <label>
+              <span class="label-title">Source Category</span>
+              <select id="sourceCategory">
+                <option value="activation">activation</option>
+                <option value="card_controls">card_controls</option>
+                <option value="campaign">campaign</option>
+                <option value="other" selected>other</option>
+              </select>
+            </label>
+
+            <label class="full">
+              <span class="label-title">Source Sub-Category</span>
+              <input id="sourceSubCategory" type="text" value="arg-fcu testing" />
             </label>
 
           <label>

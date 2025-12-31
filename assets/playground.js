@@ -594,17 +594,28 @@ function buildBaseSettingsFromForm() {
   const topSites = parseCommaList($("topSites").value);
   const ssoEnabled = isSsoDemoEnabled();
   const closeUrl = normalizeCloseUrl($("closeUrl").value, hostname);
+  const scenarioType = getRadioValue("scenarioType", "overlay");
+  const sourceType = $("sourceType").value;
+  const sourceCategory = $("sourceCategory").value;
+  const sourceSubCategory = $("sourceSubCategory").value.trim();
 
   const base = {
     config: {
       app_container_id: "cardupdatr-frame",
       hostname,
       financial_institution: fiHost.split(".")[0] || "",
-      overlay: $("overlayEnabled").checked,
+      overlay: scenarioType === "overlay",
       close_url: closeUrl,
       exclude_sites: parseCommaList($("excludeSites").value),
       merchant_site_tags: merchantSiteTags,
       countries_supported: parseCommaList($("countriesSupported").value)
+    },
+    user: {
+      source: {
+        type: sourceType,
+        category: sourceCategory,
+        sub_category: sourceSubCategory
+      }
     },
     style: {
       card_description: $("cardDescription").value.trim(),
@@ -622,6 +633,10 @@ function buildBaseSettingsFromForm() {
 
   if (merchantSiteTags.length) {
     base.config.tags = merchantSiteTags.join(",");
+  }
+
+  if (!sourceSubCategory) {
+    delete base.user.source.sub_category;
   }
 
   if (ssoEnabled) {
@@ -802,12 +817,12 @@ async function renderPreview(settings, { resetSession = false } = {}) {
 
   logSessionState('AT START of renderPreview()');
 
-  const integrationType = getRadioValue("integrationType", "embedded");
-  console.log(`  Integration type: ${integrationType}`);
+  const scenarioType = getRadioValue("scenarioType", "overlay");
+  console.log(`  Scenario type: ${scenarioType}`);
 
   const preview = $("preview");
 
-  if (integrationType === "weblink") {
+  if (scenarioType === "weblink") {
     const width = parseInt($("containerWidth").value, 10) || 900;
     const height = parseInt($("containerHeight").value, 10) || 1100;
     window.open(settings.config.hostname, "_blank");
@@ -906,13 +921,10 @@ $("loadBtn").addEventListener("click", () => {
     const settings = buildConfigFromForm();
     console.log('[SSO DEBUG] Base settings built from form');
 
-    const resetSession = $("resetSession").checked;
-    console.log(`[SSO DEBUG] resetSession checkbox: ${resetSession}`);
-
-    if (resetSession) {
-      setStatus("Resetting CardUpdatr session…");
-      clearCardupdatrStorage();
-    }
+    const resetSession = true;
+    console.log("[SSO DEBUG] resetSession: always on");
+    setStatus("Resetting CardUpdatr session…");
+    clearCardupdatrStorage();
 
     const ssoEnabled = isSsoDemoEnabled();
     console.log(`[SSO DEBUG] SSO enabled: ${ssoEnabled}`);
