@@ -1170,13 +1170,17 @@ function disableSsoDemoUi() {
 
 // disableSsoDemoUi(); // Temporarily disabled for debugging
 
-// Track FI host and aggressively clean up when it changes
-let trackedFiHost = null;
-
-// Add listener after DOM is ready
+// Track FI host and restore selection after page reload
 const fiHostElement = $("fiHost");
 if (fiHostElement) {
-  trackedFiHost = fiHostElement.value;
+  // Restore previously selected FI host from sessionStorage
+  const savedFiHost = sessionStorage.getItem('selected_fi_host');
+  if (savedFiHost && savedFiHost !== fiHostElement.value) {
+    console.log('[SSO DEBUG] Restoring FI host selection:', savedFiHost);
+    fiHostElement.value = savedFiHost;
+  }
+
+  const trackedFiHost = fiHostElement.value;
   console.log('[SSO DEBUG] Attaching FI host change listener. Initial value:', trackedFiHost);
 
   fiHostElement.addEventListener("change", () => {
@@ -1185,11 +1189,13 @@ if (fiHostElement) {
     console.log(`  Previous: ${trackedFiHost}`);
     console.log(`  New: ${newFiHost}`);
 
-  if (trackedFiHost !== newFiHost) {
-    console.log('[SSO DEBUG] FI host changed - forcing page reload');
-    // Force a full page reload to completely reset everything
-    window.location.reload();
-  }
+    if (trackedFiHost !== newFiHost) {
+      console.log('[SSO DEBUG] FI host changed - saving selection and reloading page');
+      // Save the new selection before reloading
+      sessionStorage.setItem('selected_fi_host', newFiHost);
+      // Force a full page reload to completely reset everything
+      window.location.reload();
+    }
   });
 } else {
   console.error('[SSO DEBUG] ERROR: Could not find fiHost element!');
