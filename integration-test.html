@@ -175,11 +175,14 @@
   <header class="site-header">
     <div class="wrap">
       <div class="title">ARG-FCU</div>
-      <nav class="nav">
-        <a href="./index.html">Home</a>
-        <a class="active" href="./integration-test.html">Integration Testing</a>
-        <a href="./playground.html">Playground</a>
-      </nav>
+      <div class="nav-wrapper">
+        <nav class="nav">
+          <a href="./index.html">Home</a>
+          <a class="active" href="./integration-test.html">Integration Testing</a>
+          <a href="./playground.html">Playground</a>
+        </nav>
+        <button id="themeToggle" class="theme-toggle" aria-label="Toggle theme">🌙</button>
+      </div>
     </div>
   </header>
 
@@ -979,5 +982,6 @@
     requestGeolocation();
     updateFlowDescription();
   </script>
+  <script src="./assets/theme-toggle.js"></script>
 </body>
 </html>

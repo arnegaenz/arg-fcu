@@ -10,12 +10,15 @@
   <header class="site-header">
     <div class="wrap">
       <div class="title">ARG-FCU</div>
-      <nav class="nav">
-        <a href="./index.html">Home</a>
-        <a href="./integration-test.html">Integration Testing</a>
-        <a class="active" href="./playground.html">Playground</a>
-      </nav>
-      <div id="ssoDebugIndicator" class="debug-indicator" hidden>Debug: ON</div>
+      <div class="nav-wrapper">
+        <nav class="nav">
+          <a href="./index.html">Home</a>
+          <a href="./integration-test.html">Integration Testing</a>
+          <a class="active" href="./playground.html">Playground</a>
+        </nav>
+        <div id="ssoDebugIndicator" class="debug-indicator" hidden>Debug: ON</div>
+        <button id="themeToggle" class="theme-toggle" aria-label="Toggle theme">🌙</button>
+      </div>
     </div>
   </header>
 
@@ -390,5 +393,6 @@
 
   <script id="cardupdatr-script" defer src="https://orb_prod.customer-dev.cardupdatr.app/cardupdatr-client-v2.js"></script>
   <script src="./assets/playground.js"></script>
+  <script src="./assets/theme-toggle.js"></script>
 </body>
 </html>

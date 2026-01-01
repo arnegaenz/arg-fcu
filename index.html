@@ -10,11 +10,14 @@
   <header class="site-header">
     <div class="wrap">
       <div class="title">ARG-FCU</div>
-      <nav class="nav">
-        <a class="active" href="./index.html">Home</a>
-        <a href="./integration-test.html">Integration Testing</a>
-        <a href="./playground.html">Playground</a>
-      </nav>
+      <div class="nav-wrapper">
+        <nav class="nav">
+          <a class="active" href="./index.html">Home</a>
+          <a href="./integration-test.html">Integration Testing</a>
+          <a href="./playground.html">Playground</a>
+        </nav>
+        <button id="themeToggle" class="theme-toggle" aria-label="Toggle theme">🌙</button>
+      </div>
     </div>
   </header>
 
@@ -42,8 +45,9 @@
 
   <style>
     /* tiny additions only for buttons */
-    .button { display:inline-block; padding:12px 14px; border-radius:12px; border:1px solid #ddd; background:#111; color:#fff; text-decoration:none; width: fit-content; }
-    .button.secondary { background:#fff; color:#111; }
+    .button { display:inline-block; padding:12px 14px; border-radius:12px; border:1px solid var(--border); background: var(--text); color: var(--bg); text-decoration:none; width: fit-content; }
+    .button.secondary { background: var(--bg); color: var(--text); border: 1px solid var(--border); }
   </style>
+  <script src="./assets/theme-toggle.js"></script>
 </body>
 </html>
