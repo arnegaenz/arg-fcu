@@ -709,6 +709,10 @@
       const fiName = fiHost.split('.')[0];
       const testerName = $("testerName").value.trim() || "anonymous";
 
+      console.log('[BUILD SETTINGS] fiHost:', fiHost);
+      console.log('[BUILD SETTINGS] Extracted fiName:', fiName);
+      console.log('[BUILD SETTINGS] Tester Name:', testerName);
+
       return {
         config: {
           app_container_id: "",
@@ -893,6 +897,12 @@
       preview.className = "preview-container loaded";
       preview.style.display = "flex";
 
+      console.log('[EMBEDDED SSO] Calling embedCardUpdatr with settings:', JSON.stringify(settings, null, 2));
+      console.log('[EMBEDDED SSO] Financial Institution:', settings.config.financial_institution);
+      console.log('[EMBEDDED SSO] Hostname:', settings.config.hostname);
+      console.log('[EMBEDDED SSO] Source:', settings.user.source);
+      console.log('[EMBEDDED SSO] Grant:', settings.user.grant ? 'Present' : 'Missing');
+
       if (typeof window.embedCardUpdatr === "function") {
         window.embedCardUpdatr(settings);
       } else {
@@ -965,6 +975,12 @@
 
       const hostname = settings.config.hostname;
       await ensureCardupdatrScript(hostname);
+
+      console.log('[OVERLAY SSO] Calling embedCardUpdatr with settings:', JSON.stringify(settings, null, 2));
+      console.log('[OVERLAY SSO] Financial Institution:', settings.config.financial_institution);
+      console.log('[OVERLAY SSO] Hostname:', settings.config.hostname);
+      console.log('[OVERLAY SSO] Source:', settings.user.source);
+      console.log('[OVERLAY SSO] Grant:', settings.user.grant ? 'Present' : 'Missing');
 
       if (typeof window.embedCardUpdatr === "function") {
         window.embedCardUpdatr(settings);
