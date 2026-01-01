@@ -857,6 +857,7 @@
 
       const fiHost = $("fiHost").value;
       const cardsavrServer = inferCardsavrServer(fiHost);
+      const fiName = fiHost.split('.')[0];
 
       const ssoPayload = {
         cardholder_data: {
@@ -878,7 +879,8 @@
           phone_number: cardData.phoneNumber
         },
         cardsavr_server: cardsavrServer,
-        api_instance: cardsavrServer
+        api_instance: cardsavrServer,
+        financial_institution: fiName
       };
 
       console.log('[EMBEDDED SSO - GRANT REQUEST] Sending payload to Lambda:', JSON.stringify(ssoPayload, null, 2));
@@ -949,6 +951,7 @@
 
       const fiHost = $("fiHost").value;
       const cardsavrServer = inferCardsavrServer(fiHost);
+      const fiName = fiHost.split('.')[0];
 
       const ssoPayload = {
         cardholder_data: {
@@ -970,7 +973,8 @@
           phone_number: cardData.phoneNumber
         },
         cardsavr_server: cardsavrServer,
-        api_instance: cardsavrServer
+        api_instance: cardsavrServer,
+        financial_institution: fiName
       };
 
       console.log('[OVERLAY SSO - GRANT REQUEST] Sending payload to Lambda:', JSON.stringify(ssoPayload, null, 2));
