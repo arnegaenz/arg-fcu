@@ -881,7 +881,15 @@
         api_instance: cardsavrServer
       };
 
+      console.log('[EMBEDDED SSO - GRANT REQUEST] Sending payload to Lambda:', JSON.stringify(ssoPayload, null, 2));
+      console.log('[EMBEDDED SSO - GRANT REQUEST] cardsavr_server:', cardsavrServer);
+      console.log('[EMBEDDED SSO - GRANT REQUEST] api_instance:', cardsavrServer);
+
       const apiResponse = await fetchSsoGrant(ssoPayload);
+
+      console.log('[EMBEDDED SSO - GRANT RESPONSE] Received from Lambda:', JSON.stringify(apiResponse, null, 2));
+      console.log('[EMBEDDED SSO - GRANT RESPONSE] Grant present:', !!apiResponse.grant);
+      console.log('[EMBEDDED SSO - GRANT RESPONSE] Card ID:', apiResponse.cardId);
 
       settings.user = {
         ...settings.user,
@@ -965,7 +973,15 @@
         api_instance: cardsavrServer
       };
 
+      console.log('[OVERLAY SSO - GRANT REQUEST] Sending payload to Lambda:', JSON.stringify(ssoPayload, null, 2));
+      console.log('[OVERLAY SSO - GRANT REQUEST] cardsavr_server:', cardsavrServer);
+      console.log('[OVERLAY SSO - GRANT REQUEST] api_instance:', cardsavrServer);
+
       const apiResponse = await fetchSsoGrant(ssoPayload);
+
+      console.log('[OVERLAY SSO - GRANT RESPONSE] Received from Lambda:', JSON.stringify(apiResponse, null, 2));
+      console.log('[OVERLAY SSO - GRANT RESPONSE] Grant present:', !!apiResponse.grant);
+      console.log('[OVERLAY SSO - GRANT RESPONSE] Card ID:', apiResponse.cardId);
 
       settings.user = {
         ...settings.user,
