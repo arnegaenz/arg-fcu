@@ -30,7 +30,7 @@ body { margin: 0; font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial
 .nav { display: flex; }
 .nav a { margin-left: 12px; text-decoration: none; color: var(--text); }
 .nav a.active { text-decoration: underline; }
-.theme-toggle { margin-left: auto; padding: 6px 10px; background: var(--card-bg); border: 1px solid var(--border); border-radius: 8px; cursor: pointer; font-size: 18px; transition: transform 0.2s; }
+.theme-toggle { margin-left: auto; padding: 6px 10px; background: var(--card-bg); border: 1px solid var(--border); border-radius: 8px; cursor: pointer; font-size: 18px; transition: transform 0.2s; width: auto; flex-shrink: 0; }
 .theme-toggle:hover { transform: scale(1.1); }
 .debug-indicator { font-size: 12px; font-weight: 600; padding: 6px 10px; border-radius: 999px; background: #ffe8d6; color: #b84700; border: 1px solid #f3c3a3; }
 .grid { display: grid; grid-template-columns: minmax(520px, 1fr) 1fr; gap: 16px; align-items: start; }
