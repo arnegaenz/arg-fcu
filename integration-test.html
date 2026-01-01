@@ -707,13 +707,13 @@
       const fiHost = $("fiHost").value;
       const hostname = `https://${fiHost}/`;
       const fiName = fiHost.split('.')[0];
-      const testerName = $("testerName").value.trim() || "anonymous";
+      const testerName = $("testerName").value.trim();
 
       console.log('[BUILD SETTINGS] fiHost:', fiHost);
       console.log('[BUILD SETTINGS] Extracted fiName:', fiName);
       console.log('[BUILD SETTINGS] Tester Name:', testerName);
 
-      return {
+      const settings = {
         config: {
           app_container_id: "",
           hostname: hostname,
@@ -727,8 +727,6 @@
           top_sites: ["amazon.com", "apple.com", "audible.com", "netflix.com", "spotify.com"]
         },
         style: {
-          card_description: "ARG-FCU Credit & Debit Card",
-          final_message: "Thank you for updating your card!",
           link_color: "#ff0000",
           button_color: "#5e35b1",
           button_border_radius: "0.00rem",
@@ -741,11 +739,17 @@
         user: {
           source: {
             type: "test",
-            category: "other",
-            sub_category: testerName
+            category: "other"
           }
         }
       };
+
+      // Only add sub_category if testerName is provided
+      if (testerName) {
+        settings.user.source.sub_category = testerName;
+      }
+
+      return settings;
     }
 
     // Update flow description
