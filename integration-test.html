@@ -216,7 +216,8 @@
         <label>
           <span>FI Host Environment</span>
           <select id="fiHost">
-            <option value="orb_prod.customer-dev.cardupdatr.app" selected>Current CardUpdatr (customer-dev)</option>
+            <option value="argfcu.customer-dev.cardupdatr.app">ArgFCU (customer-dev)</option>
+            <option value="orb_prod.customer-dev.cardupdatr.app">Orb Production (customer-dev)</option>
             <option value="alkami.pkumar.cardupdatr.app">CardUpdatr 2+ (pkumar)</option>
           </select>
         </label>
@@ -660,12 +661,16 @@
       });
 
       if (!response.ok) {
-        throw new Error("SSO demo gateway returned an error.");
+        const errorText = await response.text();
+        console.error('[SSO GRANT ERROR] Response status:', response.status);
+        console.error('[SSO GRANT ERROR] Response body:', errorText);
+        throw new Error(`SSO demo gateway returned an error: ${response.status} - ${errorText}`);
       }
 
       const apiResponse = await response.json();
 
       if (!apiResponse?.grant || !apiResponse?.cardId) {
+        console.error('[SSO GRANT ERROR] Missing grant or cardId:', apiResponse);
         throw new Error("SSO demo response is missing grant or cardId.");
       }
 
@@ -1013,12 +1018,28 @@
       }
     }
 
+    // Auto-select FI host based on current origin
+    function setDefaultFIHost() {
+      const fiHostSelect = $("fiHost");
+      const currentOrigin = window.location.origin;
+
+      if (currentOrigin.includes('localhost') || currentOrigin.includes('127.0.0.1')) {
+        // Localhost -> use argfcu
+        fiHostSelect.value = "argfcu.customer-dev.cardupdatr.app";
+      } else if (currentOrigin.includes('arg-fcu.com')) {
+        // arg-fcu.com -> use orb_prod
+        fiHostSelect.value = "orb_prod.customer-dev.cardupdatr.app";
+      }
+      // Otherwise leave it at the first option (argfcu)
+    }
+
     // Event listeners
     $("testFlow").addEventListener("change", updateFlowDescription);
     $("cardholder").addEventListener("change", toggleCustomCardFields);
     $("loadTestBtn").addEventListener("click", loadTest);
 
     // Initialize on page load
+    setDefaultFIHost();
     requestGeolocation();
     updateFlowDescription();
   </script>
