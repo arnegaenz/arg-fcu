@@ -12,23 +12,23 @@
       filter: grayscale(1);
     }
     .location-error {
-      background: #ffebee;
-      border: 2px solid #f44336;
+      background: var(--alert-error-bg);
+      border: 2px solid var(--alert-error-border);
       border-radius: 8px;
       padding: 2rem;
       text-align: center;
       margin: 2rem 0;
     }
     .location-error h2 {
-      color: #c62828;
+      color: var(--alert-error-title);
       margin-top: 0;
     }
     .location-error p {
-      color: #666;
+      color: var(--alert-error-text);
       margin-bottom: 0;
     }
     .test-controls {
-      background: #f5f5f5;
+      background: var(--surface-strong);
       padding: 2rem;
       border-radius: 8px;
       margin-bottom: 2rem;
@@ -44,7 +44,7 @@
       flex-direction: column;
       gap: 0.5rem;
       font-weight: 500;
-      color: #333;
+      color: var(--text);
     }
     label span {
       font-size: 0.95rem;
@@ -53,15 +53,20 @@
       padding: 0.75rem;
       font-size: 1rem;
       border-radius: 4px;
-      border: 1px solid #ccc;
+      border: 1px solid var(--input-border);
       font-family: inherit;
     }
+    select, input {
+      background: var(--input-bg);
+      color: var(--text);
+    }
     select:disabled, input:disabled {
-      background: #e0e0e0;
+      background: var(--input-disabled-bg);
+      color: var(--muted);
       cursor: not-allowed;
     }
     button {
-      background: #5e35b1;
+      background: var(--button-primary-bg);
       color: white;
       border: none;
       cursor: pointer;
@@ -70,10 +75,10 @@
       margin-top: 1rem;
     }
     button:hover:not(:disabled) {
-      background: #4527a0;
+      background: var(--button-primary-hover);
     }
     button:disabled {
-      background: #ccc;
+      background: var(--button-disabled-bg);
       cursor: not-allowed;
     }
     .location-status {
@@ -86,20 +91,20 @@
       border-radius: 4px;
     }
     .location-status.enabled {
-      background: #e8f5e9;
-      color: #2e7d32;
+      background: var(--status-success-bg);
+      color: var(--status-success-text);
     }
     .location-status.denied {
-      background: #ffebee;
-      color: #c62828;
+      background: var(--status-error-bg);
+      color: var(--status-error-text);
     }
     .location-status.pending {
-      background: #fff3e0;
-      color: #e65100;
+      background: var(--status-pending-bg);
+      color: var(--status-pending-text);
     }
     .flow-description {
-      background: #e3f2fd;
-      border-left: 4px solid #2196f3;
+      background: var(--info-bg);
+      border-left: 4px solid var(--info-border);
       padding: 1rem;
       margin-top: 1rem;
       border-radius: 4px;
@@ -109,11 +114,11 @@
     .flow-description strong {
       display: block;
       margin-bottom: 0.5rem;
-      color: #1565c0;
+      color: var(--info-title);
     }
     .flow-description .partners {
       font-style: italic;
-      color: #666;
+      color: var(--info-muted);
       margin-top: 0.5rem;
       font-size: 0.9rem;
     }
@@ -121,8 +126,8 @@
       display: none;
       margin-top: 1rem;
       padding: 1rem;
-      background: #fff;
-      border: 1px solid #ccc;
+      background: var(--custom-card-bg);
+      border: 1px solid var(--custom-card-border);
       border-radius: 4px;
     }
     .custom-card-fields.visible {
@@ -130,7 +135,7 @@
     }
     .custom-card-fields h4 {
       margin: 0 0 1rem 0;
-      color: #333;
+      color: var(--custom-card-title);
       font-size: 1rem;
     }
     .field-row {
@@ -145,18 +150,18 @@
     .preview-container {
       width: 100%;
       min-height: 800px;
-      border: 2px dashed #ddd;
+      border: 2px dashed var(--preview-border);
       border-radius: 4px;
       margin-top: 2rem;
       display: flex;
       align-items: center;
       justify-content: center;
-      color: #999;
+      color: var(--preview-text);
       font-style: italic;
     }
     .preview-container.loaded {
       border-style: solid;
-      border-color: #4CAF50;
+      border-color: var(--preview-loaded-border);
       align-items: stretch;
       justify-content: stretch;
     }
