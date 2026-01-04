@@ -1,0 +1,58 @@
+{
+  "runs": 20,
+  "successRate": 0.8,
+  "delayBetweenRunsMs": 1500,
+  "headless": false,
+  "baseUrl": "https://arg-fcu.com/integration-test.html",
+  "geolocation": {
+    "latitude": 33.8353,
+    "longitude": -117.9145
+  },
+  "integrationTest": {
+    "fiHost": "orb_prod.customer-dev.cardupdatr.app",
+    "testFlow": "overlay_sso",
+    "cardholder": "use_location",
+    "testerName": "",
+    "source": {
+      "type": "test",
+      "category": "other",
+      "subCategory": "playwright test"
+    }
+  },
+  "merchantSelection": {
+    "sites": ["Blockbuster"],
+    "searchLabel": "Search for sites",
+    "searchText": "Blockbuster",
+    "continueButtonText": "Continue"
+  },
+  "credentials": {
+    "emailField": {
+      "placeholder": "Email/Username"
+    },
+    "passwordField": {
+      "placeholder": "Password"
+    },
+    "submitButtonText": "Submit",
+    "success": {
+      "email": "good_email",
+      "password": "good_password"
+    },
+    "failureAttempts": 2,
+    "failure": {
+      "email": "fail@example.com",
+      "password": "fail-pass"
+    }
+  },
+  "finalState": {
+    "timeoutMs": 45000,
+    "success": {
+      "text": "Success"
+    },
+    "failure": {
+      "text": "Unable to automatically update your card due to invalid username/password."
+    }
+  },
+  "closeAction": {
+    "buttonText": "Close"
+  }
+}

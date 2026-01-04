@@ -147,6 +147,9 @@
     .field-row.full {
       grid-template-columns: 1fr;
     }
+    .field-row.three {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
     .preview-container {
       width: 100%;
       min-height: 800px;
@@ -171,6 +174,9 @@
     }
     @media (max-width: 768px) {
       .field-row {
+        grid-template-columns: 1fr;
+      }
+      .field-row.three {
         grid-template-columns: 1fr;
       }
     }
@@ -338,6 +344,39 @@
               <input type="text" id="customCountry" placeholder="USA" value="USA" />
             </label>
           </div>
+        </div>
+      </div>
+
+      <!-- 4. Source Settings (preset for integration testing) -->
+      <div class="control-group" id="sourceGroup">
+        <div class="field-row three">
+          <label>
+            <span>Source Type</span>
+            <select id="sourceType">
+              <option value="email">email</option>
+              <option value="navigation">navigation</option>
+              <option value="push_notification">push_notification</option>
+              <option value="promo">promo</option>
+              <option value="qr_code">qr_code</option>
+              <option value="sms">sms</option>
+              <option value="test" selected>test</option>
+            </select>
+          </label>
+
+          <label>
+            <span>Source Category</span>
+            <select id="sourceCategory">
+              <option value="activation">activation</option>
+              <option value="card_controls">card_controls</option>
+              <option value="campaign">campaign</option>
+              <option value="other" selected>other</option>
+            </select>
+          </label>
+
+          <label>
+            <span>Source Sub-Category</span>
+            <input type="text" id="sourceSubCategory" />
+          </label>
         </div>
       </div>
 
@@ -718,6 +757,9 @@
       const hostname = `https://${fiHost}/`;
       const fiName = fiHost.split('.')[0];
       const testerName = $("testerName").value.trim();
+      const sourceType = $("sourceType").value;
+      const sourceCategory = $("sourceCategory").value;
+      const sourceSubCategory = $("sourceSubCategory").value.trim();
 
       console.log('[BUILD SETTINGS] fiHost:', fiHost);
       console.log('[BUILD SETTINGS] Extracted fiName:', fiName);
@@ -748,14 +790,16 @@
         },
         user: {
           source: {
-            type: "test",
-            category: "other"
+            type: sourceType,
+            category: sourceCategory
           }
         }
       };
 
-      // Only add sub_category if testerName is provided
-      if (testerName) {
+      // Prefer explicit sub-category input, then tester name if present
+      if (sourceSubCategory) {
+        settings.user.source.sub_category = sourceSubCategory;
+      } else if (testerName) {
         settings.user.source.sub_category = testerName;
       }
 
@@ -1038,10 +1082,26 @@
       // Otherwise leave it at the first option (argfcu)
     }
 
+    // Track when sub-category is user-edited vs auto-filled
+    let subCategoryAutoFill = true;
+
     // Event listeners
     $("testFlow").addEventListener("change", updateFlowDescription);
     $("cardholder").addEventListener("change", toggleCustomCardFields);
     $("loadTestBtn").addEventListener("click", loadTest);
+    $("sourceSubCategory").addEventListener("input", () => {
+      subCategoryAutoFill = $("sourceSubCategory").value.trim().length === 0;
+    });
+    $("testerName").addEventListener("input", () => {
+      const testerName = $("testerName").value.trim();
+      if (subCategoryAutoFill || $("sourceSubCategory").value.trim().length === 0) {
+        $("sourceSubCategory").value = testerName;
+        subCategoryAutoFill = true;
+      }
+      if (!testerName && subCategoryAutoFill) {
+        $("sourceSubCategory").value = "";
+      }
+    });
 
     // Initialize on page load
     setDefaultFIHost();

@@ -1,0 +1,52 @@
+{
+  "runs": 20,
+  "successRate": 0.8,
+  "delayBetweenRunsMs": 1500,
+  "headless": false,
+  "baseUrl": "https://arg-fcu.com/integration-test.html",
+  "geolocation": {
+    "latitude": 33.8353,
+    "longitude": -117.9145
+  },
+  "integrationTest": {
+    "fiHost": "argfcu.customer-dev.cardupdatr.app",
+    "testFlow": "embedded_sso",
+    "cardholder": "jack_skellington",
+    "testerName": "Traffic Runner",
+    "source": {
+      "type": "test",
+      "category": "other",
+      "subCategory": ""
+    }
+  },
+  "merchantSelection": {
+    "sites": ["Blockbuster", "Netflix"],
+    "continueButtonText": "Continue"
+  },
+  "credentials": {
+    "emailLabel": "Email",
+    "passwordLabel": "Password",
+    "submitButtonText": "Submit",
+    "success": {
+      "email": "good_email",
+      "password": "good_password"
+    },
+    "failureAttempts": 2,
+    "failure": {
+      "email": "fail@example.com",
+      "password": "fail-pass"
+    }
+  },
+  "finalState": {
+    "timeoutMs": 45000,
+    "success": {
+      "text": "Success"
+    },
+    "failure": {
+      "text": "Failed"
+    }
+  },
+  "closeAction": {
+    "buttonText": "Close"
+  }
+}

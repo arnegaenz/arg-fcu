@@ -1,2 +1,4 @@
 .DS_Store
 __MACOSX/
+node_modules/
+tools/traffic-runner/run-*.png

@@ -1,0 +1,63 @@
+{
+  "integrationTest": {
+    "fiHost": [
+      "argfcu.customer-dev.cardupdatr.app",
+      "orb_prod.customer-dev.cardupdatr.app",
+      "alkami.pkumar.cardupdatr.app"
+    ],
+    "testFlow": [
+      "weblink_nosso",
+      "embedded_nosso",
+      "embedded_sso",
+      "overlay_nosso",
+      "overlay_sso"
+    ],
+    "cardholder": [
+      "use_location",
+      "jack_skellington",
+      "pepper_potts",
+      "custom"
+    ],
+    "source": {
+      "type": [
+        "email",
+        "navigation",
+        "push_notification",
+        "promo",
+        "qr_code",
+        "sms",
+        "test"
+      ],
+      "category": [
+        "activation",
+        "card_controls",
+        "campaign",
+        "other"
+      ]
+    }
+  },
+  "merchantSelection": {
+    "continueButtonTextExamples": [
+      "Continue"
+    ],
+    "searchLabelExamples": [
+      "Search for sites"
+    ]
+  },
+  "credentials": {
+    "submitButtonTextExamples": [
+      "Submit"
+    ],
+    "emailFieldPlaceholderExamples": [
+      "Email/Username"
+    ],
+    "passwordFieldPlaceholderExamples": [
+      "Password"
+    ]
+  },
+  "finalState": {
+    "failureTextExamples": [
+      "Unable to automatically update your card due to invalid username/password."
+    ]
+  }
+}

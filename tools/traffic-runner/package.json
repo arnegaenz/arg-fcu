@@ -1,0 +1,14 @@
+{
+  "name": "arg-fcu-traffic-runner",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Local Playwright runner for scripted CardUpdatr traffic via integration-test.html",
+  "scripts": {
+    "run": "node run-tests.js --config ./config.json",
+    "install:browsers": "npx playwright install"
+  },
+  "dependencies": {
+    "playwright": "^1.47.0"
+  }
+}
