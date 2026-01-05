@@ -6,6 +6,7 @@
   "description": "Local Playwright runner for scripted CardUpdatr traffic via integration-test.html",
   "scripts": {
     "run": "node run-tests.js --config ./config.json",
+    "run:sis": "node run-sis-jobs.js",
     "install:browsers": "npx playwright install"
   },
   "dependencies": {

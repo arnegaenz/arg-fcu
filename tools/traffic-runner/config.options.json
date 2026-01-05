@@ -59,5 +59,10 @@
     "failureTextExamples": [
       "Unable to automatically update your card due to invalid username/password."
     ]
+  },
+  "abandonRates": {
+    "selectMerchant": [0, 5, 10, 25, 50],
+    "userData": [0, 5, 10, 25, 50],
+    "credentialEntry": [0, 5, 10, 25, 50]
   }
 }

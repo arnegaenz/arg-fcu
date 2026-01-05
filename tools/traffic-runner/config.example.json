@@ -1,6 +1,11 @@
 {
   "runs": 20,
   "successRate": 0.8,
+  "abandonRates": {
+    "selectMerchant": 0,
+    "userData": 0,
+    "credentialEntry": 0
+  },
   "delayBetweenRunsMs": 1500,
   "headless": false,
   "baseUrl": "https://arg-fcu.com/integration-test.html",

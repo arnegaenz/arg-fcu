@@ -5,7 +5,7 @@ import { fileURLToPath } from "url";
 import { chromium } from "playwright";
 
 function parseArgs(argv) {
-  const args = { config: "./config.json", runs: null, failures: null };
+  const args = { config: "./config.json", runs: null, failures: null, json: false };
   for (let i = 0; i < argv.length; i += 1) {
     const token = argv[i];
     if (token === "--config") {
@@ -17,6 +17,8 @@ function parseArgs(argv) {
     } else if (token === "--failures") {
       args.failures = Number(argv[i + 1]);
       i += 1;
+    } else if (token === "--json") {
+      args.json = true;
     }
   }
   return args;
@@ -79,6 +81,12 @@ function startStaticServer(rootDir, port = 0) {
 }
 
 function normalizeSuccessRate(value) {
+  if (value == null || Number.isNaN(value)) return 0;
+  if (value > 1) return Math.min(value / 100, 1);
+  return Math.max(value, 0);
+}
+
+function normalizeRate(value) {
   if (value == null || Number.isNaN(value)) return 0;
   if (value > 1) return Math.min(value / 100, 1);
   return Math.max(value, 0);
@@ -304,6 +312,11 @@ async function runSingle(page, config, successRate, forcedSuccess) {
 
   const frame = await waitForCardupdatrFrame(page, config.timeouts?.iframeMs || 45000);
 
+  const abandonRates = config.abandonRates || {};
+  const abandonSelectRate = normalizeRate(abandonRates.selectMerchant);
+  const abandonUserRate = normalizeRate(abandonRates.userData);
+  const abandonCredentialRate = normalizeRate(abandonRates.credentialEntry);
+
   const merchantConfig = config.merchantSelection || {};
   if (merchantConfig.preSelectDelayMs) {
     try {
@@ -329,10 +342,21 @@ async function runSingle(page, config, successRate, forcedSuccess) {
   for (const site of merchantConfig.sites || []) {
     await clickByText(frame, site);
   }
+  if (Math.random() < abandonSelectRate) {
+    await tryCloseFlow(frame, config.closeAction);
+    return { outcome: "abandon_select_merchant", expectedSuccess: null };
+  }
+
   if (merchantConfig.continueButtonSelector) {
     await clickBySelector(frame, merchantConfig.continueButtonSelector);
   } else if (merchantConfig.continueButtonText) {
     await clickButtonByText(frame, merchantConfig.continueButtonText);
+  }
+
+  if (Math.random() < abandonUserRate) {
+    await frame.waitForTimeout(config.timeouts?.userDataAbandonMs || 1500);
+    await tryCloseFlow(frame, config.closeAction);
+    return { outcome: "abandon_user_data", expectedSuccess: null };
   }
 
   const creds = pickCredentials(config, successRate, forcedSuccess);
@@ -347,6 +371,11 @@ async function runSingle(page, config, successRate, forcedSuccess) {
   };
 
   await waitForCredentialFields(frame, emailField, passwordField, config.timeouts?.credentialsMs || 30000);
+
+  if (Math.random() < abandonCredentialRate) {
+    await tryCloseFlow(frame, config.closeAction);
+    return { outcome: "abandon_credential_entry", expectedSuccess: null };
+  }
 
   if (creds.expectedSuccess) {
     await fillField(frame, emailField, creds.email);
@@ -419,7 +448,9 @@ async function main() {
         const forcedSuccess = runPlan ? runPlan[i] : null;
         const result = await runSingle(page, config, successRate, forcedSuccess);
         results.push(result);
-        console.log(`Run ${i + 1}: ${result.outcome} (expected ${result.expectedSuccess ? "success" : "failure"})`);
+        const expectedLabel =
+          result.expectedSuccess == null ? "n/a" : result.expectedSuccess ? "success" : "failure";
+        console.log(`Run ${i + 1}: ${result.outcome} (expected ${expectedLabel})`);
       } catch (err) {
         const safeIndex = String(i + 1).padStart(2, "0");
         const screenshotPath = path.resolve(process.cwd(), `run-${safeIndex}-error.png`);
@@ -463,6 +494,10 @@ async function main() {
     if (key === "total") return;
     console.log(`  ${key}: ${summary[key]}`);
   });
+
+  if (args.json) {
+    console.log(JSON.stringify({ summary }));
+  }
 }
 
 main().catch((err) => {
