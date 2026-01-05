@@ -136,6 +136,10 @@ async function postResults(jobId, payload) {
   });
 }
 
+async function markRunning(jobId) {
+  await postResults(jobId, { status: "running", attempted: 0 });
+}
+
 async function main() {
   if (!API_BASE) {
     throw new Error("SIS_API_BASE is required");
@@ -174,28 +178,35 @@ async function main() {
     fs.writeFileSync(tmpConfig, JSON.stringify(config, null, 2));
 
     console.log(`Running job ${job.id} for ${runs} runs`);
-    const { summary } = runTests(tmpConfig, runs);
-    const success = Number(summary.success || 0);
-    const failure = Number(summary.failure || 0);
-    const abandonSelect = Number(summary.abandon_select_merchant || 0);
-    const abandonUser = Number(summary.abandon_user_data || 0);
-    const abandonCredential = Number(summary.abandon_credential_entry || 0);
-    const timeout = Number(summary.timeout || 0);
-    const error = Number(summary.error || 0);
-    const attempted = Number(summary.total || success + failure + abandonSelect + abandonUser + abandonCredential + timeout + error);
-    const placementsFailed = failure + timeout + error;
-    const placementsAbandoned = abandonSelect + abandonUser + abandonCredential;
+    await markRunning(job.id);
 
-    await postResults(job.id, {
-      attempted,
-      placements_success: success,
-      placements_failed: placementsFailed,
-      placements_abandoned: placementsAbandoned,
-      abandon_select_merchant: abandonSelect,
-      abandon_user_data: abandonUser,
-      abandon_credential_entry: abandonCredential,
-      last_run_at: new Date().toISOString()
-    });
+    for (let i = 0; i < runs; i += 1) {
+      const { summary } = runTests(tmpConfig, 1);
+      const success = Number(summary.success || 0);
+      const failure = Number(summary.failure || 0);
+      const abandonSelect = Number(summary.abandon_select_merchant || 0);
+      const abandonUser = Number(summary.abandon_user_data || 0);
+      const abandonCredential = Number(summary.abandon_credential_entry || 0);
+      const timeout = Number(summary.timeout || 0);
+      const error = Number(summary.error || 0);
+      const attempted = Number(
+        summary.total ||
+          success + failure + abandonSelect + abandonUser + abandonCredential + timeout + error
+      );
+      const placementsFailed = failure + timeout + error;
+      const placementsAbandoned = abandonSelect + abandonUser + abandonCredential;
+
+      await postResults(job.id, {
+        attempted,
+        placements_success: success,
+        placements_failed: placementsFailed,
+        placements_abandoned: placementsAbandoned,
+        abandon_select_merchant: abandonSelect,
+        abandon_user_data: abandonUser,
+        abandon_credential_entry: abandonCredential,
+        last_run_at: new Date().toISOString()
+      });
+    }
   }
 }
 
