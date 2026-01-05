@@ -94,6 +94,12 @@ function computeRuns(job) {
 function runTests(configPath, runs) {
   const args = ["node", path.join(__dirname, "run-tests.js"), "--config", configPath, "--runs", String(runs), "--json"];
   const result = spawnSync(args[0], args.slice(1), { encoding: "utf8" });
+  if (result.stdout) {
+    process.stdout.write(result.stdout);
+  }
+  if (result.stderr) {
+    process.stderr.write(result.stderr);
+  }
   if (result.error) {
     throw new Error(result.error.message);
   }
