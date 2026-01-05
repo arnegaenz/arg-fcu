@@ -39,7 +39,8 @@ async function fetchJson(url, options = {}) {
   try {
     data = text ? JSON.parse(text) : {};
   } catch (err) {
-    throw new Error(`Invalid JSON from ${url}`);
+    const preview = text ? text.slice(0, 200) : "(empty)";
+    throw new Error(`Invalid JSON from ${url} (status ${res.status}) -> ${preview}`);
   }
   if (!res.ok) {
     const message = data?.error || res.statusText || "Request failed";
