@@ -20,9 +20,11 @@ jobs:
           cache: npm
 
       - name: Install dependencies
+        working-directory: tools/traffic-runner
         run: npm ci
 
       - name: Install Playwright browsers
+        working-directory: tools/traffic-runner
         run: npx playwright install --with-deps chromium
 
       - name: Run SIS jobs
@@ -31,4 +33,5 @@ jobs:
           SIS_ADMIN_KEY: ${{ secrets.SIS_ADMIN_KEY }}
           RUNNER_CONFIG: ./config.json
           SIS_JOB_LIMIT: "5"
+        working-directory: tools/traffic-runner
         run: node run-sis-jobs.js
