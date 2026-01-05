@@ -70,6 +70,7 @@ function buildJobConfig(job, baseConfig) {
 
   return {
     ...baseConfig,
+    headless: true,
     integrationTest,
     successRate: normalizeRate(job.target_success_rate, baseConfig.successRate),
     abandonRates: {
