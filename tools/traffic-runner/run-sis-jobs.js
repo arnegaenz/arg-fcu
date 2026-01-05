@@ -122,9 +122,21 @@ async function main() {
     throw new Error("SIS_API_BASE is required");
   }
   const baseConfig = loadBaseConfig();
+  const apiHost = (() => {
+    try {
+      return new URL(API_BASE).host;
+    } catch {
+      return "unknown";
+    }
+  })();
+  console.log(`[SIS] Fetching jobs from ${apiHost}`);
   const data = await fetchJson(`${API_BASE}/api/synth/jobs`);
   const jobs = Array.isArray(data.jobs) ? data.jobs : [];
   const dueJobs = jobs.filter((job) => job?.due && job.status !== "canceled" && job.status !== "completed");
+  console.log(`[SIS] Jobs: ${jobs.length}, due: ${dueJobs.length}`);
+  if (dueJobs.length) {
+    console.log(`[SIS] Due job IDs: ${dueJobs.map((job) => job.id).join(", ")}`);
+  }
 
   const limit = Math.max(1, JOB_LIMIT || dueJobs.length || 1);
   const selected = dueJobs.slice(0, limit);
