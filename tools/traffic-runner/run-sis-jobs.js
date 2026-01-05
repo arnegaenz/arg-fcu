@@ -17,11 +17,21 @@ const FI_HOST_MAP = {
   orb_prod: "orb_prod.customer-dev.cardupdatr.app"
 };
 
+const CARDHOLDER_MAP = {
+  default: "use_location"
+};
+
 function normalizeFiHost(value) {
   if (!value) return "";
   const trimmed = value.toString().trim();
   if (trimmed.includes(".")) return trimmed;
   return FI_HOST_MAP[trimmed] || trimmed;
+}
+
+function normalizeCardholder(value) {
+  if (!value) return "";
+  const trimmed = value.toString().trim();
+  return CARDHOLDER_MAP[trimmed] || trimmed;
 }
 
 function normalizeRate(value, fallback = 0) {
@@ -59,7 +69,9 @@ function buildJobConfig(job, baseConfig) {
   const integrationTest = { ...(baseConfig.integrationTest || {}) };
   integrationTest.fiHost = normalizeFiHost(job.fi_host_env || integrationTest.fiHost || "");
   integrationTest.testFlow = job.integration_flow || integrationTest.testFlow || "";
-  integrationTest.cardholder = job.test_card_preset || integrationTest.cardholder || "";
+  integrationTest.cardholder = normalizeCardholder(
+    job.test_card_preset || integrationTest.cardholder || ""
+  );
   integrationTest.testerName = job.source_subcategory || integrationTest.testerName || "";
   integrationTest.source = {
     ...(integrationTest.source || {}),
