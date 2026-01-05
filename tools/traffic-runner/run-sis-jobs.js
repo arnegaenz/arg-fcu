@@ -128,16 +128,29 @@ function runTests(configPath, runs) {
   throw new Error("Runner JSON summary missing");
 }
 
-async function postResults(jobId, payload) {
-  await fetchJson(`${API_BASE}/api/synth/jobs/${jobId}/results`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(payload)
-  });
+async function postResultsWithRetry(jobId, payload, retries = 3) {
+  let lastError = null;
+  for (let attempt = 1; attempt <= retries; attempt += 1) {
+    try {
+      await fetchJson(`${API_BASE}/api/synth/jobs/${jobId}/results`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+      return;
+    } catch (err) {
+      lastError = err;
+      console.log(`[SIS] Post results failed (attempt ${attempt}/${retries}): ${err.message}`);
+      if (attempt < retries) {
+        await new Promise((resolve) => setTimeout(resolve, 750 * attempt));
+      }
+    }
+  }
+  throw lastError;
 }
 
 async function markRunning(jobId) {
-  await postResults(jobId, { status: "running", attempted: 0 });
+  await postResultsWithRetry(jobId, { status: "running", attempted: 0 });
 }
 
 async function main() {
@@ -196,7 +209,7 @@ async function main() {
       const placementsFailed = failure + timeout + error;
       const placementsAbandoned = abandonSelect + abandonUser + abandonCredential;
 
-      await postResults(job.id, {
+      await postResultsWithRetry(job.id, {
         attempted,
         placements_success: success,
         placements_failed: placementsFailed,
@@ -204,7 +217,8 @@ async function main() {
         abandon_select_merchant: abandonSelect,
         abandon_user_data: abandonUser,
         abandon_credential_entry: abandonCredential,
-        last_run_at: new Date().toISOString()
+        last_run_at: new Date().toISOString(),
+        status: "running"
       });
     }
   }
