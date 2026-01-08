@@ -618,8 +618,6 @@ function buildBaseSettingsFromForm() {
       }
     },
     style: {
-      card_description: $("cardDescription").value.trim(),
-      final_message: $("finalMessage").value.trim(),
       link_color: $("linkColor").value.trim(),
       button_color: $("buttonColor").value.trim(),
       button_border_radius: $("buttonBorderRadius").value.trim(),
@@ -637,6 +635,16 @@ function buildBaseSettingsFromForm() {
 
   if (!sourceSubCategory) {
     delete base.user.source.sub_category;
+  }
+
+  const cardDescription = $("cardDescription").value.trim();
+  if (cardDescription) {
+    base.style.card_description = cardDescription;
+  }
+
+  const finalMessage = $("finalMessage").value.trim();
+  if (finalMessage) {
+    base.style.final_message = finalMessage;
   }
 
   if (ssoEnabled) {
