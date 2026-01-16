@@ -9,7 +9,7 @@
     "longitude": -117.9145
   },
   "integrationTest": {
-    "fiHost": "orb_prod.customer-dev.cardupdatr.app",
+    "fiHost": "alkami.mbudos.cardupdatr.app",
     "testFlow": "overlay_sso",
     "cardholder": "use_location",
     "testerName": "",
