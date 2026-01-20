@@ -229,7 +229,7 @@
           <select id="fiHost">
             <option value="argfcu.customer-dev.cardupdatr.app">ArgFCU (customer-dev)</option>
             <option value="orb_prod.customer-dev.cardupdatr.app">Orb Production (customer-dev)</option>
-            <option value="alkami.pkumar.cardupdatr.app">CardUpdatr 2+ (pkumar)</option>
+            <!-- <option value="alkami.pkumar.cardupdatr.app">CardUpdatr 2+ (pkumar)</option> -->
             <option value="alkami.mbudos.cardupdatr.app">CardUpdatr 2+ (mbudos)</option>
           </select>
         </label>
@@ -752,6 +752,37 @@
       });
     }
 
+    // Clear CardUpdatr session storage to prevent state leaking between hosts
+    function clearCardupdatrStorage() {
+      const cardupdatrSessionKeys = [
+        'appConfiguration',
+        'card_id',
+        'cardholder_cuid',
+        'cardholder_id',
+        'cardholder_safe_key',
+        'clickstream',
+        'hashKeyValues',
+        'pageOffset',
+        'selectedSites',
+        'ssoUser'
+      ];
+      const sessionKeyPattern = /^session_v[\d.]+\[/;
+      const legacyPattern = /cardupdatr|cardsavr/i;
+
+      Object.keys(sessionStorage).forEach((key) => {
+        if (cardupdatrSessionKeys.includes(key) || sessionKeyPattern.test(key) || legacyPattern.test(key)) {
+          console.log('[CLEAR STORAGE] Removing sessionStorage["' + key + '"]');
+          sessionStorage.removeItem(key);
+        }
+      });
+      Object.keys(localStorage).forEach((key) => {
+        if (cardupdatrSessionKeys.includes(key) || sessionKeyPattern.test(key) || legacyPattern.test(key)) {
+          console.log('[CLEAR STORAGE] Removing localStorage["' + key + '"]');
+          localStorage.removeItem(key);
+        }
+      });
+    }
+
     // Build base settings
     function buildBaseSettings() {
       const fiHost = $("fiHost").value;
@@ -847,6 +878,9 @@
     async function loadTest() {
       const flow = $("testFlow").value;
       const fiHost = $("fiHost").value;
+
+      // Clear any previous CardUpdatr session state before loading
+      clearCardupdatrStorage();
 
       try {
         switch (flow) {

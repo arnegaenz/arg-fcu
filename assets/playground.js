@@ -786,8 +786,25 @@ function ensureCardupdatrScript(hostname, forceReload = false) {
       console.log('  [SSO DEBUG] Removing old script element');
       script.parentNode.removeChild(script);
     }
-    console.log('  [SSO DEBUG] Clearing window.embedCardUpdatr');
-    delete window.embedCardUpdatr;
+    // Clear all CardUpdatr client globals to force fresh SDK initialization
+    const cardupdatrGlobals = [
+      'embedCardUpdatr',
+      'initCardupdatr',
+      'launchCardUpdatr',
+      'getCardData',
+      'build_cardupdatr_hash_string',
+      'inferCardsavrServer',
+      'loadCustomCardData',
+      'toggleCustomCardFields',
+      'getCustomCardData',
+      'ensureCardupdatrScript'
+    ];
+    cardupdatrGlobals.forEach(name => {
+      if (window[name]) {
+        console.log(`  [SSO DEBUG] Clearing window.${name}`);
+        delete window[name];
+      }
+    });
   }
 
   console.log('[SSO DEBUG] Loading CardUpdatr script from:', desiredSrc);
@@ -880,23 +897,45 @@ function clearCardupdatrStorage() {
   console.log('[SSO DEBUG] clearCardupdatrStorage() called');
   logSessionState('BEFORE storage clear');
 
-  const keyPattern = /cardupdatr|cardsavr/i;
-  const clearMatchingKeys = (storage, storageName) => {
+  // Clear all CardUpdatr-related keys from sessionStorage
+  // These are set by the CardUpdatr client and must be cleared when switching hosts
+  const cardupdatrSessionKeys = [
+    'appConfiguration',
+    'card_id',
+    'cardholder_cuid',
+    'cardholder_id',
+    'cardholder_safe_key',
+    'clickstream',
+    'hashKeyValues',
+    'pageOffset',
+    'selectedSites',
+    'ssoUser'
+  ];
+
+  // Pattern for session keys that include version numbers
+  const sessionKeyPattern = /^session_v[\d.]+\[/;
+  const legacyPattern = /cardupdatr|cardsavr/i;
+
+  const clearKeys = (storage, storageName) => {
     if (!storage) return;
     const allKeys = Object.keys(storage);
     console.log(`  [SSO DEBUG] All ${storageName} keys:`, allKeys);
 
     allKeys.forEach((key) => {
-      if (keyPattern.test(key)) {
+      const shouldClear = cardupdatrSessionKeys.includes(key) ||
+                          sessionKeyPattern.test(key) ||
+                          legacyPattern.test(key);
+      if (shouldClear) {
         console.log(`  [SSO DEBUG] Removing ${storageName}["${key}"]`);
         storage.removeItem(key);
       } else {
-        console.log(`  [SSO DEBUG] Skipping ${storageName}["${key}"] (doesn't match pattern)`);
+        console.log(`  [SSO DEBUG] Skipping ${storageName}["${key}"]`);
       }
     });
   };
-  clearMatchingKeys(sessionStorage, 'sessionStorage');
-  clearMatchingKeys(localStorage, 'localStorage');
+
+  clearKeys(sessionStorage, 'sessionStorage');
+  clearKeys(localStorage, 'localStorage');
 
   logSessionState('AFTER storage clear');
 }
