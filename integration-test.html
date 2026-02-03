@@ -544,10 +544,25 @@
         },
         (error) => {
           statusEl.className = "location-status denied";
-          statusEl.textContent = `📍 Location access denied`;
-          errorEl.style.display = "block";
-          $("testControls").classList.add("page-disabled");
+          statusEl.textContent = `📍 Location unavailable - using preset cardholders`;
           console.error('Geolocation error:', error);
+
+          // Soft fail: disable use_location option but allow testing with preset cardholders
+          const useLocationOption = document.querySelector('#cardholder option[value="use_location"]');
+          if (useLocationOption) {
+            useLocationOption.disabled = true;
+            useLocationOption.textContent = "Use My Location (unavailable)";
+          }
+
+          // Default to jack_skellington instead
+          const cardholderSelect = $("cardholder");
+          if (cardholderSelect) {
+            cardholderSelect.value = "jack_skellington";
+          }
+
+          // Show tester name field and allow testing
+          $("testerNameGroup").style.display = "block";
+          locationGranted = true; // Allow testing to proceed
         }
       );
     }
@@ -587,10 +602,25 @@
         console.log('Location detected:', window.userLocation);
       } catch (error) {
         statusEl.className = "location-status denied";
-        statusEl.textContent = "📍 Failed to get location details";
-        $("locationError").style.display = "block";
-        $("testControls").classList.add("page-disabled");
+        statusEl.textContent = "📍 Location lookup failed - using preset cardholders";
         console.error('Reverse geocoding error:', error);
+
+        // Soft fail: disable use_location option but allow testing with preset cardholders
+        const useLocationOption = document.querySelector('#cardholder option[value="use_location"]');
+        if (useLocationOption) {
+          useLocationOption.disabled = true;
+          useLocationOption.textContent = "Use My Location (unavailable)";
+        }
+
+        // Default to jack_skellington instead
+        const cardholderSelect = $("cardholder");
+        if (cardholderSelect) {
+          cardholderSelect.value = "jack_skellington";
+        }
+
+        // Show tester name field and allow testing
+        $("testerNameGroup").style.display = "block";
+        locationGranted = true; // Allow testing to proceed
       }
     }
 
