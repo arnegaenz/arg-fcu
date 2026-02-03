@@ -3,7 +3,9 @@
     "fiHost": [
       "argfcu.customer-dev.cardupdatr.app",
       "orb_prod.customer-dev.cardupdatr.app",
-      "alkami.mbudos.cardupdatr.app"
+      "alkami.pkumar.cardupdatr.app",
+      "alkami.mbudos.cardupdatr.app",
+      "alkami.staging.cardupdatr.app"
     ],
     "testFlow": [
       "weblink_nosso",
