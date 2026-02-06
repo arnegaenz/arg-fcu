@@ -6,7 +6,28 @@ on:
     - cron: "*/10 * * * *"
 
 jobs:
+  check-jobs:
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    outputs:
+      has_due_jobs: ${{ steps.check.outputs.has_due_jobs }}
+    steps:
+      - name: Check for due jobs
+        id: check
+        run: |
+          RESPONSE=$(curl -sf "${{ secrets.SIS_API_BASE }}/api/synth/status" || echo '{"has_due_jobs":false}')
+          HAS_JOBS=$(echo "$RESPONSE" | jq -r '.has_due_jobs // false')
+          echo "Response: $RESPONSE"
+          echo "has_due_jobs=$HAS_JOBS" >> $GITHUB_OUTPUT
+          if [ "$HAS_JOBS" = "true" ]; then
+            echo "✅ Found due jobs - will proceed with runner"
+          else
+            echo "⏭️ No due jobs - skipping runner"
+          fi
+
   run-sis-jobs:
+    needs: check-jobs
+    if: needs.check-jobs.outputs.has_due_jobs == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 30
     steps:
