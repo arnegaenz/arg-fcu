@@ -54,5 +54,19 @@
   },
   "closeAction": {
     "buttonText": "Close"
+  },
+  "cardData": {
+    "email": "anaheim@test.com",
+    "phone": "5555555555",
+    "nameOnCard": "Anaheim CA",
+    "cardNumber": "4111111111111111",
+    "expDate": "12/28",
+    "cvv": "123",
+    "firstName": "Anaheim",
+    "lastName": "CA",
+    "billingAddress": "123 Test Street",
+    "city": "Anaheim",
+    "state": "CA",
+    "zip": "92805"
   }
 }

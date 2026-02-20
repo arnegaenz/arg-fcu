@@ -359,6 +359,51 @@ async function runSingle(page, config, successRate, forcedSuccess) {
     return { outcome: "abandon_user_data", expectedSuccess: null };
   }
 
+  // Detect non-SSO flow and fill card/billing data before credential entry
+  const isNonSSO = (integration.testFlow || "").toLowerCase().includes("nosso");
+  if (isNonSSO && config.cardData) {
+    const cd = config.cardData;
+    // Wait for user data page to appear (Card Number field signals it)
+    await frame.getByLabel("Card Number", { exact: false }).first()
+      .waitFor({ state: "visible", timeout: 15000 });
+    console.log("[User Data] Filling card/billing data for non-SSO flow");
+
+    const fillByLabel = async (label, value) => {
+      if (!value) return;
+      try {
+        await frame.getByLabel(label, { exact: false }).first().fill(value);
+      } catch (e) {
+        console.log(`[User Data] Could not fill "${label}": ${e.message}`);
+      }
+    };
+
+    await fillByLabel("Email Address", cd.email);
+    await fillByLabel("Phone Number", cd.phone);
+    await fillByLabel("Name On Card", cd.nameOnCard);
+    await fillByLabel("Card Number", cd.cardNumber);
+    await fillByLabel("Exp. Date", cd.expDate);
+    await fillByLabel("CVV", cd.cvv);
+    await fillByLabel("First Name", cd.firstName);
+    await fillByLabel("Last Name", cd.lastName);
+    await fillByLabel("Billing Address", cd.billingAddress);
+    await fillByLabel("City", cd.city);
+    await fillByLabel("Zip", cd.zip);
+
+    // State is a <select> element
+    if (cd.state) {
+      try {
+        const stateSelect = frame.getByLabel("State", { exact: false }).first();
+        await stateSelect.selectOption(cd.state);
+      } catch (e) {
+        console.log(`[User Data] Could not select State: ${e.message}`);
+      }
+    }
+
+    // Click Continue to proceed to credential entry
+    await clickButtonByText(frame, "Continue");
+    console.log("[User Data] Card data submitted, proceeding to credential entry");
+  }
+
   const creds = pickCredentials(config, successRate, forcedSuccess);
   const emailField = config.credentials.emailField || { label: config.credentials.emailLabel };
   const passwordField = config.credentials.passwordField || { label: config.credentials.passwordLabel };
@@ -395,6 +440,17 @@ async function runSingle(page, config, successRate, forcedSuccess) {
   }
 
   const outcome = await waitForFinalState(frame, config.finalState || {});
+
+  if (outcome === "timeout") {
+    try {
+      const screenshotPath = path.resolve(process.cwd(), "timeout-debug.png");
+      await page.screenshot({ path: screenshotPath, fullPage: true });
+      console.log(`[Debug] Timeout screenshot saved: ${screenshotPath}`);
+      await logFrameSummary(frame);
+    } catch (e) {
+      console.log(`[Debug] Timeout screenshot failed: ${e.message}`);
+    }
+  }
 
   await tryCloseFlow(frame, config.closeAction);
 
@@ -451,6 +507,20 @@ async function main() {
         const expectedLabel =
           result.expectedSuccess == null ? "n/a" : result.expectedSuccess ? "success" : "failure";
         console.log(`Run ${i + 1}: ${result.outcome} (expected ${expectedLabel})`);
+        if (result.outcome === "timeout") {
+          const safeIndex = String(i + 1).padStart(2, "0");
+          const screenshotPath = path.resolve(process.cwd(), `run-${safeIndex}-timeout.png`);
+          try {
+            await page.screenshot({ path: screenshotPath, fullPage: true });
+            console.log(`Run ${i + 1}: saved timeout screenshot ${screenshotPath}`);
+            const frame = page.frames().find((entry) => entry !== page.mainFrame());
+            if (frame) {
+              await logFrameSummary(frame);
+            }
+          } catch (screenshotErr) {
+            console.log(`Run ${i + 1}: timeout screenshot failed (${screenshotErr.message})`);
+          }
+        }
       } catch (err) {
         const safeIndex = String(i + 1).padStart(2, "0");
         const screenshotPath = path.resolve(process.cwd(), `run-${safeIndex}-error.png`);
