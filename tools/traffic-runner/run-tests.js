@@ -116,7 +116,7 @@ function buildRunPlan(totalRuns, failures) {
 async function selectOptionIfPresent(page, selector, value) {
   if (!value) return;
   const el = page.locator(selector);
-  if (await el.count()) {
+  if (await el.count() && await el.isVisible()) {
     await page.selectOption(selector, value);
   }
 }
@@ -124,7 +124,7 @@ async function selectOptionIfPresent(page, selector, value) {
 async function fillIfPresent(page, selector, value) {
   if (value == null) return;
   const el = page.locator(selector);
-  if (await el.count()) {
+  if (await el.count() && await el.isVisible()) {
     await el.fill(value);
   }
 }
