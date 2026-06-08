@@ -132,7 +132,7 @@ async function postResultsWithRetry(jobId, payload, retries = 3) {
   let lastError = null;
   for (let attempt = 1; attempt <= retries; attempt += 1) {
     try {
-      await fetchJson(`${API_BASE}/api/synth/jobs/${jobId}/results`, {
+      await fetchJson(`${API_BASE}/api/synthetic-traffic/${jobId}/results`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload)
@@ -166,7 +166,7 @@ async function main() {
     }
   })();
   console.log(`[SIS] Fetching jobs from ${apiHost}`);
-  const data = await fetchJson(`${API_BASE}/api/synth/jobs`);
+  const data = await fetchJson(`${API_BASE}/api/synthetic-traffic`);
   const jobs = Array.isArray(data.jobs) ? data.jobs : [];
   const dueJobs = jobs.filter((job) => job?.due && job.status !== "canceled" && job.status !== "completed");
   console.log(`[SIS] Jobs: ${jobs.length}, due: ${dueJobs.length}`);
