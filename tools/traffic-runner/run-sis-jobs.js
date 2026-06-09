@@ -3,6 +3,7 @@ import os from "os";
 import path from "path";
 import { fileURLToPath } from "url";
 import { spawnSync } from "child_process";
+import { firePageViewsForPlacement, outcomesFromSummary } from "./ga-events.mjs";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -220,6 +221,19 @@ async function main() {
         last_run_at: new Date().toISOString(),
         status: "running"
       });
+
+      // Fire GA4 page_view events to the test property so the SIS GA Page
+      // Views tiles populate for this FI. No-ops cleanly when the GA env
+      // vars aren't configured. One client_id per simulated cardholder
+      // (per outcome in the summary) so GA4 stitches them as separate
+      // sessions.
+      const host = normalizeFiHost(job.fi_host_env);
+      const fiKey = (job.fi_host_env || "").toString().trim();
+      const isSso = (job.integration_flow || "").toString().toLowerCase().includes("_sso");
+      const outcomes = outcomesFromSummary(summary);
+      for (const outcome of outcomes) {
+        await firePageViewsForPlacement({ host, fiKey, outcome, isSso });
+      }
     }
   }
 }
